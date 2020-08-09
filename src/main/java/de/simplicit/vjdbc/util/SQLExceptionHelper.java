@@ -4,11 +4,8 @@
 
 package de.simplicit.vjdbc.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Iterator;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 
 /**
  * SQLExceptionHelper wraps driver-specific exceptions in a generic SQLException.
@@ -46,9 +43,7 @@ public class SQLExceptionHelper {
 
         while (loop != null && exceptionIsGeneric) {
 
-            exceptionIsGeneric =
-                java.io.Serializable.class.isAssignableFrom(loop.getClass()) ||
-                java.io.Externalizable.class.isAssignableFrom(loop.getClass());
+            exceptionIsGeneric = java.io.Serializable.class.isAssignableFrom(loop.getClass()) || java.io.Externalizable.class.isAssignableFrom(loop.getClass());
             loop = loop.getCause();
         }
 

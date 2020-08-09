@@ -9,9 +9,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 class SimpleStatementParser {
-    Set getTablesOfSelectStatement(String sql) {
+    Set<String> getTablesOfSelectStatement(String sql) {
         // Create the result Set
-        Set result = new HashSet();
+        Set<String> result = new HashSet<String>();
         // Normalize the string (remove all double whitespaces)
         while(true) {
             String newsql = sql.replaceAll("  ", " ");
@@ -38,10 +38,10 @@ class SimpleStatementParser {
                     String fromPart = sqlLowerCase.substring(fromPos + 6);
                     String[] parts = fromPart.split(",");
 
-                    for(int i = 0; i < parts.length; i++) {
-                        String part = parts[i].trim();
+                    for (String s : parts) {
+                        String part = s.trim();
                         int spacePos = part.indexOf(' ');
-                        if(spacePos >= 0) {
+                        if (spacePos >= 0) {
                             String table = part.substring(0, spacePos);
                             result.add(table.toLowerCase());
                         } else {
@@ -87,9 +87,8 @@ class SimpleStatementParser {
     private static void dumpTables(String sql) {
         System.out.println(sql);
         SimpleStatementParser parser = new SimpleStatementParser();
-        Set tables = parser.getTablesOfSelectStatement(sql);
-        for(Iterator iterator = tables.iterator(); iterator.hasNext();) {
-            String table = (String)iterator.next();
+        Set<String> tables = parser.getTablesOfSelectStatement(sql);
+        for (String table : tables) {
             System.out.println("Table: " + table);
         }
     }

@@ -548,8 +548,8 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * themselves respond to interrupts.
    **/
   public synchronized void interruptAll() {
-    for (Iterator it = threads_.values().iterator(); it.hasNext(); ) {
-      Thread t = (Thread)(it.next());
+    for (Object o : threads_.values()) {
+      Thread t = (Thread) o;
       t.interrupt();
     }
   }
@@ -704,7 +704,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
          if (r != null && !shutdown_) // just consume task if shut down
            addThread(r);
       } catch(InterruptedException ie) {
-        return;
+      ie.printStackTrace();
       }
     }
   }
@@ -749,7 +749,9 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
           task = null;
         }
       }
-      catch (InterruptedException ex) { } // fall through
+      catch (InterruptedException ex) {
+        ex.printStackTrace();
+      } // fall through
       finally {
         workerDone(this);
       }
@@ -772,7 +774,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   }
 
   /** Class defining Run action. **/
-  protected class RunWhenBlocked implements BlockedExecutionHandler {
+  protected static class RunWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       command.run();
       return true;
@@ -810,7 +812,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   }
 
   /** Class defining Discard action. **/
-  protected class DiscardWhenBlocked implements BlockedExecutionHandler {
+  protected static class DiscardWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       return true;
     }
@@ -826,7 +828,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
 
 
   /** Class defining Abort action. **/
-  protected class AbortWhenBlocked implements BlockedExecutionHandler {
+  protected static class AbortWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       throw new RuntimeException("Pool is blocked");
     }

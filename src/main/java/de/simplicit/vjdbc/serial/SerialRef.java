@@ -23,19 +23,22 @@ public class SerialRef implements Ref, Externalizable {
         _javaObject = ref.getObject();
     }
 
-    public String getBaseTypeName() throws SQLException {
+    public SerialRef() {
+    }
+
+    public String getBaseTypeName() {
         return _baseTypeName;
     }
 
-    public Object getObject(Map map) throws SQLException {
+    public Object getObject(Map map) {
         throw new UnsupportedOperationException("Ref.getObject(Map) not supported");
     }
 
-    public Object getObject() throws SQLException {
+    public Object getObject() {
         return _javaObject;
     }
 
-    public void setObject(Object value) throws SQLException {
+    public void setObject(Object value) {
         throw new UnsupportedOperationException("Ref.setObject(Object) not supported");
     }
 

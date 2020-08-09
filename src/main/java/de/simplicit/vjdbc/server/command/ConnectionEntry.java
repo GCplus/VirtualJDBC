@@ -33,16 +33,16 @@ import java.sql.Statement;
 import java.util.*;
 
 class ConnectionEntry implements ConnectionContext {
-    private static Log _logger = LogFactory.getLog(ConnectionEntry.class);
+    private static final Log _logger = LogFactory.getLog(ConnectionEntry.class);
 
     // Unique identifier for the ConnectionEntry
-    private Long _uid;
+    private final Long _uid;
     // The real JDBC-Connection
-    private Connection _connection;
+    private final Connection _connection;
     // Configuration information
-    private ConnectionConfiguration _connectionConfiguration;
+    private final ConnectionConfiguration _connectionConfiguration;
     // Properties delivered from the client
-    private Properties _clientInfo;
+    private final Properties _clientInfo;
     // Flag that signals the activity of this connection
     private boolean _active = false;
 
@@ -52,10 +52,10 @@ class ConnectionEntry implements ConnectionContext {
 
     // Map containing all JDBC-Objects which are created by this Connection
     // entry
-    private Map<Long, JdbcObjectHolder> _jdbcObjects =
+    private final Map<Long, JdbcObjectHolder> _jdbcObjects =
         Collections.synchronizedMap(new HashMap<Long, JdbcObjectHolder>());
     // Map for counting commands
-    private Map<String, Integer> _commandCountMap =
+    private final Map<String, Integer> _commandCountMap =
         Collections.synchronizedMap(new HashMap<String, Integer>());
 
     ConnectionEntry(Long connuid, Connection conn, ConnectionConfiguration config, Properties clientInfo, CallingContext ctx) {
@@ -84,21 +84,21 @@ class ConnectionEntry implements ConnectionContext {
     }
 
     public void closeAllRelatedJdbcObjects() throws SQLException {
-    	Set<Long> keys = null;
-    	synchronized(_jdbcObjects) {
-    		keys = new HashSet<Long>(_jdbcObjects.keySet());
-    	}
-    	if(keys != null) {
-	    	for(Long key: keys) {
-	    		JdbcObjectHolder jdbcObject = _jdbcObjects.get(key);
-	    		// don't act on the Connection itself - this will be done elsewhere
-	    		if(jdbcObject.getJdbcInterfaceType() == JdbcInterfaceType.CONNECTION)
-	    			continue;
-	    		// create a DestroyCommand and act on it
-	    		Command destroy = new DestroyCommand(key, jdbcObject.getJdbcInterfaceType());
-	    		destroy.execute(jdbcObject.getJdbcObject(), this);
-	    	}
-    	}
+        Set<Long> keys = null;
+        synchronized (_jdbcObjects) {
+            keys = new HashSet<Long>(_jdbcObjects.keySet());
+        }
+        if (!keys.isEmpty()) {
+            for (Long key : keys) {
+                JdbcObjectHolder jdbcObject = _jdbcObjects.get(key);
+                // don't act on the Connection itself - this will be done elsewhere
+                if (jdbcObject.getJdbcInterfaceType() == JdbcInterfaceType.CONNECTION)
+                    continue;
+                // create a DestroyCommand and act on it
+                Command destroy = new DestroyCommand(key, jdbcObject.getJdbcInterfaceType());
+                destroy.execute(jdbcObject.getJdbcObject(), this);
+            }
+        }
     }
     
     boolean hasJdbcObjects() {
@@ -236,9 +236,9 @@ class ConnectionEntry implements ConnectionContext {
                 String cmdString = cmd.toString();
                 Integer oldval = _commandCountMap.get(cmdString);
                 if(oldval == null) {
-                    _commandCountMap.put(cmdString, new Integer(1));
+                    _commandCountMap.put(cmdString, 1);
                 } else {
-                    _commandCountMap.put(cmdString, new Integer(oldval.intValue() + 1));
+                    _commandCountMap.put(cmdString, oldval + 1);
                 }
             }
 
@@ -283,11 +283,10 @@ class ConnectionEntry implements ConnectionContext {
 
         if(_jdbcObjects.size() > 0) {
             _logger.info("  Remaining objects .... " + _jdbcObjects.size());
-            for(Iterator<JdbcObjectHolder> it = _jdbcObjects.values().iterator(); it.hasNext();) {
-                JdbcObjectHolder jdbcObjectHolder = it.next();
+            for (JdbcObjectHolder jdbcObjectHolder : _jdbcObjects.values()) {
                 _logger.info("  - " + jdbcObjectHolder.getJdbcObject().getClass().getName());
-                if(_connectionConfiguration.isTraceOrphanedObjects()) {
-                    if(jdbcObjectHolder.getCallingContext() != null) {
+                if (_connectionConfiguration.isTraceOrphanedObjects()) {
+                    if (jdbcObjectHolder.getCallingContext() != null) {
                         _logger.info(jdbcObjectHolder.getCallingContext().getStackTrace());
                     }
                 }
@@ -311,8 +310,8 @@ class ConnectionEntry implements ConnectionContext {
                 }
             });
 
-            for(Iterator it = entries.iterator(); it.hasNext();) {
-                Map.Entry entry = (Map.Entry) it.next();
+            for (Object o : entries) {
+                Map.Entry entry = (Map.Entry) o;
                 String cmd = (String) entry.getKey();
                 Integer count = (Integer) entry.getValue();
                 _logger.info("     " + count + " : " + cmd);

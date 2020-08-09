@@ -24,12 +24,12 @@ public class CallableStatementSetSQLXMLCommand implements Command {
     public CallableStatementSetSQLXMLCommand() {
     }
 
-    public CallableStatementSetSQLXMLCommand(int index, SQLXML sqlxml) throws IOException {
+    public CallableStatementSetSQLXMLCommand(int index, SQLXML sqlxml) {
         _index = index;
         this.sqlxml = sqlxml;
     }
 
-    public CallableStatementSetSQLXMLCommand(String paramName, SQLXML sqlxml) throws IOException {
+    public CallableStatementSetSQLXMLCommand(String paramName, SQLXML sqlxml) {
         _parameterName = paramName;
         this.sqlxml = sqlxml;
     }

@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ArrayAccessors {
-    private static Map _arrayAccessors = new HashMap();
-    private static ArrayAccess _objectArrayFiller = new ArrayAccessObject();
+    private static final Map<Class, ArrayAccess> _arrayAccessors = new HashMap<Class, ArrayAccess>();
+    private static final ArrayAccess _objectArrayFiller = new ArrayAccessObject();
 
     static {
         _arrayAccessors.put(Boolean.TYPE, new ArrayAccessBoolean());
@@ -24,7 +24,7 @@ class ArrayAccessors {
     }
 
     static ArrayAccess getArrayAccessorForPrimitiveType(Class primitiveType) {
-        return (ArrayAccess) _arrayAccessors.get(primitiveType);
+        return _arrayAccessors.get(primitiveType);
     }
 
     static ArrayAccess getObjectArrayAccessor() {
@@ -36,7 +36,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return Boolean.valueOf(Array.getBoolean(array, index));
+                return Array.getBoolean(array, index);
             }
         }
     }
@@ -46,7 +46,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Byte(Array.getByte(array, index));
+                return Array.getByte(array, index);
             }
         }
     }
@@ -56,7 +56,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Character(Array.getChar(array, index));
+                return Array.getChar(array, index);
             }
         }
     }
@@ -66,7 +66,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Short(Array.getShort(array, index));
+                return Array.getShort(array, index);
             }
         }
     }
@@ -76,7 +76,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Integer(Array.getInt(array, index));
+                return Array.getInt(array, index);
             }
         }
     }
@@ -86,7 +86,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Long(Array.getLong(array, index));
+                return Array.getLong(array, index);
             }
         }
     }
@@ -96,7 +96,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Float(Array.getFloat(array, index));
+                return Array.getFloat(array, index);
             }
         }
     }
@@ -106,7 +106,7 @@ class ArrayAccessors {
             if(nullFlags[index]) {
                 return null;
             } else {
-                return new Double(Array.getDouble(array, index));
+                return Array.getDouble(array, index);
             }
         }
     }

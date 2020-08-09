@@ -13,11 +13,12 @@ class ConfigurationUtil {
     }
 
     static long getMillisFromString(String value) {
+        long parseLong = Long.parseLong(value.substring(0, value.length() - 1));
         if(value.endsWith("s")) {
-            return Long.parseLong(value.substring(0, value.length()-1)) * MILLIS_PER_SECOND;
+            return parseLong * MILLIS_PER_SECOND;
         }
         else if(value.endsWith("m")) {
-            return Long.parseLong(value.substring(0, value.length()-1)) * MILLIS_PER_MINUTE;
+            return parseLong * MILLIS_PER_MINUTE;
         }
         else {
             return Long.parseLong(value);

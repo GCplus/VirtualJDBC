@@ -47,10 +47,10 @@ public class ObjectParameter implements PreparedStatementParameter {
             if(_targetSqlType == null) {
                 pstmt.setObject(index, _value);
             } else {
-                pstmt.setObject(index, _value, _targetSqlType.intValue());
+                pstmt.setObject(index, _value, _targetSqlType);
             }
         } else {
-            pstmt.setObject(index, _value, _targetSqlType.intValue(), _scale.intValue());
+            pstmt.setObject(index, _value, _targetSqlType, _scale);
         }
     }
 

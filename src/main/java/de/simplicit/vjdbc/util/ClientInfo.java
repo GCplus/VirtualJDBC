@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class ClientInfo {
-    private static Log _logger = LogFactory.getLog(ClientInfo.class);
+    private static final Log _logger = LogFactory.getLog(ClientInfo.class);
     private static Properties _properties = null;
 
     public static Properties getProperties(String propertiesToTransfer) {
@@ -41,6 +41,7 @@ public class ClientInfo {
                 }
             } catch (Exception e) {
                 _logger.info("Access-Exception, System-Properties can't be delivered to the server");
+                e.printStackTrace();
             }
         }
 

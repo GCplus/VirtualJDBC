@@ -18,14 +18,14 @@ import java.util.Timer;
  * it supports a Listener which is called before and after execution of the command.
  */
 public class DecoratedCommandSink {
-    private UIDEx _connectionUid;
-    private CommandSink _targetSink;
+    private final UIDEx _connectionUid;
+    private final CommandSink _targetSink;
     private CommandSinkListener _listener = new NullCommandSinkListener();
-    private CallingContextFactory _callingContextFactory;
+    private final CallingContextFactory _callingContextFactory;
     private Timer _timer;
 
     public DecoratedCommandSink(UIDEx connuid, CommandSink sink, CallingContextFactory ctxFactory) {
-        this(connuid, sink, ctxFactory, 10000l);
+        this(connuid, sink, ctxFactory, 10000L);
     }
 
     public DecoratedCommandSink(UIDEx connuid, CommandSink sink, CallingContextFactory ctxFactory, long pingPeriod) {
@@ -98,8 +98,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Integer n = (Integer)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return n.intValue();
+            return Integer.parseInt(String.valueOf(_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx)));
         } finally {
             _listener.postExecution(cmd);
         }
@@ -116,8 +115,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Boolean b = (Boolean)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.booleanValue();
+            return Boolean.parseBoolean(String.valueOf(_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx)));
         } finally {
             _listener.postExecution(cmd);
         }
@@ -134,8 +132,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Byte b = (Byte)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.byteValue();
+            return Byte.parseByte(String.valueOf(_targetSink.process(_connectionUid.getUID(),uid.getUID(),cmd,ctx)));
         } finally {
             _listener.postExecution(cmd);
         }
@@ -153,7 +150,7 @@ public class DecoratedCommandSink {
             }
             _listener.preExecution(cmd);
             Short b = (Short)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.shortValue();
+            return b;
         } finally {
             _listener.postExecution(cmd);
         }
@@ -170,8 +167,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Long b = (Long)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.longValue();
+            return Long.parseLong(String.valueOf(_targetSink.process(_connectionUid.getUID(),uid.getUID(),cmd,ctx)));
         } finally {
             _listener.postExecution(cmd);
         }
@@ -188,8 +184,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Float b = (Float)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.floatValue();
+            return Float.parseFloat(String.valueOf(_targetSink.process(_connectionUid.getUID(),uid.getUID(),cmd,ctx)));
         } finally {
             _listener.postExecution(cmd);
         }
@@ -206,8 +201,7 @@ public class DecoratedCommandSink {
                 ctx = _callingContextFactory.create();
             }
             _listener.preExecution(cmd);
-            Double b = (Double)_targetSink.process(_connectionUid.getUID(), uid.getUID(), cmd, ctx);
-            return b.doubleValue();
+            return Double.parseDouble(String.valueOf(_targetSink.process(_connectionUid.getUID(),uid.getUID(),cmd,ctx)));
         } finally {
             _listener.postExecution(cmd);
         }

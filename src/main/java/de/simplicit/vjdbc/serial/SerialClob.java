@@ -80,11 +80,11 @@ public class SerialClob implements Clob, Externalizable {
         _data = (char[])in.readObject();
     }
 
-    public long length() throws SQLException {
+    public long length() {
         return _data.length;
     }
 
-    public String getSubString(long pos, int length) throws SQLException {
+    public String getSubString(long pos, int length) {
         if (pos <= Integer.MAX_VALUE) {
             return new String(_data, (int)pos - 1, length);
         }
@@ -98,7 +98,7 @@ public class SerialClob implements Clob, Externalizable {
         return writer.toString();
     }
 
-    public Reader getCharacterStream() throws SQLException {
+    public Reader getCharacterStream() {
         return new StringReader(new String(_data));
     }
 
@@ -110,36 +110,36 @@ public class SerialClob implements Clob, Externalizable {
         }
     }
 
-    public long position(String searchstr, long start) throws SQLException {
+    public long position(String searchstr, long start) {
         throw new UnsupportedOperationException("SerialClob.position");
     }
 
-    public long position(Clob searchstr, long start) throws SQLException {
+    public long position(Clob searchstr, long start) {
         throw new UnsupportedOperationException("SerialClob.position");
     }
 
-    public int setString(long pos, String str) throws SQLException {
+    public int setString(long pos, String str) {
         throw new UnsupportedOperationException("SerialClob.setString");
     }
 
-    public int setString(long pos, String str, int offset, int len) throws SQLException {
+    public int setString(long pos, String str, int offset, int len) {
         throw new UnsupportedOperationException("SerialClob.setString");
     }
 
-    public OutputStream setAsciiStream(long pos) throws SQLException {
+    public OutputStream setAsciiStream(long pos) {
         throw new UnsupportedOperationException("SerialClob.setAsciiStream");
     }
 
-    public Writer setCharacterStream(long pos) throws SQLException {
+    public Writer setCharacterStream(long pos) {
         throw new UnsupportedOperationException("SerialClob.setCharacterStream");
     }
 
-    public void truncate(long len) throws SQLException {
+    public void truncate(long len) {
         throw new UnsupportedOperationException("SerialClob.truncate");
     }
 
     /* start JDBC4 support */
-    public Reader getCharacterStream(long pos, long length) throws SQLException {
+    public Reader getCharacterStream(long pos, long length) {
         if (pos <= Integer.MAX_VALUE && length <= Integer.MAX_VALUE) {
             return new CharArrayReader(_data, (int)pos, (int)length);
         }
@@ -153,7 +153,7 @@ public class SerialClob implements Clob, Externalizable {
         return new CharArrayReader(writer.toCharArray());
     }
 
-    public void free() throws SQLException {
+    public void free() {
         _data = null;
     }
     /* end JDBC4 support */

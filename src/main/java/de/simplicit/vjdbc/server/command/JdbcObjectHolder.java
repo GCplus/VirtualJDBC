@@ -7,9 +7,9 @@ package de.simplicit.vjdbc.server.command;
 import de.simplicit.vjdbc.serial.CallingContext;
 
 class JdbcObjectHolder {
-    private Object _jdbcObject;
-    private CallingContext _callingContext;
-    private int _jdbcInterfaceType;
+    private final Object _jdbcObject;
+    private final CallingContext _callingContext;
+    private final int _jdbcInterfaceType;
     
     JdbcObjectHolder(Object jdbcObject, CallingContext ctx, int _jdbcInterfaceType) {
         this._jdbcObject = jdbcObject;

@@ -14,7 +14,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class Zipper {
-    private static Log _logger = LogFactory.getLog(Zipper.class);
+    private static final Log _logger = LogFactory.getLog(Zipper.class);
 
     public static byte[] zip(byte[] b, int compressionMode) throws IOException {
         Deflater deflater = new Deflater(compressionMode);

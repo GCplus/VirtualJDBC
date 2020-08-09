@@ -41,6 +41,7 @@ public class SQLXMLParameter implements PreparedStatementParameter {
         try {
             return "SQLXML: " + _value.getString();
         } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
         return "SQLXML: fail";
     }

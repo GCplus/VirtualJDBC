@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.rmi.PortableRemoteObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +26,6 @@ import de.simplicit.vjdbc.command.CommandSink;
 import de.simplicit.vjdbc.command.DecoratedCommandSink;
 import de.simplicit.vjdbc.command.NullCallingContextFactory;
 import de.simplicit.vjdbc.command.StandardCallingContextFactory;
-import de.simplicit.vjdbc.ejb.EjbCommandSink;
 import de.simplicit.vjdbc.ejb.EjbCommandSinkProxy;
 import de.simplicit.vjdbc.rmi.CommandSinkRmi;
 import de.simplicit.vjdbc.rmi.CommandSinkRmiProxy;
@@ -43,7 +41,7 @@ import de.simplicit.vjdbc.util.ClientInfo;
 import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
 public final class VirtualDriver implements Driver {
-    private static Log _logger = LogFactory.getLog(VirtualDriver.class);
+    private static final Log _logger = LogFactory.getLog(VirtualDriver.class);
 
     private static final String VJDBC_IDENTIFIER = "jdbc:vjdbc:";
     private static final String EJB_IDENTIFIER = "ejb:";
@@ -88,7 +86,7 @@ public final class VirtualDriver implements Driver {
             _logger.info("VJdbc-URL: " + realUrl);
 
             try {
-                CommandSink sink = null;
+                CommandSink sink;//创建一个空白的CommandSink对象
 
                 String[] urlparts;
 
@@ -153,11 +151,11 @@ public final class VirtualDriver implements Driver {
         return result;
     }
 
-    public boolean acceptsURL(String url) throws SQLException {
+    public boolean acceptsURL(String url) {
         return url.startsWith(VJDBC_IDENTIFIER);
     }
 
-    public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
+    public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
         return new DriverPropertyInfo[0];
     }
 
@@ -182,8 +180,7 @@ public final class VirtualDriver implements Driver {
         }
         ConnectionBrokerRmi broker = (ConnectionBrokerRmi)Naming.lookup(rminame);
         CommandSinkRmi rmiSink = broker.createCommandSink();
-        CommandSink proxy = new CommandSinkRmiProxy(rmiSink);
-        return proxy;
+        return new CommandSinkRmiProxy(rmiSink);
     }
 
     private CommandSink createEjbCommandSink(String ejbname) throws Exception {
@@ -221,11 +218,11 @@ public final class VirtualDriver implements Driver {
     private String[] split(String url) {
         char[] splitChars = { ',', ';', '#', '$' };
 
-        for(int i = 0; i < splitChars.length; i++) {
-            int charindex = url.indexOf(splitChars[i]);
+        for (char splitChar : splitChars) {
+            int charindex = url.indexOf(splitChar);
 
-            if(charindex >= 0) {
-                return new String[] { url.substring(0, charindex), url.substring(charindex + 1) };
+            if (charindex >= 0) {
+                return new String[]{url.substring(0, charindex), url.substring(charindex + 1)};
             }
         }
 

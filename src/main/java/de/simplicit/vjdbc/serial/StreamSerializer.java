@@ -64,7 +64,7 @@ public class StreamSerializer {
             int readChars = reader.read(buffer);
 
             if(readChars >= 0) {
-                caw.write(buffer, 0, (int)Math.min((long)readChars, length));
+                caw.write(buffer, 0, (int)Math.min(readChars, length));
                 length -= readChars;
             }
         }

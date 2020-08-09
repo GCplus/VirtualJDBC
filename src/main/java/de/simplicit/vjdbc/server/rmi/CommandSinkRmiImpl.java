@@ -19,7 +19,7 @@ import de.simplicit.vjdbc.server.command.CommandProcessor;
 public class CommandSinkRmiImpl extends UnicastRemoteObject implements CommandSinkRmi, Unreferenced {
     private static final long serialVersionUID = 3257566187649840185L;
     
-    private CommandProcessor _processor;
+    private final CommandProcessor _processor;
 
     public CommandSinkRmiImpl(int remotingPort) throws RemoteException {
         super(remotingPort);

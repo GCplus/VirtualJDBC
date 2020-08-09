@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
  * This class holds configuration information for the OCCT.
  */
 public class OcctConfiguration {
-    private static Log _logger = LogFactory.getLog(OcctConfiguration.class);
+    private static final Log _logger = LogFactory.getLog(OcctConfiguration.class);
 
     private long _checkingPeriod = 30000;
     private long _timeout = 120000;

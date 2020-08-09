@@ -49,7 +49,7 @@ public class PreparedStatementQueryCommand implements Command, ResultSetProducer
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("PreparedStatementQueryCommand");
         if(_params != null && _params.length > 0) {
             sb.append(" with parameters\n");

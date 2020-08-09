@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class PingCommand implements Command {
     static final long serialVersionUID = 3340327873423851L;
 
-    private static Log _logger = LogFactory.getLog(PingCommand.class);
+    private static final Log _logger = LogFactory.getLog(PingCommand.class);
 
     public PingCommand() {
     }

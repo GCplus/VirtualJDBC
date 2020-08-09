@@ -29,7 +29,7 @@ public class ByteStreamParameter implements PreparedStatementParameter {
         BufferedInputStream s = new BufferedInputStream(x);
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream((int)(length >= 0 ? length : 1024));
-            byte buf[] = new byte[1024];
+            byte[] buf = new byte[1024];
             int br;
             while((br = s.read(buf)) >= 0) {
                 if(br > 0) {
@@ -48,6 +48,7 @@ public class ByteStreamParameter implements PreparedStatementParameter {
             try {
                 s.close();
             } catch(IOException e) {
+                e.printStackTrace();
             }
         }
     }

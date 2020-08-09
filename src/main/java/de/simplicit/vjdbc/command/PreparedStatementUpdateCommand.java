@@ -39,7 +39,7 @@ public class PreparedStatementUpdateCommand implements Command {
                 _params[i].setParameter(pstmt, i + 1);
             }
         }
-        return new Integer(pstmt.executeUpdate());
+        return pstmt.executeUpdate();
     }
 
     public String toString() {

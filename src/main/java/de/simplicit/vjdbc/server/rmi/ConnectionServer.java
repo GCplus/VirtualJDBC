@@ -20,7 +20,7 @@ import java.rmi.server.RMISocketFactory;
 import java.util.Properties;
 
 public class ConnectionServer {
-    private static Log _logger = LogFactory.getLog(ConnectionServer.class);
+    private static final Log _logger = LogFactory.getLog(ConnectionServer.class);
 
     private RmiConfiguration _rmiConfiguration;
     private Registry _registry;

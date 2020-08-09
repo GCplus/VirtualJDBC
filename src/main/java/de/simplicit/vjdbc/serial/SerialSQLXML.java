@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 public class SerialSQLXML implements SQLXML, Externalizable {
     static final long serialVersionUID = 68757548812947189L;
 
-    private StringBuilder xml;
+    private final StringBuilder xml;
 
     public SerialSQLXML() {
         this.xml = new StringBuilder();
@@ -33,45 +33,46 @@ public class SerialSQLXML implements SQLXML, Externalizable {
         sqlxml.free();
     }
 
-    public void free() throws SQLException {
+    public void free() {
         xml.delete(0, xml.length());
     }
 
-    public InputStream getBinaryStream() throws SQLException {
+    public InputStream getBinaryStream() {
         return new ByteArrayInputStream(xml.toString().getBytes());
     }
 
-    public Reader getCharacterStream() throws SQLException {
+    public Reader getCharacterStream() {
         return new StringReader(xml.toString());
     }
 
-    public <T extends Source> T getSource(Class<T> sourceClass) throws SQLException {
+    public <T extends Source> T getSource(Class<T> sourceClass) {
         try {
             Constructor<T> constructor =
                 sourceClass.getConstructor(InputSource.class);
             return constructor.newInstance(new InputSource(getCharacterStream()));
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public String getString() throws SQLException {
+    public String getString() {
         return xml.toString();
     }
 
-    public OutputStream setBinaryStream() throws SQLException {
+    public OutputStream setBinaryStream() {
         throw new UnsupportedOperationException("SQLXML.setBinaryStream() not supported, use setString(String value) instead");
     }
 
-    public Writer setCharacterStream() throws SQLException {
+    public Writer setCharacterStream() {
         throw new UnsupportedOperationException("SQLXML.setCharacterStream() not supported, use setString(String value) instead");
     }
 
-    public <T extends Result> T setResult(Class<T> resultClass) throws SQLException {
+    public <T extends Result> T setResult(Class<T> resultClass) {
         throw new UnsupportedOperationException("SQLXML.setResult() not supported");
     }
 
-    public void setString(String value) throws SQLException {
+    public void setString(String value) {
         xml.delete(0, xml.length());
         xml.append(value);
     }

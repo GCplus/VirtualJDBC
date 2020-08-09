@@ -14,7 +14,7 @@ public class UIDEx implements Externalizable {
 
     private static long s_cookie = 1;
     
-    private Long _uid = new Long(s_cookie++);
+    private Long _uid = s_cookie++;
     private int _value1 = Integer.MIN_VALUE;
     private int _value2 = Integer.MIN_VALUE;
 
@@ -71,13 +71,13 @@ public class UIDEx implements Externalizable {
     }
     
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uid.longValue());
+        out.writeLong(_uid);
         out.writeInt(_value1);
         out.writeInt(_value2);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uid = new Long(in.readLong());
+        _uid = in.readLong();
         _value1 = in.readInt();
         _value2 = in.readInt();
     }

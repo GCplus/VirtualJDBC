@@ -11,35 +11,35 @@ import java.sql.*;
 import java.util.*;
 
 public class TableCache extends TimerTask {
-    private static Log _logger = LogFactory.getLog(TableCache.class);
+    private static final Log _logger = LogFactory.getLog(TableCache.class);
 
-    private static Map _sqlTypeMappingForHSql = new HashMap();
+    private static final Map<Integer, String> _sqlTypeMappingForHSql = new HashMap<Integer, String>();
 
-    private Connection _vjdbcConnection;
-    private Connection _hsqlConnection;
-    private DatabaseMetaData _dbMetaData;
-    private Statement _vjdbcStatement;
-    private Statement _hsqlStatement;
-    private Map _tableEntries = new HashMap();
-    private Timer _cacheTimer = new Timer(true);
-    private SimpleStatementParser _statementParser = new SimpleStatementParser();
+    private final Connection _vjdbcConnection;
+    private final Connection _hsqlConnection;
+    private final DatabaseMetaData _dbMetaData;
+    private final Statement _vjdbcStatement;
+    private final Statement _hsqlStatement;
+    private final Map<String, CacheEntry> _tableEntries = new HashMap<String, CacheEntry>();
+    private final Timer _cacheTimer = new Timer(true);
+    private final SimpleStatementParser _statementParser = new SimpleStatementParser();
 
     // Mappings for generation of the HSQL-Create-Table-Statements, some SQL
     // types won't be cached
     static {
-        _sqlTypeMappingForHSql.put(new Integer(Types.BIGINT), "BIGINT");
-        _sqlTypeMappingForHSql.put(new Integer(Types.BIT), "BIT");
-        _sqlTypeMappingForHSql.put(new Integer(Types.CHAR), "CHAR");
-        _sqlTypeMappingForHSql.put(new Integer(Types.DATE), "DATE");
-        _sqlTypeMappingForHSql.put(new Integer(Types.DECIMAL), "DECIMAL");
-        _sqlTypeMappingForHSql.put(new Integer(Types.DOUBLE), "DOUBLE");
-        _sqlTypeMappingForHSql.put(new Integer(Types.FLOAT), "FLOAT");
-        _sqlTypeMappingForHSql.put(new Integer(Types.INTEGER), "INTEGER");
-        _sqlTypeMappingForHSql.put(new Integer(Types.NUMERIC), "NUMERIC");
-        _sqlTypeMappingForHSql.put(new Integer(Types.SMALLINT), "SMALLINT");
-        _sqlTypeMappingForHSql.put(new Integer(Types.TIMESTAMP), "TIMESTAMP");
-        _sqlTypeMappingForHSql.put(new Integer(Types.TINYINT), "TINYINT");
-        _sqlTypeMappingForHSql.put(new Integer(Types.VARCHAR), "VARCHAR");
+        _sqlTypeMappingForHSql.put(Types.BIGINT, "BIGINT");
+        _sqlTypeMappingForHSql.put(Types.BIT, "BIT");
+        _sqlTypeMappingForHSql.put(Types.CHAR, "CHAR");
+        _sqlTypeMappingForHSql.put(Types.DATE, "DATE");
+        _sqlTypeMappingForHSql.put(Types.DECIMAL, "DECIMAL");
+        _sqlTypeMappingForHSql.put(Types.DOUBLE, "DOUBLE");
+        _sqlTypeMappingForHSql.put(Types.FLOAT, "FLOAT");
+        _sqlTypeMappingForHSql.put(Types.INTEGER, "INTEGER");
+        _sqlTypeMappingForHSql.put(Types.NUMERIC, "NUMERIC");
+        _sqlTypeMappingForHSql.put(Types.SMALLINT, "SMALLINT");
+        _sqlTypeMappingForHSql.put(Types.TIMESTAMP, "TIMESTAMP");
+        _sqlTypeMappingForHSql.put(Types.TINYINT, "TINYINT");
+        _sqlTypeMappingForHSql.put(Types.VARCHAR, "VARCHAR");
     }
 
     // Internal management structure for the SQL-Statements of a table
@@ -86,7 +86,7 @@ public class TableCache extends TimerTask {
 
     public PreparedStatement getPreparedStatement(String sql) throws SQLException {
         // Get the tables of the SQL-Statement
-        Set tables = _statementParser.getTablesOfSelectStatement(sql);
+        Set<String> tables = _statementParser.getTablesOfSelectStatement(sql);
         // Caching is only possible when the returned list has tables
         boolean cachingPossible = tables.size() > 0;
 
@@ -96,15 +96,14 @@ public class TableCache extends TimerTask {
                 // Now iterate through all table names and check if they are allowed to
                 // be cached. Caching of a statement is not possible if there is one
                 // table which isn't in the list of cached tables.
-                for(Iterator it = tables.iterator(); it.hasNext();) {
-                    String tableName = (String)it.next();
-                    CacheEntry ce = (CacheEntry)_tableEntries.get(tableName);
+                for (String tableName : tables) {
+                    CacheEntry ce = _tableEntries.get(tableName);
 
-                    if(ce != null) {
-                        if(!ce._isFilled) {
+                    if (ce != null) {
+                        if (!ce._isFilled) {
                             try {
                                 refreshCacheEntry(ce);
-                            } catch(SQLException e) {
+                            } catch (SQLException e) {
                                 cachingPossible = false;
                             }
                         }
@@ -164,12 +163,14 @@ public class TableCache extends TimerTask {
                 try {
                     vjdbcResultSet.close();
                 } catch(SQLException e) {
+                    e.printStackTrace();
                 }
             }
             if(hsqlPreparedStatement != null) {
                 try {
                     hsqlPreparedStatement.close();
                 } catch(SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -193,16 +194,16 @@ public class TableCache extends TimerTask {
         // Get the column metadata of the correspondig table
         ResultSet rs = _dbMetaData.getColumns(null, null, table.toUpperCase(), "%");
         // Create different StringBuffers for the future SQL-Statements
-        StringBuffer sbCreate = new StringBuffer("CREATE TABLE " + table + " (");
-        StringBuffer sbInsert = new StringBuffer("INSERT INTO " + table + " (");
-        StringBuffer sbInsert2 = new StringBuffer(" VALUES (");
-        StringBuffer sbSelect = new StringBuffer("SELECT ");
+        StringBuilder sbCreate = new StringBuilder("CREATE TABLE " + table + " (");
+        StringBuilder sbInsert = new StringBuilder("INSERT INTO " + table + " (");
+        StringBuilder sbInsert2 = new StringBuilder(" VALUES (");
+        StringBuilder sbSelect = new StringBuilder("SELECT ");
 
         // Analyze all columns
         while(rs.next()) {
             String columnName = rs.getString("COLUMN_NAME");
             int origDataType = rs.getInt("DATA_TYPE");
-            String dataType = (String)_sqlTypeMappingForHSql.get(new Integer(origDataType));
+            String dataType = _sqlTypeMappingForHSql.get(origDataType);
 
             // There might be an unknown data type
             if(dataType != null) {
@@ -243,18 +244,16 @@ public class TableCache extends TimerTask {
 
     public void run() {
         // Iterate through all table entries
-        for(Iterator it = _tableEntries.values().iterator(); it.hasNext();) {
-            CacheEntry tableEntry = (CacheEntry)it.next();
-
+        for (CacheEntry tableEntry : _tableEntries.values()) {
             // Refreshing necessary ?
-            if(tableEntry._refreshInterval > 0) {
+            if (tableEntry._refreshInterval > 0) {
                 // Now measure if the cache should be refreshed
-                if((System.currentTimeMillis() - tableEntry._lastTimeRefreshed) > tableEntry._refreshInterval) {
+                if ((System.currentTimeMillis() - tableEntry._lastTimeRefreshed) > tableEntry._refreshInterval) {
                     try {
                         _logger.debug("Refreshing cache for table " + tableEntry._name);
                         refreshCacheEntry(tableEntry);
                         _logger.debug("... successfully refreshed");
-                    } catch(SQLException e) {
+                    } catch (SQLException e) {
                         _logger.warn("... failed", e);
                     }
                 }

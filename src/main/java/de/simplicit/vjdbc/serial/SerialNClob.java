@@ -8,8 +8,6 @@ import java.io.*;
 import java.sql.NClob;
 import java.sql.SQLException;
 
-import de.simplicit.vjdbc.util.SQLExceptionHelper;
-
 public class SerialNClob extends SerialClob implements NClob {
     static final long serialVersionUID = -869122661664868443L;
 

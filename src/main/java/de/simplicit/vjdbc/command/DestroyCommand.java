@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class DestroyCommand implements Command {
     static final long serialVersionUID = 4457392123395584636L;
 
-    private static Log _logger = LogFactory.getLog(DestroyCommand.class);
+    private static final Log _logger = LogFactory.getLog(DestroyCommand.class);
     private Long _uid;
     private int _interfaceType;
 
@@ -36,12 +36,12 @@ public class DestroyCommand implements Command {
     }
     
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uid.longValue());
+        out.writeLong(_uid);
         out.writeInt(_interfaceType);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uid = new Long(in.readLong());
+        _uid = in.readLong();
         _interfaceType = in.readInt();
     }
 

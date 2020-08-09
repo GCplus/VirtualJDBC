@@ -23,12 +23,12 @@ import org.xml.sax.SAXException;
  * or be built up programmatically.
  */
 public class VJdbcConfiguration {
-    private static Log _logger = LogFactory.getLog(VJdbcConfiguration.class);
+    private static final Log _logger = LogFactory.getLog(VJdbcConfiguration.class);
     private static VJdbcConfiguration _singleton;
 
     private OcctConfiguration _occtConfiguration = new OcctConfiguration();
     private RmiConfiguration _rmiConfiguration;
-    private List _connections = new ArrayList();
+    private final List _connections = new ArrayList();
     private static boolean useStreamingResultSet = true;
 
     /**
@@ -49,7 +49,7 @@ public class VJdbcConfiguration {
 
     /**
      * Initialization with pre-built configuration object.
-     * @param customConfig
+     * @param customConfig 配置
      */
     public static void init(VJdbcConfiguration customConfig) {
         if(_singleton != null) {
@@ -62,7 +62,7 @@ public class VJdbcConfiguration {
     /**
      * Initialization with resource.
      * @param configResource Resource to be loaded by the ClassLoader
-     * @throws ConfigurationException
+     * @throws ConfigurationException 配置异常
      */
     public static void init(String configResource) throws ConfigurationException {
         init(configResource, null);
@@ -71,7 +71,7 @@ public class VJdbcConfiguration {
     /**
      * Initialization with resource.
      * @param configResource Resource to be loaded by the ClassLoader
-     * @throws ConfigurationException
+     * @throws ConfigurationException 配置异常
      */
     public static void init(String configResource, Properties configVariables) throws ConfigurationException {
         if(_singleton != null) {
@@ -93,7 +93,7 @@ public class VJdbcConfiguration {
     /**
      * Initialization with pre-opened InputStream.
      * @param configResourceInputStream InputStream
-     * @throws ConfigurationException
+     * @throws ConfigurationException 配置异常
      */
     public static void init(InputStream configResourceInputStream, Properties configVariables) throws ConfigurationException {
         if(_singleton != null) {
@@ -161,9 +161,9 @@ public class VJdbcConfiguration {
      * @return ConnectionConfiguration or null
      */
     public ConnectionConfiguration getConnection(String name) {
-        for(Iterator it = _connections.iterator(); it.hasNext();) {
-            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration)it.next();
-            if(connectionConfiguration.getId().equals(name)) {
+        for (Object connection : _connections) {
+            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
+            if (connectionConfiguration.getId().equals(name)) {
                 return connectionConfiguration;
             }
         }
@@ -172,7 +172,7 @@ public class VJdbcConfiguration {
 
     /**
      * Adds a ConnectionConfiguration.
-     * @param connectionConfiguration
+     * @param connectionConfiguration 连接配置
      * @throws ConfigurationException Thrown when the connection identifier already exists
      */
     public void addConnection(ConnectionConfiguration connectionConfiguration) throws ConfigurationException {
@@ -211,8 +211,8 @@ public class VJdbcConfiguration {
 
     private void validateConnections() throws ConfigurationException {
         // Call the validation method of the configuration
-        for(Iterator it = _connections.iterator(); it.hasNext();) {
-            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration)it.next();
+        for (Object connection : _connections) {
+            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             connectionConfiguration.validate();
         }
     }
@@ -275,8 +275,8 @@ public class VJdbcConfiguration {
             _rmiConfiguration.log();
         }
         _occtConfiguration.log();
-        for(Iterator it = _connections.iterator(); it.hasNext();) {
-            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration)it.next();
+        for (Object connection : _connections) {
+            ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             connectionConfiguration.log();
         }
     }

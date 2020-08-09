@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class ReflectiveCommand implements Command, Externalizable {
     static final long serialVersionUID = 1573361368678688726L;
 
-    private static Log _logger = LogFactory.getLog(ReflectiveCommand.class);
+    private static final Log _logger = LogFactory.getLog(ReflectiveCommand.class);
     private static final Object[] _zeroParameters = new Object[0];
 
     private int _interfaceType;
@@ -49,8 +49,8 @@ public class ReflectiveCommand implements Command, Externalizable {
         out.writeInt(_interfaceType);
         out.writeUTF(_cmd);
         out.writeInt(_parameters.length);
-        for (int i = 0; i < _parameters.length; i++) {
-            out.writeObject(_parameters[i]);
+        for (Object parameter : _parameters) {
+            out.writeObject(parameter);
         }
         out.writeInt(_parameterTypes);
     }
@@ -133,7 +133,7 @@ public class ReflectiveCommand implements Command, Externalizable {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("ReflectiveCommand '").append(_cmd).append("'");
         if(_targetClass != null) {
             sb.append(" on object of class ").append(_targetClass.getName());
@@ -162,7 +162,7 @@ public class ReflectiveCommand implements Command, Externalizable {
 
     private String getParameterTypesAsString() {
         Class[] parameterTypes = ParameterTypeCombinations._typeCombinations[_parameterTypes];
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         for(int i = 0; i < parameterTypes.length; i++) {
             buff.append("Parameter-Type ").append(i).append(": ").append(parameterTypes[i].getName()).append("\n");
         }

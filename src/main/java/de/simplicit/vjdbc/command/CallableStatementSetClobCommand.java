@@ -4,10 +4,7 @@
 
 package de.simplicit.vjdbc.command;
 
-import de.simplicit.vjdbc.serial.StreamSerializer;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.sql.Clob;

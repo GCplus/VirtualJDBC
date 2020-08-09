@@ -10,10 +10,10 @@ import de.simplicit.vjdbc.command.Command;
 import de.simplicit.vjdbc.serial.CallingContext;
 
 public class ProcessRequestEntity implements RequestEntity {
-    private Long _connuid;
-    private Long _uid;
-    private Command _cmd;
-    private CallingContext _ctx;
+    private final Long _connuid;
+    private final Long _uid;
+    private final Command _cmd;
+    private final CallingContext _ctx;
     
     public ProcessRequestEntity(Long connuid, Long uid, Command cmd, CallingContext ctx) {
         _connuid = connuid;

@@ -31,7 +31,7 @@ public class StatementUpdateCommand implements Command {
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
-        return new Integer(((Statement) target).executeUpdate(ctx.resolveOrCheckQuery(_sql)));
+        return ((Statement) target).executeUpdate(ctx.resolveOrCheckQuery(_sql));
     }
 
     public String toString() {

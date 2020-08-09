@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class RmiConfiguration {
-    private static Log _logger = LogFactory.getLog(RmiConfiguration.class);
+    private static final Log _logger = LogFactory.getLog(RmiConfiguration.class);
 
     protected String _objectName = "VJdbc";
     protected int _registryPort = 2000;

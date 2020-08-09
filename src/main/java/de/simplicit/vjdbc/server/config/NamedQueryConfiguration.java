@@ -13,8 +13,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class NamedQueryConfiguration {
-    private static Log _logger = LogFactory.getLog(NamedQueryConfiguration.class);
-    private Map _queryMap = new HashMap();
+    private static final Log _logger = LogFactory.getLog(NamedQueryConfiguration.class);
+    private final Map _queryMap = new HashMap();
 
     public Map getQueryMap() {
         return _queryMap;
@@ -39,8 +39,8 @@ public class NamedQueryConfiguration {
     void log() {
         _logger.info("  Named Query-Configuration:");
 
-        for (Iterator it = _queryMap.keySet().iterator(); it.hasNext();) {
-            String id = (String) it.next();
+        for (Object o : _queryMap.keySet()) {
+            String id = (String) o;
             _logger.info("    [" + id + "] = [" + _queryMap.get(id) + "]");
         }
     }

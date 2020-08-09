@@ -27,15 +27,15 @@ public class ConnectionPrepareStatementCommand implements Command {
 
     public ConnectionPrepareStatementCommand(String sql, int resultSetType, int resultSetConcurrency) {
         _sql = sql;
-        _resultSetType = new Integer(resultSetType);
-        _resultSetConcurrency = new Integer(resultSetConcurrency);
+        _resultSetType = resultSetType;
+        _resultSetConcurrency = resultSetConcurrency;
     }
 
     public ConnectionPrepareStatementCommand(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
         _sql = sql;
-        _resultSetType = new Integer(resultSetType);
-        _resultSetConcurrency = new Integer(resultSetConcurrency);
-        _resultSetHoldability = new Integer(resultSetHoldability);
+        _resultSetType = resultSetType;
+        _resultSetConcurrency = resultSetConcurrency;
+        _resultSetHoldability = resultSetHoldability;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
@@ -58,10 +58,10 @@ public class ConnectionPrepareStatementCommand implements Command {
         // Now choose the correct call
         if(_resultSetType != null && _resultSetConcurrency != null) {
             if(_resultSetHoldability != null) {
-                return ((Connection) target).prepareStatement(sql, _resultSetType.intValue(), _resultSetConcurrency.intValue(), _resultSetHoldability.intValue());
+                return ((Connection) target).prepareStatement(sql, _resultSetType, _resultSetConcurrency, _resultSetHoldability);
             }
             else {
-                return ((Connection) target).prepareStatement(sql, _resultSetType.intValue(), _resultSetConcurrency.intValue());
+                return ((Connection) target).prepareStatement(sql, _resultSetType, _resultSetConcurrency);
             }
         }
         else {

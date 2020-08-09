@@ -78,11 +78,11 @@ public class SerialBlob implements Blob, Externalizable {
         _data = (byte[])in.readObject();
     }
 
-    public long length() throws SQLException {
+    public long length() {
         return _data.length;
     }
 
-    public byte[] getBytes(long pos, int length) throws SQLException {
+    public byte[] getBytes(long pos, int length) {
         if (pos <= Integer.MAX_VALUE) {
             byte[] result = new byte[length];
             System.arraycopy(_data, (int)pos - 1, result, 0, length);
@@ -99,36 +99,36 @@ public class SerialBlob implements Blob, Externalizable {
         return baos.toByteArray();
     }
 
-    public InputStream getBinaryStream() throws SQLException {
+    public InputStream getBinaryStream() {
         return new ByteArrayInputStream(_data);
     }
 
-    public long position(byte pattern[], long start) throws SQLException {
+    public long position(byte[] pattern, long start) {
         throw new UnsupportedOperationException("Blob.position");
     }
 
-    public long position(Blob pattern, long start) throws SQLException {
+    public long position(Blob pattern, long start) {
         throw new UnsupportedOperationException("Blob.position");
     }
 
-    public int setBytes(long pos, byte[] bytes) throws SQLException {
+    public int setBytes(long pos, byte[] bytes) {
         throw new UnsupportedOperationException("Blob.setBytes");
     }
 
-    public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
+    public int setBytes(long pos, byte[] bytes, int offset, int len) {
         throw new UnsupportedOperationException("Blob.setBytes");
     }
 
-    public OutputStream setBinaryStream(long pos) throws SQLException {
+    public OutputStream setBinaryStream(long pos) {
         throw new UnsupportedOperationException("Blob.setBinaryStream");
     }
 
-    public void truncate(long len) throws SQLException {
+    public void truncate(long len) {
         throw new UnsupportedOperationException("Blob.truncate");
     }
 
     /* start JDBC4 support */
-    public InputStream getBinaryStream(long pos, long length) throws SQLException {
+    public InputStream getBinaryStream(long pos, long length) {
         if (pos <= Integer.MAX_VALUE && length <= Integer.MAX_VALUE) {
             return new ByteArrayInputStream(_data, (int)pos, (int)length);
         }
@@ -143,7 +143,7 @@ public class SerialBlob implements Blob, Externalizable {
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
-    public void free() throws SQLException {
+    public void free() {
         _data = null;
     }
     /* end JDBC4 support */

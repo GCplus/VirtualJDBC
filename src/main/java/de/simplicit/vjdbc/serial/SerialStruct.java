@@ -41,15 +41,15 @@ public class SerialStruct implements Struct, Externalizable {
         _attributes = (Object[])in.readObject();
     }
 
-    public String getSQLTypeName() throws SQLException {
+    public String getSQLTypeName() {
         return _sqlTypeName;
     }
 
-    public Object[] getAttributes() throws SQLException {
+    public Object[] getAttributes() {
         return _attributes;
     }
 
-    public Object[] getAttributes(Map map) throws SQLException {
+    public Object[] getAttributes(Map map) {
         throw new UnsupportedOperationException("getAttributes(Map)");
     }
 }

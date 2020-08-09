@@ -27,7 +27,7 @@ import java.util.Properties;
 import java.util.zip.Deflater;
 
 public class ConnectionConfiguration implements Executor {
-    private static Log _logger = LogFactory.getLog(ConnectionConfiguration.class);
+    private static final Log _logger = LogFactory.getLog(ConnectionConfiguration.class);
     private static final String DBCP_ID = "jdbc:apache:commons:dbcp:";
 
     // Basic properties
@@ -44,7 +44,7 @@ public class ConnectionConfiguration implements Executor {
     // transported in one packet
     protected int _rowPacketSize = 200;
     // Encoding for strings
-    protected String _charset = "ISO-8859-1";
+    protected String _charset = "UTF-8";//原值为ISO-8859-1
     // Compression
     protected int _compressionMode = Deflater.BEST_SPEED;
     protected long _compressionThreshold = 1000;
@@ -66,8 +66,8 @@ public class ConnectionConfiguration implements Executor {
     private Boolean _connectionPoolInitialized = Boolean.FALSE;
     private GenericObjectPool _connectionPool = null;
     // Thread pooling support
-    private int _maxThreadPoolSize = 8;
-    private PooledExecutor _pooledExecutor = new PooledExecutor(_maxThreadPoolSize);
+    private final int _maxThreadPoolSize = 8;
+    private final PooledExecutor _pooledExecutor = new PooledExecutor(_maxThreadPoolSize);
 
     public String getId() {
         return _id;

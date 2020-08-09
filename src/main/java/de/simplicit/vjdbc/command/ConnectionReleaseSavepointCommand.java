@@ -24,11 +24,11 @@ public class ConnectionReleaseSavepointCommand implements Command {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uidOfSavepoint.longValue());
+        out.writeLong(_uidOfSavepoint);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uidOfSavepoint = new Long(in.readLong());
+        _uidOfSavepoint = in.readLong();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {

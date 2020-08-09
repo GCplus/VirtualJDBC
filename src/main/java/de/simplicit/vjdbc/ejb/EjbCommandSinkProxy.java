@@ -8,7 +8,6 @@ import de.simplicit.vjdbc.command.Command;
 import de.simplicit.vjdbc.command.CommandSink;
 import de.simplicit.vjdbc.serial.CallingContext;
 import de.simplicit.vjdbc.serial.UIDEx;
-import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
 import java.sql.SQLException;
 import java.util.Properties;

@@ -36,15 +36,15 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
  * client to the responsible connection object.
  */
 public class CommandProcessor {
-    private static Log _logger = LogFactory.getLog(CommandProcessor.class);
+    private static final Log _logger = LogFactory.getLog(CommandProcessor.class);
     private static CommandProcessor _singleton;
 
     private static boolean closeConnectionsOnKill = true;
     private static long s_connectionId = 1;
     private Timer _timer = null;
-    private Map<Long, ConnectionEntry> _connectionEntries =
+    private final Map<Long, ConnectionEntry> _connectionEntries =
         Collections.synchronizedMap(new HashMap<Long, ConnectionEntry>());
-    private OcctConfiguration _occtConfig;
+    private final OcctConfiguration _occtConfig;
 
     public static CommandProcessor getInstance() {
         if(_singleton == null) {
@@ -116,7 +116,7 @@ public class CommandProcessor {
     public synchronized UIDEx registerConnection(Connection conn, ConnectionConfiguration config, Properties clientInfo, CallingContext ctx) {
         // To optimize the communication we can tell the client if
         // calling-contexts should be delivered at all
-        Long connid = new Long(s_connectionId++);
+        Long connid = s_connectionId++;
         UIDEx reg = new UIDEx(connid, config.isTraceOrphanedObjects() ? 1 : 0);
         _connectionEntries.put(connid, new ConnectionEntry(connid, conn, config, clientInfo, ctx));
         return reg;
@@ -152,9 +152,9 @@ public class CommandProcessor {
             // and clear the map immediately
             _connectionEntries.clear();
 
-            for(Iterator it = copyOfConnectionEntries.iterator(); it.hasNext();) {
-                ConnectionEntry connectionEntry = (ConnectionEntry) it.next();
-                synchronized(connectionEntry) {
+            for (Object copyOfConnectionEntry : copyOfConnectionEntries) {
+                ConnectionEntry connectionEntry = (ConnectionEntry) copyOfConnectionEntry;
+                synchronized (connectionEntry) {
                     connectionEntry.close();
                 }
             }

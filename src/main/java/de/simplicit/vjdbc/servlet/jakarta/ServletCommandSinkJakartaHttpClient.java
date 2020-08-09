@@ -31,9 +31,9 @@ import de.simplicit.vjdbc.util.StreamCloser;
  * @author Mike
  */
 public class ServletCommandSinkJakartaHttpClient extends AbstractServletCommandSinkClient {
-    private String _urlExternalForm;
-    private HttpClient _httpClient;
-    private MultiThreadedHttpConnectionManager _multiThreadedHttpConnectionManager;
+    private final String _urlExternalForm;
+    private final HttpClient _httpClient;
+    private final MultiThreadedHttpConnectionManager _multiThreadedHttpConnectionManager;
 
     public ServletCommandSinkJakartaHttpClient(String url, RequestEnhancer requestEnhancer) throws SQLException {
         super(url, requestEnhancer);

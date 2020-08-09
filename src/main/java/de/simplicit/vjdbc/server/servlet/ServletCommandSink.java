@@ -40,7 +40,7 @@ public class ServletCommandSink extends HttpServlet {
     private static final String INIT_PARAMETER_CONFIG_VARIABLES = "config-variables";
     private static final String DEFAULT_CONFIG_RESOURCE = "/WEB-INF/vjdbc-config.xml";
     private static final long serialVersionUID = 3257570624301249846L;
-    private static Log _logger = LogFactory.getLog(ServletCommandSink.class);
+    private static final Log _logger = LogFactory.getLog(ServletCommandSink.class);
 
     private CommandProcessor _processor;
 
@@ -91,12 +91,6 @@ public class ServletCommandSink extends HttpServlet {
                         new FileInputStream(ctx.getRealPath(configVariables));
                 }
 
-                if(configVariablesInputStream == null) {
-                    String msg = "Configuration-Variables " + configVariables + " not found !";
-                    _logger.error(msg);
-                    throw new ServletException(msg);
-                }
-
                 configVariablesProps = new Properties();
                 configVariablesProps.load(configVariablesInputStream);
             } catch (IOException e) {
@@ -107,7 +101,9 @@ public class ServletCommandSink extends HttpServlet {
                 if(configVariablesInputStream != null) {
                     try {
                         configVariablesInputStream.close();
-                    } catch (IOException e) {}
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

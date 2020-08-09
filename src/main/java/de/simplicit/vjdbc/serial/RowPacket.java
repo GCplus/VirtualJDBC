@@ -23,7 +23,7 @@ public class RowPacket implements Externalizable {
     private static final int DEFAULT_ARRAY_SIZE = 100;
     static final long serialVersionUID = 6366194574502000718L;
 
-    private static Log _logger = LogFactory.getLog(RowPacket.class);
+    private static final Log _logger = LogFactory.getLog(RowPacket.class);
 
     private int _rowCount = 0;
     private boolean _forwardOnly = false;
@@ -31,7 +31,7 @@ public class RowPacket implements Externalizable {
 
     // Transient attributes
     private transient FlattenedColumnValues[] _flattenedColumnsValues = null;
-    private transient ArrayList _rows = null;
+    private transient ArrayList<Object[]> _rows = null;
     private transient int[] _columnTypes = null;
     private transient int _offset = 0;
     private transient int _maxrows = 0;
@@ -59,7 +59,7 @@ public class RowPacket implements Externalizable {
         _rowCount = in.readInt();
         if(_rowCount > 0) {
             FlattenedColumnValues[] flattenedColumns = (FlattenedColumnValues[]) in.readObject();
-            _rows = new ArrayList(_rowCount);
+            _rows = new ArrayList<Object[]>(_rowCount);
             for(int i = 0; i < _rowCount; i++) {
                 Object[] row = new Object[flattenedColumns.length];
                 for(int j = 0; j < flattenedColumns.length; j++) {
@@ -69,7 +69,7 @@ public class RowPacket implements Externalizable {
             }
         }
         else {
-            _rows = new ArrayList();
+            _rows = new ArrayList<Object[]>();
         }
     }
 
@@ -81,7 +81,7 @@ public class RowPacket implements Externalizable {
         } else if(adjustedIndex >= _rows.size()) {
             throw new SQLException("Index " + index + " is above the possible index");
         } else {
-            return (Object[]) _rows.get(adjustedIndex);
+            return _rows.get(adjustedIndex);
         }
     }
 
@@ -294,7 +294,7 @@ public class RowPacket implements Externalizable {
                 break;
 
             default:
-                if(JavaVersionInfo.use14Api) {
+                if(JavaVersionInfo.use16Api) {
                     if(columnType == Types.BOOLEAN) {
                         componentType = Boolean.TYPE;
                     } else {

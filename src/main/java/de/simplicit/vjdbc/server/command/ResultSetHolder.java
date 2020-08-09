@@ -21,14 +21,14 @@ import de.simplicit.vjdbc.server.config.ConnectionConfiguration;
  * result when nextRowPacket is called.
  */
 public class ResultSetHolder {
-    private static Log _logger = LogFactory.getLog(ResultSetHolder.class);
+    private static final Log _logger = LogFactory.getLog(ResultSetHolder.class);
 
     private final Object _lock = new Object();
     private boolean _readerThreadIsRunning = false;
 
     private ResultSet _resultSet;
     private SerializableTransport _currentSerializedRowPacket;
-    private ConnectionConfiguration _connectionConfiguration;
+    private final ConnectionConfiguration _connectionConfiguration;
     private boolean _lastPartReached;
     private SQLException _lastOccurredException = null;
 

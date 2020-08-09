@@ -20,7 +20,7 @@ final class RequestModifierJakartaHttpClient implements RequestModifier {
     
     /**
      * Package visibility, doesn't make sense for other packages.
-     * @param urlConnection Wrapped URLConnection
+     * @param {urlConnection} Wrapped URLConnection
      */
     RequestModifierJakartaHttpClient(PostMethod postMethod) {
         _postMethod = postMethod;

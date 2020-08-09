@@ -89,8 +89,7 @@ public class CallableStatementGetObjectCommand implements Command {
                 result = cstmt.getObject(_parameterName, _map);
             } else if (_clazz != null) {
                 result =
-                    ((VirtualCallableStatement)cstmt).getObject(_parameterName,
-                                                                _clazz);
+                    cstmt.getObject(_parameterName, _clazz);
             } else {
                 result = cstmt.getObject(_parameterName);
             }
@@ -98,9 +97,7 @@ public class CallableStatementGetObjectCommand implements Command {
             if(_map != null) {
                 result = cstmt.getObject(_index, _map);
             } else if (_clazz != null) {
-                result =
-                    ((VirtualCallableStatement)cstmt).getObject(_index,
-                                                                _clazz);
+                result = cstmt.getObject(_index, _clazz);
             } else {
                 result = cstmt.getObject(_index);
             }

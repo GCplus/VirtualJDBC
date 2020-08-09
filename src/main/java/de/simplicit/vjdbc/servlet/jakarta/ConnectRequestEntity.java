@@ -19,10 +19,10 @@ import de.simplicit.vjdbc.serial.CallingContext;
  * @author Mike
  */
 class ConnectRequestEntity implements RequestEntity {
-    private String _database;
-    private Properties _props;
-    private Properties _clientInfo;
-    private CallingContext _ctx;
+    private final String _database;
+    private final Properties _props;
+    private final Properties _clientInfo;
+    private final CallingContext _ctx;
     
     public ConnectRequestEntity(String database, Properties props, Properties clientInfo, CallingContext ctx) {
         _database = database;

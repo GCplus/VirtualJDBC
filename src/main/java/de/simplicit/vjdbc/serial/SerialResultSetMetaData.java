@@ -53,7 +53,7 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     {
         int numElems = in.readShort();
         if (numElems != -1) {
-            String ret[] = new String[numElems];
+            String[] ret = new String[numElems];
             for (int i = 0; i < numElems; i++) {
                 byte notNull = in.readByte();
                 if (1 == notNull) {
@@ -67,15 +67,15 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
         return null;
     }
 
-    public void writeStringArr(String arr[], ObjectOutput out)
+    public void writeStringArr(String[] arr, ObjectOutput out)
         throws IOException
     {
         if (arr != null) {
             out.writeShort(arr.length);
-            for (int i = 0; i < arr.length; i++) {
-                if (arr[i] != null) {
+            for (String s : arr) {
+                if (s != null) {
                     out.writeByte(1);
-                    out.writeUTF(arr[i]);
+                    out.writeUTF(s);
                 } else {
                     out.writeByte(0);
                 }
@@ -89,22 +89,22 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     {
         int numElems = in.readShort();
         if (numElems != -1) {
-            Integer ret[] = new Integer[numElems];
+            Integer[] ret = new Integer[numElems];
             for (int i = 0; i < numElems; i++) {
-                ret[i] = new Integer(in.readInt());
+                ret[i] = in.readInt();
             }
             return ret;
         }
         return null;
     }
 
-    public void writeIntArr(Integer arr[], ObjectOutput out)
+    public void writeIntArr(Integer[] arr, ObjectOutput out)
         throws IOException
     {
         if (arr != null) {
             out.writeShort(arr.length);
-            for (int i = 0; i < arr.length; i++) {
-                out.writeInt(arr[i].intValue());
+            for (Integer integer : arr) {
+                out.writeInt(integer);
             }
         } else {
             out.writeShort(-1);
@@ -115,22 +115,22 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     {
         int numElems = in.readShort();
         if (numElems != -1) {
-            Boolean ret[] = new Boolean[numElems];
+            Boolean[] ret = new Boolean[numElems];
             for (int i = 0; i < numElems; i++) {
-                ret[i] = new Boolean(in.readBoolean());
+                ret[i] = in.readBoolean();
             }
             return ret;
         }
         return null;
     }
 
-    public void writeBooleanArr(Boolean arr[], ObjectOutput out)
+    public void writeBooleanArr(Boolean[] arr, ObjectOutput out)
         throws IOException
     {
         if (arr != null) {
             out.writeShort(arr.length);
-            for (int i = 0; i < arr.length; i++) {
-                out.writeBoolean(arr[i].booleanValue());
+            for (Boolean aBoolean : arr) {
+                out.writeBoolean(aBoolean);
             }
         } else {
             out.writeShort(-1);
@@ -263,31 +263,31 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
             }
 
             try {
-                _columnDisplaySize[i] = new Integer(rsmd.getColumnDisplaySize(col));
+                _columnDisplaySize[i] = rsmd.getColumnDisplaySize(col);
             } catch(Exception e7) {
                 _columnDisplaySize[i] = null;
             }
 
             try {
-                _columnType[i] = new Integer(rsmd.getColumnType(col));
+                _columnType[i] = rsmd.getColumnType(col);
             } catch(Exception e8) {
                 _columnType[i] = null;
             }
 
             try {
-                _precision[i] = new Integer(rsmd.getPrecision(col));
+                _precision[i] = rsmd.getPrecision(col);
             } catch(Exception e9) {
                 _precision[i] = null;
             }
 
             try {
-                _scale[i] = new Integer(rsmd.getScale(col));
+                _scale[i] = rsmd.getScale(col);
             } catch(Exception e10) {
                 _scale[i] = null;
             }
 
             try {
-                _nullable[i] = new Integer(rsmd.isNullable(col));
+                _nullable[i] = rsmd.isNullable(col);
             } catch(Exception e11) {
                 _nullable[i] = null;
             }
@@ -342,50 +342,50 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
         }
     }
 
-    public int getColumnCount() throws SQLException {
+    public int getColumnCount() {
         return _columnCount;
     }
 
     public boolean isAutoIncrement(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_autoIncrement[column - 1]);
-        return _autoIncrement[column - 1].booleanValue();
+        return _autoIncrement[column - 1];
     }
 
     public boolean isCaseSensitive(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_caseSensitive[column - 1]);
-        return _caseSensitive[column - 1].booleanValue();
+        return _caseSensitive[column - 1];
     }
 
     public boolean isSearchable(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_searchable[column - 1]);
-        return _searchable[column - 1].booleanValue();
+        return _searchable[column - 1];
     }
 
     public boolean isCurrency(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_currency[column - 1]);
-        return _currency[column - 1].booleanValue();
+        return _currency[column - 1];
     }
 
     public int isNullable(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_nullable[column - 1]);
-        return _nullable[column - 1].intValue();
+        return _nullable[column - 1];
     }
 
     public boolean isSigned(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_signed[column - 1]);
-        return _signed[column - 1].booleanValue();
+        return _signed[column - 1];
     }
 
     public int getColumnDisplaySize(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_columnDisplaySize[column - 1]);
-        return _columnDisplaySize[column - 1].intValue();
+        return _columnDisplaySize[column - 1];
     }
 
     public String getColumnLabel(int column) throws SQLException {
@@ -409,13 +409,13 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public int getPrecision(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_precision[column - 1]);
-        return _precision[column - 1].intValue();
+        return _precision[column - 1];
     }
 
     public int getScale(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_scale[column - 1]);
-        return _scale[column - 1].intValue();
+        return _scale[column - 1];
     }
 
     public String getTableName(int column) throws SQLException {
@@ -433,7 +433,7 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public int getColumnType(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_columnType[column - 1]);
-        return _columnType[column - 1].intValue();
+        return _columnType[column - 1];
     }
 
     public String getColumnTypeName(int column) throws SQLException {
@@ -445,19 +445,19 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public boolean isReadOnly(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_readOnly[column - 1]);
-        return _readOnly[column - 1].booleanValue();
+        return _readOnly[column - 1];
     }
 
     public boolean isWritable(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_writable[column - 1]);
-        return _writable[column - 1].booleanValue();
+        return _writable[column - 1];
     }
 
     public boolean isDefinitelyWritable(int column) throws SQLException {
         checkColumnIndex(column);
         throwIfNull(_definitivelyWritable[column - 1]);
-        return _definitivelyWritable[column - 1].booleanValue();
+        return _definitivelyWritable[column - 1];
     }
 
     public String getColumnClassName(int column) throws SQLException {
@@ -477,13 +477,13 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setAutoIncrement(int columnIndex, boolean property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _autoIncrement[columnIndex - 1] = new Boolean(property);
+        _autoIncrement[columnIndex - 1] = property;
     }
 
     public void setCaseSensitive(int columnIndex, boolean property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _caseSensitive[columnIndex - 1] = new Boolean(property);
+        _caseSensitive[columnIndex - 1] = property;
     }
 
     public void setCatalogName(int columnIndex, String catalogName)
@@ -495,7 +495,7 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setColumnDisplaySize(int columnIndex, int size)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _columnDisplaySize[columnIndex - 1] = new Integer(size);
+        _columnDisplaySize[columnIndex - 1] = size;
     }
 
     public void setColumnLabel(int columnIndex, String label)
@@ -513,7 +513,7 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setColumnType(int columnIndex, int SQLType)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _columnType[columnIndex - 1] = new Integer(SQLType);
+        _columnType[columnIndex - 1] = SQLType;
     }
 
     public void setColumnTypeName(int columnIndex, String typeName)
@@ -525,25 +525,25 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setCurrency(int columnIndex, boolean property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _currency[columnIndex - 1] = new Boolean(property);
+        _currency[columnIndex - 1] = property;
     }
 
     public void setNullable(int columnIndex, int property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _nullable[columnIndex - 1] = new Integer(property);
+        _nullable[columnIndex - 1] = property;
     }
 
     public void setPrecision(int columnIndex, int precision)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _precision[columnIndex - 1] = new Integer(precision);
+        _precision[columnIndex - 1] = precision;
     }
 
     public void setScale(int columnIndex, int scale)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _scale[columnIndex - 1] = new Integer(scale);
+        _scale[columnIndex - 1] = scale;
     }
 
     public void setSchemaName(int columnIndex, String schemaName)
@@ -555,13 +555,13 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setSearchable(int columnIndex, boolean property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _searchable[columnIndex - 1] = new Boolean(property);
+        _searchable[columnIndex - 1] = property;
     }
 
     public void setSigned(int columnIndex, boolean property)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _signed[columnIndex - 1] = new Boolean(property);
+        _signed[columnIndex - 1] = property;
     }
 
     public void setTableName(int columnIndex, String tableName)
@@ -573,19 +573,19 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     public void setReadOnly(int columnIndex, boolean readOnly)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _readOnly[columnIndex - 1] = new Boolean(readOnly);
+        _readOnly[columnIndex - 1] = readOnly;
     }
 
     public void setWritable(int columnIndex, boolean writable)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _writable[columnIndex - 1] = new Boolean(writable);
+        _writable[columnIndex - 1] = writable;
     }
 
     public void setDefinitelyWritable(int columnIndex, boolean writable)
         throws SQLException {
         checkColumnIndex(columnIndex);
-        _definitivelyWritable[columnIndex - 1] = new Boolean(writable);
+        _definitivelyWritable[columnIndex - 1] = writable;
     }
 
     public void setColumnClassName(int columnIndex, String columnClassName)
@@ -607,11 +607,11 @@ public class SerialResultSetMetaData implements ResultSetMetaData, Externalizabl
     }
 
     /* start JDBC4 support */
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(Class<?> iface) {
         return iface.isAssignableFrom(SerialResultSetMetaData.class);
     }
 
-    public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(Class<T> iface) {
         return (T)this;
     }
     /* end JDBC4 support */

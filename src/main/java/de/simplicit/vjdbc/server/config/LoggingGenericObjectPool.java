@@ -14,9 +14,9 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * @author Mike
  */
 public class LoggingGenericObjectPool extends GenericObjectPool {
-    private static Log _logger = LogFactory.getLog(LoggingGenericObjectPool.class);
+    private static final Log _logger = LogFactory.getLog(LoggingGenericObjectPool.class);
     
-    private String _idOfConnection;
+    private final String _idOfConnection;
 
     public LoggingGenericObjectPool(String nameOfConnection) {
         super(null);

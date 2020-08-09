@@ -20,10 +20,9 @@ import java.util.Properties;
 
 @Stateless
 @Remote
-public class EjbCommandSinkBean
-    implements EjbCommandSink, EjbCommandSinkProxy {
+public class EjbCommandSinkBean implements EjbCommandSink, EjbCommandSinkProxy {
 
-    private static Log _logger = LogFactory.getLog(EjbCommandSinkBean.class);
+    private static final Log _logger = LogFactory.getLog(EjbCommandSinkBean.class);
 
     private transient CommandProcessor _processor;
 
@@ -35,9 +34,7 @@ public class EjbCommandSinkBean
                          CallingContext ctx)
         throws SQLException {
         try {
-            UIDEx reg =
-                _processor.createConnection(url, props, clientInfo, ctx);
-            return reg;
+            return _processor.createConnection(url, props, clientInfo, ctx);
         } catch (Exception e) {
             _logger.error(url, e);
             throw SQLExceptionHelper.wrap(e);

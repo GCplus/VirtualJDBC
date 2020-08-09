@@ -25,7 +25,7 @@ import de.simplicit.vjdbc.serial.*;
 import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
 public class VirtualPreparedStatement extends VirtualStatement implements PreparedStatement {
-    private static PreparedStatementParameter[] _emptyParameters = new PreparedStatementParameter[0];
+    private static final PreparedStatementParameter[] _emptyParameters = new PreparedStatementParameter[0];
 
     protected PreparedStatementParameter[] _paramList = new PreparedStatementParameter[10];
     protected int _maxIndex = 0;
@@ -34,6 +34,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         super(reg, connection, sink, resultSetType);
     }
 
+    @Override
     public ResultSet executeQuery() throws SQLException {
         StreamingResultSet result = null;
 
@@ -57,59 +58,59 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         return _sink.processWithIntResult(_objectUid, new PreparedStatementUpdateCommand(_paramList));
     }
 
-    public void setNull(int parameterIndex, int sqlType) throws SQLException {
+    public void setNull(int parameterIndex, int sqlType) {
         setParam(parameterIndex, new NullParameter(sqlType, null));
     }
 
-    public void setBoolean(int parameterIndex, boolean x) throws SQLException {
+    public void setBoolean(int parameterIndex, boolean x) {
         setParam(parameterIndex, new BooleanParameter(x));
     }
 
-    public void setByte(int parameterIndex, byte x) throws SQLException {
+    public void setByte(int parameterIndex, byte x) {
         setParam(parameterIndex, new ByteParameter(x));
     }
 
-    public void setShort(int parameterIndex, short x) throws SQLException {
+    public void setShort(int parameterIndex, short x) {
         setParam(parameterIndex, new ShortParameter(x));
     }
 
-    public void setInt(int parameterIndex, int x) throws SQLException {
+    public void setInt(int parameterIndex, int x) {
         setParam(parameterIndex, new IntegerParameter(x));
     }
 
-    public void setLong(int parameterIndex, long x) throws SQLException {
+    public void setLong(int parameterIndex, long x) {
         setParam(parameterIndex, new LongParameter(x));
     }
 
-    public void setFloat(int parameterIndex, float x) throws SQLException {
+    public void setFloat(int parameterIndex, float x) {
         setParam(parameterIndex, new FloatParameter(x));
     }
 
-    public void setDouble(int parameterIndex, double x) throws SQLException {
+    public void setDouble(int parameterIndex, double x)   {
         setParam(parameterIndex, new DoubleParameter(x));
     }
 
-    public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
+    public void setBigDecimal(int parameterIndex, BigDecimal x)   {
         setParam(parameterIndex, new BigDecimalParameter(x));
     }
 
-    public void setString(int parameterIndex, String x) throws SQLException {
+    public void setString(int parameterIndex, String x)   {
         setParam(parameterIndex, new StringParameter(x));
     }
 
-    public void setBytes(int parameterIndex, byte x[]) throws SQLException {
+    public void setBytes(int parameterIndex, byte x[])   {
         setParam(parameterIndex, new ByteArrayParameter(x));
     }
 
-    public void setDate(int parameterIndex, Date x) throws SQLException {
+    public void setDate(int parameterIndex, Date x)   {
         setParam(parameterIndex, new DateParameter(x, null));
     }
 
-    public void setTime(int parameterIndex, Time x) throws SQLException {
+    public void setTime(int parameterIndex, Time x)   {
         setParam(parameterIndex, new TimeParameter(x, null));
     }
 
-    public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
+    public void setTimestamp(int parameterIndex, Timestamp x)   {
         setParam(parameterIndex, new TimestampParameter(x, null));
     }
 
@@ -125,21 +126,19 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         setParam(parameterIndex, new ByteStreamParameter(ByteStreamParameter.TYPE_BINARY, x, length));
     }
 
-    public void clearParameters() throws SQLException {
-        for (int i = 0; i < _paramList.length; ++i) {
-            _paramList[i] = null;
-        }
+    public void clearParameters()   {
+        Arrays.fill(_paramList, null);
     }
 
-    public void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException {
-        setParam(parameterIndex, new ObjectParameter(x, new Integer(targetSqlType), new Integer(scale)));
+    public void setObject(int parameterIndex, Object x, int targetSqlType, int scale)   {
+        setParam(parameterIndex, new ObjectParameter(x, targetSqlType, scale));
     }
 
-    public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
-        setParam(parameterIndex, new ObjectParameter(x, new Integer(targetSqlType), null));
+    public void setObject(int parameterIndex, Object x, int targetSqlType)   {
+        setParam(parameterIndex, new ObjectParameter(x, targetSqlType, null));
     }
 
-    public void setObject(int parameterIndex, Object x) throws SQLException {
+    public void setObject(int parameterIndex, Object x)   {
         setParam(parameterIndex, new ObjectParameter(x, null, null));
     }
 
@@ -148,7 +147,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         return _sink.processWithBooleanResult(_objectUid, new PreparedStatementExecuteCommand(_paramList));
     }
 
-    public void addBatch() throws SQLException {
+    public void addBatch()   {
         reduceParam();
         PreparedStatementParameter[] paramListClone = new PreparedStatementParameter[_paramList.length];
         System.arraycopy(_paramList, 0, paramListClone, 0, _paramList.length);
@@ -194,27 +193,27 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         }
     }
 
-    public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException {
+    public void setDate(int parameterIndex, Date x, Calendar cal)   {
         setParam(parameterIndex, new DateParameter(x, cal));
     }
 
-    public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException {
+    public void setTime(int parameterIndex, Time x, Calendar cal)   {
         setParam(parameterIndex, new TimeParameter(x, cal));
     }
 
-    public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
+    public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal)   {
         setParam(parameterIndex, new TimestampParameter(x, cal));
     }
 
-    public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException {
+    public void setNull(int parameterIndex, int sqlType, String typeName)   {
         setParam(parameterIndex, new NullParameter(sqlType, typeName));
     }
 
-    public void setURL(int parameterIndex, URL x) throws SQLException {
+    public void setURL(int parameterIndex, URL x)   {
         setParam(parameterIndex, new URLParameter(x));
     }
 
-    public ParameterMetaData getParameterMetaData() throws SQLException {
+    public ParameterMetaData getParameterMetaData()   {
         throw new UnsupportedOperationException("getParameterMetaData");
     }
 
@@ -247,7 +246,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         setParam(parameterIndex, new RowIdParameter(rowId));
     }
 
-    public void setNString(int parameterIndex, String value) throws SQLException {
+    public void setNString(int parameterIndex, String value)   {
         setParam(parameterIndex, new StringParameter(value));
     }
 

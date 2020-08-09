@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ConnectionPoolConfiguration {
-    private static Log _logger = LogFactory.getLog(ConnectionPoolConfiguration.class);
+    private static final Log _logger = LogFactory.getLog(ConnectionPoolConfiguration.class);
 
     protected int _maxActive = 8;
     protected int _maxIdle = 8;

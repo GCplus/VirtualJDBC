@@ -14,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class QueryFilterConfiguration {
-    private static Log _logger = LogFactory.getLog(QueryFilterConfiguration.class);
-    private List _filters = new ArrayList();
-    private Perl5Matcher _matcher = new Perl5Matcher();
+    private static final Log _logger = LogFactory.getLog(QueryFilterConfiguration.class);
+    private final List _filters = new ArrayList();
+    private final Perl5Matcher _matcher = new Perl5Matcher();
 
-    private static PatternCompiler s_patternCompiler = new Perl5Compiler();
+    private static final PatternCompiler s_patternCompiler = new Perl5Compiler();
 
     private static class Filter {
         Filter(boolean isDenyFilter, String regExp, Pattern pattern, boolean containsType) {
@@ -53,18 +53,18 @@ public class QueryFilterConfiguration {
 
     public void checkAgainstFilters(String sql) throws SQLException {
         if(!_filters.isEmpty()) {
-            for(int i = 0, n = _filters.size(); i < n; ++i) {
-                Filter filter = (Filter) _filters.get(i);
+            for (Object o : _filters) {
+                Filter filter = (Filter) o;
                 boolean matched = filter._containsType ? _matcher.contains(sql, filter._pattern) : _matcher.matches(sql,
                         filter._pattern);
-    
-                if(matched) {
-                    if(filter._isDenyFilter) {
+
+                if (matched) {
+                    if (filter._isDenyFilter) {
                         String msg = "SQL [" + sql + "] is denied due to Deny-Filter [" + filter._regExp + "]";
                         _logger.warn(msg);
                         throw new SQLException(msg);
                     } else {
-                        if(_logger.isDebugEnabled()) {
+                        if (_logger.isDebugEnabled()) {
                             String msg = "SQL [" + sql + "] is allowed due to Allow-Filter [" + filter._regExp + "]";
                             _logger.debug(msg);
                         }
@@ -82,9 +82,9 @@ public class QueryFilterConfiguration {
     void log() {
         _logger.info("  Query Filter-Configuration:");
 
-        for(Iterator it = _filters.iterator(); it.hasNext();) {
-            Filter filter = (Filter) it.next();
-            if(filter._isDenyFilter) {
+        for (Object o : _filters) {
+            Filter filter = (Filter) o;
+            if (filter._isDenyFilter) {
                 _logger.info("    Deny  : [" + filter._regExp + "]");
             } else {
                 _logger.info("    Allow : [" + filter._regExp + "]");

@@ -27,6 +27,7 @@ public final class StreamCloser {
                 is.close();
             }
             catch(IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -41,6 +42,7 @@ public final class StreamCloser {
                 os.close();
             }
             catch(IOException e) {
+                e.printStackTrace();
             }
         }
     }

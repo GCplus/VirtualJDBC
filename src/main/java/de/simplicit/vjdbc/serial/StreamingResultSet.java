@@ -22,7 +22,7 @@ import java.util.Map;
 public class StreamingResultSet implements ResultSet, Externalizable {
     static final long serialVersionUID = 8291019975153433161L;
 
-    private static Log _logger = LogFactory.getLog(StreamingResultSet.class);
+    private static final Log _logger = LogFactory.getLog(StreamingResultSet.class);
 
     private int[] _columnTypes;
     private String[] _columnNames;
@@ -177,11 +177,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public boolean wasNull() throws SQLException {
+    public boolean wasNull() {
         return _actualRow[_lastReadColumn] == null;
     }
 
-    public String getString(int columnIndex) throws SQLException {
+    public String getString(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return _actualRow[columnIndex].toString();
@@ -198,26 +198,26 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue();
+                    return (Boolean) value;
                 case Types.TINYINT:
                     // Byte
-                    return ((Byte)value).byteValue() != 0;
+                    return (Byte) value != 0;
                 case Types.SMALLINT:
                     // Short
-                    return ((Short)value).shortValue() != 0;
+                    return (Short) value != 0;
                 case Types.INTEGER:
                     // Integer
-                    return ((Integer)value).intValue() != 0;
+                    return (Integer) value != 0;
                 case Types.BIGINT:
                     // Long
-                    return ((Long)value).longValue() != 0;
+                    return (Long) value != 0;
                 case Types.REAL:
                     // Float
-                    return ((Float)value).floatValue() != 0.0f;
+                    return (Float) value != 0.0f;
                 case Types.FLOAT:
                 case Types.DOUBLE:
                     // Double
-                    return ((Double)value).doubleValue() != 0.0f;
+                    return (Double) value != 0.0f;
                 case Types.NUMERIC:
                 case Types.DECIMAL:
                     // BigDecimal
@@ -232,10 +232,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to boolean, must be an integer");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue();
+                            return (Boolean) value;
                         }
                     }
                     break;
@@ -255,10 +255,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? (byte)1 : (byte)0;
+                    return (Boolean) value ? (byte)1 : (byte)0;
                 case Types.TINYINT:
                     // Byte
-                    return ((Byte)value).byteValue();
+                    return (Byte) value;
                 case Types.SMALLINT:
                     // Short
                     return ((Short)value).byteValue();
@@ -289,10 +289,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to byte");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? (byte)1 : (byte)0;
+                            return (Boolean) value ? (byte)1 : (byte)0;
                         }
                     }
                     break;
@@ -312,13 +312,13 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? (short)1 : (short)0;
+                    return (Boolean) value ? (short)1 : (short)0;
                 case Types.TINYINT:
                     // Byte
                     return ((Byte)value).shortValue();
                 case Types.SMALLINT:
                     // Short
-                    return ((Short)value).shortValue();
+                    return (Short) value;
                 case Types.INTEGER:
                     // Integer
                     return ((Integer)value).shortValue();
@@ -346,10 +346,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to short");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? (short)1 : (short)0;
+                            return (Boolean) value ? (short)1 : (short)0;
                         }
                     }
                     break;
@@ -369,7 +369,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? (int)1 : (int)0;
+                    return (Boolean) value ? 1 : 0;
                 case Types.TINYINT:
                     // Byte
                     return ((Byte)value).intValue();
@@ -378,7 +378,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     return ((Short)value).intValue();
                 case Types.INTEGER:
                     // Integer
-                    return ((Integer)value).intValue();
+                    return (Integer) value;
                 case Types.BIGINT:
                     // Long
                     return ((Long)value).intValue();
@@ -403,10 +403,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to integer");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? 1 : 0;
+                            return (Boolean) value ? 1 : 0;
                         }
                     }
                     break;
@@ -426,7 +426,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? 1 : 0;
+                    return (Boolean) value ? 1 : 0;
                 case Types.TINYINT:
                     // Byte
                     return ((Byte)value).longValue();
@@ -438,7 +438,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     return ((Integer)value).longValue();
                 case Types.BIGINT:
                     // Long
-                    return ((Long)value).longValue();
+                    return (Long) value;
                 case Types.REAL:
                     // Float
                     return ((Float)value).longValue();
@@ -460,10 +460,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to long");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? 1 : 0;
+                            return (Boolean) value ? 1 : 0;
                         }
                     }
                     break;
@@ -483,7 +483,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? 1.0f : 0.0f;
+                    return (Boolean) value ? 1.0f : 0.0f;
                 case Types.TINYINT:
                     // Byte
                     return ((Byte)value).floatValue();
@@ -498,7 +498,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     return ((Long)value).floatValue();
                 case Types.REAL:
                     // Float
-                    return ((Float)value).floatValue();
+                    return (Float) value;
                 case Types.FLOAT:
                 case Types.DOUBLE:
                     // Double
@@ -517,10 +517,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to float");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? 1 : 0;
+                            return (Boolean) value ? 1 : 0;
                         }
                     }
                     break;
@@ -540,7 +540,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(_columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
-                    return ((Boolean)value).booleanValue() ? 1.0 : 0.0;
+                    return (Boolean) value ? 1.0 : 0.0;
                 case Types.TINYINT:
                     // Byte
                     return ((Byte)value).doubleValue();
@@ -559,7 +559,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                 case Types.FLOAT:
                 case Types.DOUBLE:
                     // Double
-                    return ((Double)value).doubleValue();
+                    return (Double) value;
                 case Types.NUMERIC:
                 case Types.DECIMAL:
                     // BigDecimal
@@ -574,10 +574,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                         throw new SQLException("Can't convert String value '" + value + "' to double");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
-                            return ((Boolean)value).booleanValue() ? 1 : 0;
+                            return (Boolean) value ? 1 : 0;
                         }
                     }
                     break;
@@ -598,7 +598,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public byte[] getBytes(int columnIndex) throws SQLException {
+    public byte[] getBytes(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (byte[])_actualRow[columnIndex];
@@ -663,11 +663,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public InputStream getAsciiStream(int columnIndex) throws SQLException {
+    public InputStream getAsciiStream(int columnIndex) {
         throw new UnsupportedOperationException("getAsciiStream");
     }
 
-    public InputStream getUnicodeStream(int columnIndex) throws SQLException {
+    public InputStream getUnicodeStream(int columnIndex) {
         throw new UnsupportedOperationException("getUnicodeStream");
     }
 
@@ -749,11 +749,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getTimestamp(getIndexForName(columnName));
     }
 
-    public InputStream getAsciiStream(String columnName) throws SQLException {
+    public InputStream getAsciiStream(String columnName) {
         throw new UnsupportedOperationException("getAsciiStream");
     }
 
-    public InputStream getUnicodeStream(String columnName) throws SQLException {
+    public InputStream getUnicodeStream(String columnName) {
         throw new UnsupportedOperationException("getUnicodeStream");
     }
 
@@ -769,10 +769,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public void clearWarnings() throws SQLException {
+    public void clearWarnings() {
     }
 
-    public String getCursorName() throws SQLException {
+    public String getCursorName() {
         throw new UnsupportedOperationException("getCursorName");
     }
 
@@ -793,7 +793,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return _metaData;
     }
 
-    public Object getObject(int columnIndex) throws SQLException {
+    public Object getObject(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return _actualRow[columnIndex];
@@ -811,7 +811,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getIndexForName(columnName);
     }
 
-    public Reader getCharacterStream(int columnIndex) throws SQLException {
+    public Reader getCharacterStream(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return new StringReader((String)_actualRow[columnIndex]);
@@ -846,32 +846,32 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             switch(columnType) {
                 case Types.BIT:
                     // Boolean
-                    result = new BigDecimal(((Boolean)value).booleanValue() ? 1.0 : 0.0);
+                    result = BigDecimal.valueOf(Boolean.parseBoolean(String.valueOf(value)) ? 1.0 : 0.0);
                     break;
                 case Types.TINYINT:
                     // Byte
-                    result = new BigDecimal(((Byte)value).doubleValue());
+                    result = BigDecimal.valueOf(Byte.valueOf(String.valueOf(value)).doubleValue());
                     break;
                 case Types.SMALLINT:
                     // Short
-                    result = new BigDecimal(((Short)value).doubleValue());
+                    result = BigDecimal.valueOf(Short.valueOf(String.valueOf(value)).doubleValue());
                     break;
                 case Types.INTEGER:
                     // Integer
-                    result = new BigDecimal(((Integer)value).doubleValue());
+                    result = BigDecimal.valueOf(Integer.valueOf(String.valueOf(value)).doubleValue());
                     break;
                 case Types.BIGINT:
                     // Long
-                    result = new BigDecimal(((Long)value).doubleValue());
+                    result = BigDecimal.valueOf(Long.valueOf(String.valueOf(value)).doubleValue());
                     break;
                 case Types.REAL:
                     // Float
-                    result = new BigDecimal(((Float)value).doubleValue());
+                    result = BigDecimal.valueOf(Float.valueOf(String.valueOf(value)).doubleValue());
                     break;
                 case Types.FLOAT:
                 case Types.DOUBLE:
                     // Double
-                    result = new BigDecimal(((Double)value).doubleValue());
+                    result = BigDecimal.valueOf(Double.parseDouble(String.valueOf(value)));
                     break;
                 case Types.NUMERIC:
                 case Types.DECIMAL:
@@ -883,15 +883,15 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                 case Types.LONGVARCHAR:
                     // String
                     try {
-                        result = new BigDecimal(Double.parseDouble((String)value));
+                        result = BigDecimal.valueOf(Double.parseDouble(String.valueOf(value)));
                     } catch (NumberFormatException e) {
                         throw new SQLException("Can't convert String value '" + value + "' to double");
                     }
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(columnType == Types.BOOLEAN) {
                             // Boolean
-                            result = new BigDecimal(((Boolean)value).booleanValue() ? 1.0 : 0.0);
+                            result = BigDecimal.valueOf(Boolean.parseBoolean(String.valueOf(value)) ? 1.0 : 0.0);
                         }
                     }
                     break;
@@ -911,35 +911,35 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return result;
     }
 
-    public boolean isBeforeFirst() throws SQLException {
+    public boolean isBeforeFirst() {
         return _cursor < 0;
     }
 
-    public boolean isAfterLast() throws SQLException {
+    public boolean isAfterLast() {
         return _rows.isLastPart() && (_cursor == _rows.size());
     }
 
-    public boolean isFirst() throws SQLException {
+    public boolean isFirst() {
         return _cursor == 0;
     }
 
-    public boolean isLast() throws SQLException {
+    public boolean isLast() {
         return _rows.isLastPart() && (_cursor == (_rows.size() - 1));
     }
 
-    public void beforeFirst() throws SQLException {
+    public void beforeFirst() {
         _cursor = -1;
         _actualRow = null;
     }
 
-    public void afterLast() throws SQLException {
+    public void afterLast() {
         // Request all remaining Row-Packets
-        while(requestNextRowPacket()) ;
+//        while(requestNextRowPacket()) ;
         _cursor = _rows.size();
         _actualRow = null;
     }
 
-    public boolean first() throws SQLException {
+    public boolean first() {
         try {
             _cursor = 0;
             _actualRow = _rows.get(_cursor);
@@ -949,10 +949,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public boolean last() throws SQLException {
+    public boolean last() {
         try {
             // Request all remaining Row-Packets
-            while(requestNextRowPacket()) ;
+//            while(requestNextRowPacket()) ;
             _cursor = _rows.size() - 1;
             _actualRow = _rows.get(_cursor);
             return true;
@@ -961,7 +961,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public int getRow() throws SQLException {
+    public int getRow() {
         return _cursor + 1;
     }
 
@@ -986,246 +986,230 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public void setFetchDirection(int direction) throws SQLException {
+    public void setFetchDirection(int direction) {
         _fetchDirection = direction;
     }
 
-    public int getFetchDirection() throws SQLException {
+    public int getFetchDirection() {
         return _fetchDirection;
     }
 
-    public void setFetchSize(int rows) throws SQLException {
+    public void setFetchSize(int rows) {
     }
 
-    public int getFetchSize() throws SQLException {
+    public int getFetchSize() {
         return 0;
     }
 
-    public int getType() throws SQLException {
+    public int getType() {
         return _forwardOnly ? ResultSet.TYPE_FORWARD_ONLY : ResultSet.TYPE_SCROLL_INSENSITIVE;
     }
 
-    public int getConcurrency() throws SQLException {
+    public int getConcurrency() {
         return ResultSet.CONCUR_READ_ONLY;
     }
 
-    public boolean rowUpdated() throws SQLException {
+    public boolean rowUpdated() {
         return false;
     }
 
-    public boolean rowInserted() throws SQLException {
+    public boolean rowInserted() {
         return false;
     }
 
-    public boolean rowDeleted() throws SQLException {
+    public boolean rowDeleted() {
         return false;
     }
 
-    public void updateNull(int columnIndex) throws SQLException {
+    public void updateNull(int columnIndex) {
         throw new UnsupportedOperationException("updateNull");
     }
 
-    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
+    public void updateBoolean(int columnIndex, boolean x) {
         throw new UnsupportedOperationException("updateBoolean");
     }
 
-    public void updateByte(int columnIndex, byte x) throws SQLException {
+    public void updateByte(int columnIndex, byte x) {
         throw new UnsupportedOperationException("updateByte");
     }
 
-    public void updateShort(int columnIndex, short x) throws SQLException {
+    public void updateShort(int columnIndex, short x) {
         throw new UnsupportedOperationException("updateShort");
     }
 
-    public void updateInt(int columnIndex, int x) throws SQLException {
+    public void updateInt(int columnIndex, int x) {
         throw new UnsupportedOperationException("updateInt");
     }
 
-    public void updateLong(int columnIndex, long x) throws SQLException {
+    public void updateLong(int columnIndex, long x) {
         throw new UnsupportedOperationException("updateLong");
     }
 
-    public void updateFloat(int columnIndex, float x) throws SQLException {
+    public void updateFloat(int columnIndex, float x) {
         throw new UnsupportedOperationException("updateFloat");
     }
 
-    public void updateDouble(int columnIndex, double x) throws SQLException {
+    public void updateDouble(int columnIndex, double x) {
         throw new UnsupportedOperationException("updateDouble");
     }
 
-    public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
+    public void updateBigDecimal(int columnIndex, BigDecimal x) {
         throw new UnsupportedOperationException("updateBigDecimal");
     }
 
-    public void updateString(int columnIndex, String x) throws SQLException {
+    public void updateString(int columnIndex, String x) {
         throw new UnsupportedOperationException("updateString");
     }
 
-    public void updateBytes(int columnIndex, byte x[]) throws SQLException {
+    public void updateBytes(int columnIndex, byte[] x) {
         throw new UnsupportedOperationException("updateBytes");
     }
 
-    public void updateDate(int columnIndex, Date x) throws SQLException {
+    public void updateDate(int columnIndex, Date x) {
         throw new UnsupportedOperationException("updateDate");
     }
 
-    public void updateTime(int columnIndex, Time x) throws SQLException {
+    public void updateTime(int columnIndex, Time x) {
         throw new UnsupportedOperationException("updateTime");
     }
 
-    public void updateTimestamp(int columnIndex, Timestamp x)
-            throws SQLException {
+    public void updateTimestamp(int columnIndex, Timestamp x) {
         throw new UnsupportedOperationException("updateTimestamp");
     }
 
-    public void updateAsciiStream(int columnIndex,
-                                  InputStream x,
-                                  int length) throws SQLException {
+    public void updateAsciiStream(int columnIndex, InputStream x, int length) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(int columnIndex,
-                                   InputStream x,
-                                   int length) throws SQLException {
+    public void updateBinaryStream(int columnIndex, InputStream x, int length) {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateCharacterStream(int columnIndex,
-                                      Reader x,
-                                      int length) throws SQLException {
+    public void updateCharacterStream(int columnIndex, Reader x, int length) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateObject(int columnIndex, Object x, int scale)
-            throws SQLException {
+    public void updateObject(int columnIndex, Object x, int scale) {
         throw new UnsupportedOperationException("updateObject");
     }
 
-    public void updateObject(int columnIndex, Object x) throws SQLException {
+    public void updateObject(int columnIndex, Object x) {
         throw new UnsupportedOperationException("updateObject");
     }
 
-    public void updateNull(String columnName) throws SQLException {
+    public void updateNull(String columnName) {
         throw new UnsupportedOperationException("updateNull");
     }
 
-    public void updateBoolean(String columnName, boolean x) throws SQLException {
+    public void updateBoolean(String columnName, boolean x) {
         throw new UnsupportedOperationException("updateBoolean");
     }
 
-    public void updateByte(String columnName, byte x) throws SQLException {
+    public void updateByte(String columnName, byte x) {
         throw new UnsupportedOperationException("updateByte");
     }
 
-    public void updateShort(String columnName, short x) throws SQLException {
+    public void updateShort(String columnName, short x) {
         throw new UnsupportedOperationException("updateShort");
     }
 
-    public void updateInt(String columnName, int x) throws SQLException {
+    public void updateInt(String columnName, int x) {
         throw new UnsupportedOperationException("updateInt");
     }
 
-    public void updateLong(String columnName, long x) throws SQLException {
+    public void updateLong(String columnName, long x) {
         throw new UnsupportedOperationException("updateLong");
     }
 
-    public void updateFloat(String columnName, float x) throws SQLException {
+    public void updateFloat(String columnName, float x) {
         throw new UnsupportedOperationException("updateFloat");
     }
 
-    public void updateDouble(String columnName, double x) throws SQLException {
+    public void updateDouble(String columnName, double x) {
         throw new UnsupportedOperationException("updateDouble");
     }
 
-    public void updateBigDecimal(String columnName, BigDecimal x) throws SQLException {
+    public void updateBigDecimal(String columnName, BigDecimal x) {
         throw new UnsupportedOperationException("updateBigDecimal");
     }
 
-    public void updateString(String columnName, String x) throws SQLException {
+    public void updateString(String columnName, String x) {
         throw new UnsupportedOperationException("updateString");
     }
 
-    public void updateBytes(String columnName, byte x[]) throws SQLException {
+    public void updateBytes(String columnName, byte[] x) {
         throw new UnsupportedOperationException("updateBytes");
     }
 
-    public void updateDate(String columnName, Date x) throws SQLException {
+    public void updateDate(String columnName, Date x) {
         throw new UnsupportedOperationException("updateDate");
     }
 
-    public void updateTime(String columnName, Time x) throws SQLException {
+    public void updateTime(String columnName, Time x) {
         throw new UnsupportedOperationException("updateTime");
     }
 
-    public void updateTimestamp(String columnName, Timestamp x)
-            throws SQLException {
+    public void updateTimestamp(String columnName, Timestamp x) {
         throw new UnsupportedOperationException("updateTimestamp");
     }
 
-    public void updateAsciiStream(String columnName,
-                                  InputStream x,
-                                  int length) throws SQLException {
+    public void updateAsciiStream(String columnName, InputStream x, int length) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(String columnName,
-                                   InputStream x,
-                                   int length) throws SQLException {
+    public void updateBinaryStream(String columnName, InputStream x, int length) {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateCharacterStream(String columnName,
-                                      Reader reader,
-                                      int length) throws SQLException {
+    public void updateCharacterStream(String columnName, Reader reader, int length) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateObject(String columnName, Object x, int scale)
-            throws SQLException {
+    public void updateObject(String columnName, Object x, int scale) {
         throw new UnsupportedOperationException("updateObject");
     }
 
-    public void updateObject(String columnName, Object x) throws SQLException {
+    public void updateObject(String columnName, Object x) {
         throw new UnsupportedOperationException("updateObject");
     }
 
-    public void insertRow() throws SQLException {
+    public void insertRow() {
         throw new UnsupportedOperationException("insertRow");
     }
 
-    public void updateRow() throws SQLException {
+    public void updateRow() {
         throw new UnsupportedOperationException("updateRow");
     }
 
-    public void deleteRow() throws SQLException {
+    public void deleteRow() {
         throw new UnsupportedOperationException("deleteRow");
     }
 
-    public void refreshRow() throws SQLException {
+    public void refreshRow() {
         throw new UnsupportedOperationException("refreshRow");
     }
 
-    public void cancelRowUpdates() throws SQLException {
+    public void cancelRowUpdates() {
         throw new UnsupportedOperationException("cancelRowUpdates");
     }
 
-    public void moveToInsertRow() throws SQLException {
+    public void moveToInsertRow() {
         throw new UnsupportedOperationException("moveToInsertRow");
     }
 
-    public void moveToCurrentRow() throws SQLException {
+    public void moveToCurrentRow() {
         throw new UnsupportedOperationException("moveToCurrentRow");
     }
 
-    public Statement getStatement() throws SQLException {
+    public Statement getStatement() {
         return _statement;
     }
 
-    public Object getObject(int i, Map map) throws SQLException {
+    public Object getObject(int i, Map map) {
         throw new UnsupportedOperationException("getObject");
     }
 
-    public Ref getRef(int columnIndex) throws SQLException {
+    public Ref getRef(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (Ref)_actualRow[columnIndex];
@@ -1235,7 +1219,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public Blob getBlob(int columnIndex) throws SQLException {
+    public Blob getBlob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (Blob)_actualRow[columnIndex];
@@ -1245,7 +1229,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public Clob getClob(int columnIndex) throws SQLException {
+    public Clob getClob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (Clob)_actualRow[columnIndex];
@@ -1255,7 +1239,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public Array getArray(int columnIndex) throws SQLException {
+    public Array getArray(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (Array)_actualRow[columnIndex];
@@ -1265,7 +1249,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
     }
 
-    public Object getObject(String colName, Map map) throws SQLException {
+    public Object getObject(String colName, Map map) {
         throw new UnsupportedOperationException("getObject");
     }
 
@@ -1308,7 +1292,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getDate(getIndexForName(columnName), cal);
     }
 
-    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
+    public Time getTime(int columnIndex, Calendar cal) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             Time time = (Time)_actualRow[columnIndex];
@@ -1339,7 +1323,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getTimestamp(getIndexForName(columnName), cal);
     }
 
-    public URL getURL(int columnIndex) throws SQLException {
+    public URL getURL(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (URL)_actualRow[columnIndex];
@@ -1353,35 +1337,35 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getURL(getIndexForName(columnName));
     }
 
-    public void updateRef(int columnIndex, Ref x) throws SQLException {
+    public void updateRef(int columnIndex, Ref x) {
         throw new UnsupportedOperationException("updateRef");
     }
 
-    public void updateRef(String columnName, Ref x) throws SQLException {
+    public void updateRef(String columnName, Ref x) {
         throw new UnsupportedOperationException("updateRef");
     }
 
-    public void updateBlob(int columnIndex, Blob x) throws SQLException {
+    public void updateBlob(int columnIndex, Blob x) {
         throw new UnsupportedOperationException("updateBlob");
     }
 
-    public void updateBlob(String columnName, Blob x) throws SQLException {
+    public void updateBlob(String columnName, Blob x) {
         throw new UnsupportedOperationException("updateBlob");
     }
 
-    public void updateClob(int columnIndex, Clob x) throws SQLException {
+    public void updateClob(int columnIndex, Clob x) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateClob(String columnName, Clob x) throws SQLException {
+    public void updateClob(String columnName, Clob x) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateArray(int columnIndex, Array x) throws SQLException {
+    public void updateArray(int columnIndex, Array x) {
         throw new UnsupportedOperationException("updateArray");
     }
 
-    public void updateArray(String columnName, Array x) throws SQLException {
+    public void updateArray(String columnName, Array x) {
         throw new UnsupportedOperationException("updateArray");
     }
 
@@ -1488,7 +1472,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     /* start JDBC4 support */
     public RowId getRowId(int parameterIndex) throws SQLException {
         return (RowId)_commandSink.process(_remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getRowId",
-                new Object[]{new Integer(parameterIndex)},
+                new Object[]{parameterIndex},
                 ParameterTypeCombinations.INT));
     }
 
@@ -1498,15 +1482,15 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                 ParameterTypeCombinations.STR));
     }
 
-    public void setRowId(String parameterName, RowId x) throws SQLException {
+    public void setRowId(String parameterName, RowId x) {
         throw new UnsupportedOperationException("setRowId");
     }
 
-    public void updateRowId(int columnIndex, RowId x) throws SQLException {
+    public void updateRowId(int columnIndex, RowId x) {
         throw new UnsupportedOperationException("updateRowId");
     }
 
-    public void updateRowId(String columnLabel, RowId x) throws SQLException {
+    public void updateRowId(String columnLabel, RowId x) {
         throw new UnsupportedOperationException("updateRowId");
     }
 
@@ -1514,27 +1498,27 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return _commandSink.processWithIntResult(_remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getHoldability"));
     }
 
-    public boolean isClosed() throws SQLException {
+    public boolean isClosed() {
         return (_cursor < 0);
     }
 
-    public void updateNString(int columnIndex, String nString) throws SQLException {
+    public void updateNString(int columnIndex, String nString) {
         throw new UnsupportedOperationException("updateNString");
     }
 
-    public void updateNString(String columnLabel, String nString) throws SQLException {
+    public void updateNString(String columnLabel, String nString) {
         throw new UnsupportedOperationException("updateNString");
     }
 
-    public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
+    public void updateNClob(int columnIndex, NClob nClob) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
+    public void updateNClob(String columnLabel, NClob nClob) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public NClob getNClob(int columnIndex) throws SQLException {
+    public NClob getNClob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (NClob)_actualRow[columnIndex];
@@ -1548,7 +1532,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getNClob(getIndexForName(columnLabel));
     }
 
-    public SQLXML getSQLXML(int columnIndex) throws SQLException {
+    public SQLXML getSQLXML(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return (SQLXML)_actualRow[columnIndex];
@@ -1562,15 +1546,15 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getSQLXML(getIndexForName(columnLabel));
     }
 
-    public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException {
+    public void updateSQLXML(int columnIndex, SQLXML xmlObject) {
         throw new UnsupportedOperationException("updateSQLXML");
     }
 
-    public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
+    public void updateSQLXML(String columnLabel, SQLXML xmlObject) {
         throw new UnsupportedOperationException("updateSQLXML");
     }
 
-    public String getNString(int columnIndex) throws SQLException {
+    public String getNString(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return _actualRow[columnIndex].toString();
@@ -1583,7 +1567,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getNString(getIndexForName(columnLabel));
     }
 
-    public Reader getNCharacterStream(int columnIndex) throws SQLException {
+    public Reader getNCharacterStream(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
             return new StringReader((String)_actualRow[columnIndex]);
@@ -1597,122 +1581,122 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         return getNCharacterStream(getIndexForName(columnLabel));
     }
 
-    public void updateNCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+    public void updateNCharacterStream(int columnIndex, Reader x, long length) {
         throw new UnsupportedOperationException("updateNCharacterStream");
     }
 
-    public void updateNCharacterStream(String columnLabel, Reader x, long length) throws SQLException {
+    public void updateNCharacterStream(String columnLabel, Reader x, long length) {
         throw new UnsupportedOperationException("updateNCharacterStream");
     }
 
-    public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException {
+    public void updateAsciiStream(int columnIndex, InputStream x, long length) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException {
+    public void updateBinaryStream(int columnIndex, InputStream x, long length) {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+    public void updateCharacterStream(int columnIndex, Reader x, long length) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
+    public void updateAsciiStream(String columnLabel, InputStream x, long length) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException {
+    public void updateBinaryStream(String columnLabel, InputStream x, long length) {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
+    public void updateCharacterStream(String columnLabel, Reader reader, long length) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
+    public void updateBlob(int columnIndex, InputStream inputStream, long length) {
     }
 
-    public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException {
+    public void updateBlob(String columnLabel, InputStream inputStream, long length) {
         throw new UnsupportedOperationException("updateBlob");
     }
 
-    public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
+    public void updateClob(int columnIndex, Reader reader, long length) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
+    public void updateClob(String columnLabel, Reader reader, long length) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
+    public void updateNClob(int columnIndex, Reader reader, long length) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
+    public void updateNClob(String columnLabel, Reader reader, long length) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public void updateNCharacterStream(int columnIndex, Reader reader) throws SQLException {
+    public void updateNCharacterStream(int columnIndex, Reader reader) {
         throw new UnsupportedOperationException("updateNCharacterStream");
     }
 
-    public void updateNCharacterStream(String columnLabel, Reader reader) throws SQLException {
+    public void updateNCharacterStream(String columnLabel, Reader reader) {
         throw new UnsupportedOperationException("updateNCharacterStream");
     }
 
-    public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
+    public void updateAsciiStream(int columnIndex, InputStream x) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException {
+    public void updateBinaryStream(int columnIndex, InputStream x)  {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateCharacterStream(int columnIndex, Reader reader) throws SQLException {
+    public void updateCharacterStream(int columnIndex, Reader reader) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
+    public void updateCharacterStream(String columnLabel, Reader reader) {
         throw new UnsupportedOperationException("updateCharacterStream");
     }
 
-    public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
+    public void updateAsciiStream(String columnLabel, InputStream x) {
         throw new UnsupportedOperationException("updateAsciiStream");
     }
 
-    public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
+    public void updateBinaryStream(String columnLabel, InputStream x) {
         throw new UnsupportedOperationException("updateBinaryStream");
     }
 
-    public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
+    public void updateBlob(int columnIndex, InputStream inputStream) {
         throw new UnsupportedOperationException("updateBlob");
     }
 
-    public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
+    public void updateBlob(String columnLabel, InputStream inputStream) {
         throw new UnsupportedOperationException("updateBlob");
     }
 
-    public void updateClob(int columnIndex, Reader reader) throws SQLException {
+    public void updateClob(int columnIndex, Reader reader) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateClob(String columnLabel, Reader reader) throws SQLException {
+    public void updateClob(String columnLabel, Reader reader) {
         throw new UnsupportedOperationException("updateClob");
     }
 
-    public void updateNClob(int columnIndex, Reader reader) throws SQLException {
+    public void updateNClob(int columnIndex, Reader reader) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public void updateNClob(String columnLabel, Reader reader) throws SQLException {
+    public void updateNClob(String columnLabel, Reader reader) {
         throw new UnsupportedOperationException("updateNClob");
     }
 
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(Class<?> iface) {
         return iface.isAssignableFrom(StreamingResultSet.class);
     }
 
-    public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(Class<T> iface) {
         return (T)this;
     }
     /* end JDBC4 support */
