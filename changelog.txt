@@ -112,7 +112,7 @@ Release 1.4 (11 Jun 2005)
        server reads the next RowPacket which can be delivered instantly with the next Remote-Call.
 * OPT: Changed expensive instanceof-Calls in StreamingResultset into switch-Statements
 * FEA: Implemented getRef()-API
-* FEA: Improved support for ad-hoc conversions within StreamingResultSet (thx to Erik Jõgi)
+* FEA: Improved support for ad-hoc conversions within StreamingResultSet (thx to Erik JÃµgi)
 * FEA: Long running database operations were accidently terminated by the OrphanedConnectionCollectorTask.
        This is now prevented by marking the connection as active.
 * FEA: Now it can be specified which client-side system properties are delivered to the server for

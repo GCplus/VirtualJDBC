@@ -11,7 +11,7 @@
 			<session-type>Stateless</session-type>
 			<transaction-type>Bean</transaction-type>
 			<resource-ref id="de.simplicit.vjdbc.desc.Database">
-				<description></description>
+				<description/>
 				<res-ref-name>jdbc/database</res-ref-name>
 				<res-type>javax.sql.DataSource</res-type>
 				<res-auth>Container</res-auth>
