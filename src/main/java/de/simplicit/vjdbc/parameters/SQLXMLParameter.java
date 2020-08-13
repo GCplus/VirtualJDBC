@@ -38,11 +38,6 @@ public class SQLXMLParameter implements PreparedStatementParameter {
     }
 
     public String toString() {
-        try {
-            return "SQLXML: " + _value.getString();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-        return "SQLXML: fail";
+        return "SQLXML: " + _value.getString();
     }
 }

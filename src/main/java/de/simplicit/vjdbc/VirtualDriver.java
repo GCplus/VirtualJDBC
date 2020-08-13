@@ -61,14 +61,14 @@ public final class VirtualDriver implements Driver {
                 Class.forName("org.hsqldb.jdbcDriver").newInstance();
                 _logger.info("HSQL-Driver loaded, caching activated");
                 _cacheEnabled = true;
-            } catch(ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 _logger.info("Couldn't load HSQL-Driver, caching deactivated");
                 _cacheEnabled = false;
-            } catch(Exception e) {
+            } catch (Exception e) {
                 _logger.error("Unexpected exception occured on loading the HSQL-Driver");
                 _cacheEnabled = false;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             _logger.fatal("Couldn't register Virtual-JDBC-Driver !", e);
             throw new RuntimeException("Couldn't register Virtual-JDBC-Driver !", e);
         }
@@ -80,7 +80,7 @@ public final class VirtualDriver implements Driver {
     public Connection connect(String urlstr, Properties props) throws SQLException {
         Connection result = null;
 
-        if(acceptsURL(urlstr)) {
+        if (acceptsURL(urlstr)) {
             String realUrl = urlstr.substring(VJDBC_IDENTIFIER.length());
 
             _logger.info("VJdbc-URL: " + realUrl);
@@ -91,24 +91,24 @@ public final class VirtualDriver implements Driver {
                 String[] urlparts;
 
                 // EJB-Connection
-                if(realUrl.startsWith(EJB_IDENTIFIER)) {
+                if (realUrl.startsWith(EJB_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(EJB_IDENTIFIER.length()));
                     _logger.info("VJdbc in EJB-Mode, using object " + urlparts[0]);
                     sink = createEjbCommandSink(urlparts[0]);
                     // RMI-Connection
-                } else if(realUrl.startsWith(RMI_IDENTIFIER)) {
+                } else if (realUrl.startsWith(RMI_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(RMI_IDENTIFIER.length()));
                     _logger.info("VJdbc in RMI-Mode, using object " + urlparts[0]);
                     // Examine SSL property
-                    boolean useSSL = false;
+                    boolean useSSL;
                     String propSSL = props.getProperty(VJdbcProperties.RMI_SSL);
                     useSSL = (propSSL != null && propSSL.equalsIgnoreCase("true"));
-                    if(useSSL) {
+                    if (useSSL) {
                         _logger.info("Using Secure Socket Layer (SSL)");
                     }
                     sink = createRmiCommandSink(urlparts[0], useSSL);
                     // Servlet-Connection
-                } else if(realUrl.startsWith(SERVLET_IDENTIFIER)) {
+                } else if (realUrl.startsWith(SERVLET_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(SERVLET_IDENTIFIER.length()));
                     _logger.info("VJdbc in Servlet-Mode, using URL " + urlparts[0]);
                     sink = createServletCommandSink(urlparts[0], props);
@@ -116,7 +116,7 @@ public final class VirtualDriver implements Driver {
                     throw new SQLException("Unknown protocol identifier " + realUrl);
                 }
 
-                if(urlparts[1].length() > 0) {
+                if (urlparts[1].length() > 0) {
                     _logger.info("Connecting to datasource " + urlparts[1]);
                 } else {
                     _logger.info("Using default datasource");
@@ -132,17 +132,16 @@ public final class VirtualDriver implements Driver {
                 CallingContextFactory ctxFactory;
                 // The value 1 signals that every remote call shall provide a calling context. This should only
                 // be used for debugging purposes as sending of these objects is quite expensive.
-                if(reg.getValue1() == 1) {
+                if (reg.getValue1() == 1) {
                     ctxFactory = new StandardCallingContextFactory();
-                }
-                else {
+                } else {
                     ctxFactory = new NullCallingContextFactory();
                 }
                 // Decorate the sink
                 DecoratedCommandSink decosink = new DecoratedCommandSink(reg, sink, ctxFactory);
                 // return the new connection
                 result = new VirtualConnection(reg, decosink, props, _cacheEnabled);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 _logger.error(e);
                 throw SQLExceptionHelper.wrap(e);
             }
@@ -172,13 +171,13 @@ public final class VirtualDriver implements Driver {
     }
 
     private CommandSink createRmiCommandSink(String rminame, boolean useSSL) throws Exception {
-        if(useSSL) {
-            if(_sslSocketFactory == null) {
+        if (useSSL) {
+            if (_sslSocketFactory == null) {
                 _sslSocketFactory = new SecureSocketFactory();
                 RMISocketFactory.setSocketFactory(_sslSocketFactory);
             }
         }
-        ConnectionBrokerRmi broker = (ConnectionBrokerRmi)Naming.lookup(rminame);
+        ConnectionBrokerRmi broker = (ConnectionBrokerRmi) Naming.lookup(rminame);
         CommandSinkRmi rmiSink = broker.createCommandSink();
         return new CommandSinkRmiProxy(rmiSink);
     }
@@ -188,7 +187,7 @@ public final class VirtualDriver implements Driver {
         _logger.info("Lookup " + ejbname);
         Object ref = ctx.lookup(ejbname);
         _logger.info("remote bean " + ref.getClass().getName());
-        return (EjbCommandSinkProxy)ref;
+        return (EjbCommandSinkProxy) ref;
     }
 
     private CommandSink createServletCommandSink(String url, Properties props) throws Exception {
@@ -196,27 +195,26 @@ public final class VirtualDriver implements Driver {
 
         String requestEnhancerFactoryClassName = props.getProperty(VJdbcProperties.SERVLET_REQUEST_ENHANCER_FACTORY);
 
-        if(requestEnhancerFactoryClassName != null) {
+        if (requestEnhancerFactoryClassName != null) {
             _logger.debug("Found RequestEnhancerFactory class: " + requestEnhancerFactoryClassName);
             Class requestEnhancerFactoryClass = Class.forName(requestEnhancerFactoryClassName);
-            RequestEnhancerFactory requestEnhancerFactory = (RequestEnhancerFactory)requestEnhancerFactoryClass.newInstance();
+            RequestEnhancerFactory requestEnhancerFactory = (RequestEnhancerFactory) requestEnhancerFactoryClass.newInstance();
             _logger.debug("RequestEnhancerFactory successfully created");
             requestEnhancer = requestEnhancerFactory.create();
         }
 
         // Decide here if we should use Jakarta-HTTP-Client
         String useJakartaHttpClient = props.getProperty(VJdbcProperties.SERVLET_USE_JAKARTA_HTTP_CLIENT);
-        if(useJakartaHttpClient != null && useJakartaHttpClient.equals("true")) {
+        if (useJakartaHttpClient != null && useJakartaHttpClient.equals("true")) {
             return new ServletCommandSinkJakartaHttpClient(url, requestEnhancer);
-        }
-        else {
+        } else {
             return new ServletCommandSinkJdkHttpClient(url, requestEnhancer);
         }
     }
 
     // Helper method (can't use the 1.4-Method because support for 1.3 is desired)
     private String[] split(String url) {
-        char[] splitChars = { ',', ';', '#', '$' };
+        char[] splitChars = {',', ';', '#', '$'};
 
         for (char splitChar : splitChars) {
             int charindex = url.indexOf(splitChar);
@@ -226,7 +224,7 @@ public final class VirtualDriver implements Driver {
             }
         }
 
-        return new String[] { url, "" };
+        return new String[]{url, ""};
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {

@@ -155,34 +155,34 @@ public class ConnectionConfiguration implements Executor {
 
     public void setCompressionModeAsInt(int compressionMode) throws ConfigurationException {
         switch (compressionMode) {
-        case Deflater.BEST_SPEED:
-        case Deflater.BEST_COMPRESSION:
-        case Deflater.NO_COMPRESSION:
-            _compressionMode = compressionMode;
-        default:
-            throw new ConfigurationException("Unknown compression mode");
+            case Deflater.BEST_SPEED:
+            case Deflater.BEST_COMPRESSION:
+            case Deflater.NO_COMPRESSION:
+                _compressionMode = compressionMode;
+            default:
+                throw new ConfigurationException("Unknown compression mode");
         }
     }
 
     public String getCompressionMode() {
         switch (_compressionMode) {
-        case Deflater.BEST_SPEED:
-            return "bestspeed";
-        case Deflater.BEST_COMPRESSION:
-            return "bestcompression";
-        case Deflater.NO_COMPRESSION:
-            return "none";
-        default:
-            throw new RuntimeException("Unknown compression mode");
+            case Deflater.BEST_SPEED:
+                return "bestspeed";
+            case Deflater.BEST_COMPRESSION:
+                return "bestcompression";
+            case Deflater.NO_COMPRESSION:
+                return "none";
+            default:
+                throw new RuntimeException("Unknown compression mode");
         }
     }
 
     public void setCompressionMode(String compressionMode) throws ConfigurationException {
-        if(compressionMode.equalsIgnoreCase("bestspeed")) {
+        if (compressionMode.equalsIgnoreCase("bestspeed")) {
             _compressionMode = Deflater.BEST_SPEED;
-        } else if(compressionMode.equalsIgnoreCase("bestcompression")) {
+        } else if (compressionMode.equalsIgnoreCase("bestcompression")) {
             _compressionMode = Deflater.BEST_COMPRESSION;
-        } else if(compressionMode.equalsIgnoreCase("none")) {
+        } else if (compressionMode.equalsIgnoreCase("none")) {
             _compressionMode = Deflater.NO_COMPRESSION;
         } else {
             throw new ConfigurationException("Unknown compression mode '" + compressionMode
@@ -195,7 +195,7 @@ public class ConnectionConfiguration implements Executor {
     }
 
     public void setCompressionThreshold(long compressionThreshold) throws ConfigurationException {
-        if(_compressionThreshold < 0) {
+        if (_compressionThreshold < 0) {
             throw new ConfigurationException("Compression threshold must be >= 0");
         }
         _compressionThreshold = compressionThreshold;
@@ -251,7 +251,7 @@ public class ConnectionConfiguration implements Executor {
     }
 
     void validate() throws ConfigurationException {
-        if(_url == null && (_dataSourceProvider == null)) {
+        if (_url == null && (_dataSourceProvider == null)) {
             String msg = "Connection-Entry " + _id + ": neither URL nor DataSourceProvider is provided";
             _logger.error(msg);
             throw new ConfigurationException(msg);
@@ -259,8 +259,8 @@ public class ConnectionConfiguration implements Executor {
 
         // When connection pooling is used, the user/password combination must be
         // provided in the configuration as otherwise user-accounts are mixed up
-        if(_dataSourceProvider == null) {
-            if(_connectionPooling && _user == null) {
+        if (_dataSourceProvider == null) {
+            if (_connectionPooling && _user == null) {
                 String msg = "Connection-Entry " + _id + ": connection pooling can only be used when a dedicated user is specified for the connection";
                 _logger.error(msg);
                 throw new ConfigurationException(msg);
@@ -270,9 +270,9 @@ public class ConnectionConfiguration implements Executor {
 
     void log() {
         String usedPassword = "provided by client";
-        if(_password != null) {
+        if (_password != null) {
             char[] hiddenPassword = new char[_password.length()];
-            for(int i = 0; i < _password.length(); i++) {
+            for (int i = 0; i < _password.length(); i++) {
                 hiddenPassword[i] = '*';
             }
             usedPassword = new String(hiddenPassword);
@@ -283,7 +283,7 @@ public class ConnectionConfiguration implements Executor {
         // We must differentiate between the DataSource-API and the older
         // DriverManager-API. When the DataSource-Provider is provided, the
         // driver and URL configurations will be ignored
-        if(_dataSourceProvider != null) {
+        if (_dataSourceProvider != null) {
             _logger.info("  DataSource-Provider ........ " + _dataSourceProvider);
         } else {
             if (_driver != null) {
@@ -303,15 +303,15 @@ public class ConnectionConfiguration implements Executor {
         _logger.info("  Trace Command-Counts ....... " + _traceCommandCount);
         _logger.info("  Trace Orphaned-Objects ..... " + _traceOrphanedObjects);
 
-        if(_connectionPoolConfiguration != null) {
+        if (_connectionPoolConfiguration != null) {
             _connectionPoolConfiguration.log();
         }
 
-        if(_namedQueries != null) {
+        if (_namedQueries != null) {
             _namedQueries.log();
         }
 
-        if(_queryFilters != null) {
+        if (_queryFilters != null) {
             _queryFilters.log();
         }
     }
@@ -319,7 +319,7 @@ public class ConnectionConfiguration implements Executor {
     public Connection create(Properties props) throws SQLException, VJdbcException {
         checkLogin(props);
 
-        if(_dataSourceProvider != null) {
+        if (_dataSourceProvider != null) {
             return createConnectionViaDataSource();
         } else {
             return createConnectionViaDriverManager(props);
@@ -337,7 +337,7 @@ public class ConnectionConfiguration implements Executor {
             _logger.debug("DataSourceProvider created");
             DataSource dataSource = dataSourceProvider.getDataSource();
             _logger.debug("Retrieving connection from DataSource");
-            if(_user != null) {
+            if (_user != null) {
                 result = dataSource.getConnection(_user, _password);
             } else {
                 result = dataSource.getConnection();
@@ -362,7 +362,7 @@ public class ConnectionConfiguration implements Executor {
 
     protected Connection createConnectionViaDriverManager(Properties props) throws SQLException {
         // Try to load the driver
-        if(!_driverInitialized && _driver != null) {
+        if (!_driverInitialized && _driver != null) {
             try {
                 _logger.debug("Loading driver " + _driver);
                 Class.forName(_driver).newInstance();
@@ -377,10 +377,10 @@ public class ConnectionConfiguration implements Executor {
 
         // When database login is provided use them for the login instead of the
         // ones provided by the client
-        if(_user != null) {
+        if (_user != null) {
             _logger.debug("Using " + _user + " for database-login");
             props.put("user", _user);
-            if(_password != null) {
+            if (_password != null) {
                 props.put("password", _password);
             } else {
                 _logger.warn("No password was provided for database-login " + _user);
@@ -389,7 +389,7 @@ public class ConnectionConfiguration implements Executor {
 
         String jdbcurl = _url;
 
-        if(jdbcurl.length() > 0) {
+        if (jdbcurl.length() > 0) {
             _logger.debug("JDBC-Connection-String: " + jdbcurl);
         } else {
             String msg = "No JDBC-Connection-String available";
@@ -398,17 +398,17 @@ public class ConnectionConfiguration implements Executor {
         }
 
         // Connection pooling with DBCP
-        if(_connectionPooling && _connectionPoolInitialized != null) {
+        if (_connectionPooling && _connectionPoolInitialized != null) {
             String dbcpId = DBCP_ID + _id;
 
-            if(_connectionPool != null) {
+            if (_connectionPool != null) {
                 jdbcurl = dbcpId;
             } else {
                 try {
                     // Try to load the DBCP-Driver
                     Class.forName("org.apache.commons.dbcp.PoolingDriver");
                     // Populate configuration object
-                    if(_connectionPoolConfiguration != null) {
+                    if (_connectionPoolConfiguration != null) {
                         GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
                         poolConfig.maxActive = _connectionPoolConfiguration.getMaxActive();
                         poolConfig.maxIdle = _connectionPoolConfiguration.getMaxIdle();
@@ -417,8 +417,7 @@ public class ConnectionConfiguration implements Executor {
                         poolConfig.minEvictableIdleTimeMillis = _connectionPoolConfiguration.getMinEvictableIdleTimeMillis();
                         poolConfig.timeBetweenEvictionRunsMillis = _connectionPoolConfiguration.getTimeBetweenEvictionRunsMillis();
                         _connectionPool = new LoggingGenericObjectPool(_id, poolConfig);
-                    }
-                    else {
+                    } else {
                         _connectionPool = new LoggingGenericObjectPool(_id);
                     }
 
@@ -442,10 +441,10 @@ public class ConnectionConfiguration implements Executor {
     }
 
     protected void checkLogin(Properties props) throws VJdbcException {
-        if(_loginHandler != null) {
+        if (_loginHandler != null) {
             _logger.debug("Trying to login ...");
 
-            if(_loginHandlerInstance == null) {
+            if (_loginHandlerInstance == null) {
                 try {
                     Class loginHandlerClazz = Class.forName(_loginHandler);
                     _loginHandlerInstance = (LoginHandler) loginHandlerClazz.newInstance();
@@ -467,11 +466,11 @@ public class ConnectionConfiguration implements Executor {
             String loginUser = props.getProperty(VJdbcProperties.LOGIN_USER);
             String loginPassword = props.getProperty(VJdbcProperties.LOGIN_PASSWORD);
 
-            if(loginUser == null) {
+            if (loginUser == null) {
                 _logger.warn("Property vjdbc.login.user is not set, " + "the login-handler might not be satisfied");
             }
 
-            if(loginPassword == null) {
+            if (loginPassword == null) {
                 _logger.warn("Property vjdbc.login.password is not set, " + "the login-handler might not be satisfied");
             }
 

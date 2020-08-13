@@ -5,7 +5,6 @@
 package de.simplicit.vjdbc.cache;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 class SimpleStatementParser {
@@ -13,9 +12,9 @@ class SimpleStatementParser {
         // Create the result Set
         Set<String> result = new HashSet<String>();
         // Normalize the string (remove all double whitespaces)
-        while(true) {
+        while (true) {
             String newsql = sql.replaceAll("  ", " ");
-            if(newsql.equals(sql)) {
+            if (newsql.equals(sql)) {
                 break;
             } else {
                 sql = newsql;
@@ -26,15 +25,15 @@ class SimpleStatementParser {
         int selectPos = sqlLowerCase.indexOf("select");
 
         // Any SELECT-Portion ?
-        if(selectPos >= 0) {
+        if (selectPos >= 0) {
             // Now search for JOIN-Parts
             boolean fromLoop = true;
             int fromStartPos = 0;
 
-            while(fromLoop) {
+            while (fromLoop) {
                 int fromPos = sqlLowerCase.indexOf(" from ", fromStartPos);
 
-                if(fromPos >= 0) {
+                if (fromPos >= 0) {
                     String fromPart = sqlLowerCase.substring(fromPos + 6);
                     String[] parts = fromPart.split(",");
 
@@ -59,14 +58,14 @@ class SimpleStatementParser {
             boolean joinLoop = true;
             int joinStartPos = 0;
 
-            while(joinLoop) {
+            while (joinLoop) {
                 int joinPos = sqlLowerCase.indexOf(" join ", joinStartPos);
 
-                if(joinPos >= 0) {
+                if (joinPos >= 0) {
                     int joinPos2 = sql.indexOf(' ', joinPos + 6);
 
                     String tableName;
-                    if(joinPos2 >= 0) {
+                    if (joinPos2 >= 0) {
                         tableName = sql.substring(joinPos + 6, joinPos2);
                     } else {
                         tableName = sql.substring(joinPos + 6);

@@ -11,6 +11,9 @@ import de.simplicit.vjdbc.serial.UIDEx;
 /**
  * A factory for turning proxy network objects back into their full JDBC
  * form on the client.
+ *
+ * 一个工厂，用于在客户端上将代理网络对象转换回其完整的JDBC形式。
+ *
  */
 public interface ProxyFactory {
 

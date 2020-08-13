@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.ejb.*;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -50,5 +51,30 @@ public class EjbCommandSinkBean implements EjbCommandSink, EjbCommandSinkProxy {
 
     public void close() {
         _processor = null;
+    }
+
+    @Override
+    public EJBHome getEJBHome() {
+        return null;
+    }
+
+    @Override
+    public Object getPrimaryKey() {
+        return null;
+    }
+
+    @Override
+    public void remove() {
+
+    }
+
+    @Override
+    public Handle getHandle() {
+        return null;
+    }
+
+    @Override
+    public boolean isIdentical(EJBObject ejbObject) {
+        return false;
     }
 }

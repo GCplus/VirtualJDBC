@@ -216,7 +216,7 @@ public class RowPacket implements Externalizable {
                     break;
 
                 default:
-                    if(JavaVersionInfo.use14Api) {
+                    if(JavaVersionInfo.use16Api) {
                         if(_columnTypes[internalIndex] == Types.BOOLEAN) {
                             _flattenedColumnsValues[internalIndex].setBoolean(_rowCount, rs.getBoolean(i));
                         }

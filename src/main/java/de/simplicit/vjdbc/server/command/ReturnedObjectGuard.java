@@ -31,7 +31,7 @@ class ReturnedObjectGuard {
             }
         } else if(obj instanceof DatabaseMetaData) {
             return new UIDEx();
-        } else if(JavaVersionInfo.use14Api && obj instanceof Savepoint) {
+        } else if(JavaVersionInfo.use16Api && obj instanceof Savepoint) {
             return new UIDEx();
         } else {
             return null;
