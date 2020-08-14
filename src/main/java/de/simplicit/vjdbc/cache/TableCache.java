@@ -26,6 +26,7 @@ public class TableCache extends TimerTask {
 
     // Mappings for generation of the HSQL-Create-Table-Statements, some SQL
     // types won't be cached
+    // 用于生成HSQL-Create-Table-Statement的映射，某些SQL类型不会被缓存
     static {
         _sqlTypeMappingForHSql.put(Types.BIGINT, "BIGINT");
         _sqlTypeMappingForHSql.put(Types.BIT, "BIT");
@@ -43,6 +44,7 @@ public class TableCache extends TimerTask {
     }
 
     // Internal management structure for the SQL-Statements of a table
+    // 表的SQL语句的内部管理结构
     private static class CacheEntry {
         boolean _isFilled = false;
         long _lastTimeRefreshed = System.currentTimeMillis();
@@ -69,14 +71,19 @@ public class TableCache extends TimerTask {
         _vjdbcConnection = conn;
         _dbMetaData = _vjdbcConnection.getMetaData();
         // Get a connection to a In-Memory-Database
+        // 获取到内存中数据库的连接
         _hsqlConnection = DriverManager.getConnection("jdbc:hsqldb:.", "sa", "");
         // Statement for gathering of cached data
+        // 用于收集缓存数据的声明
         _vjdbcStatement = _vjdbcConnection.createStatement();
         // Statement for selecting the existing cache
+        // 选择现有缓存的声明
         _hsqlStatement = _hsqlConnection.createStatement();
         // Set up a timer to schedule cache refreshing at a fixed rate
+        // 设置计时器以固定速率进行缓存刷新
         _cacheTimer.scheduleAtFixedRate(this, 10000, 10000);
         // Parse the table string
+        // 解析数据表的字符串
         _logger.info("Caching of following tables:");
         StringTokenizer tok = new StringTokenizer(cachedTables, ",");
         while(tok.hasMoreTokens()) {
@@ -86,8 +93,10 @@ public class TableCache extends TimerTask {
 
     public PreparedStatement getPreparedStatement(String sql) throws SQLException {
         // Get the tables of the SQL-Statement
+        // 获取SQL语句中的表
         Set<String> tables = _statementParser.getTablesOfSelectStatement(sql);
         // Caching is only possible when the returned list has tables
+        // 仅当返回的列表包含表时才可以进行缓存
         boolean cachingPossible = tables.size() > 0;
 
         if(cachingPossible) {

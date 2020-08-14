@@ -10,8 +10,10 @@ import java.util.Set;
 class SimpleStatementParser {
     Set<String> getTablesOfSelectStatement(String sql) {
         // Create the result Set
+        // 创建一个sql结果set
         Set<String> result = new HashSet<String>();
         // Normalize the string (remove all double whitespaces)
+        // 规范化字符串（删除所有双空格）
         while (true) {
             String newsql = sql.replaceAll("  ", " ");
             if (newsql.equals(sql)) {
@@ -21,12 +23,15 @@ class SimpleStatementParser {
             }
         }
         // Now parse the string for the used tables
+        // 现在解析所用表的字符串
         String sqlLowerCase = sql.toLowerCase();
         int selectPos = sqlLowerCase.indexOf("select");
 
         // Any SELECT-Portion ?
+        // 任何SELECT部分？
         if (selectPos >= 0) {
             // Now search for JOIN-Parts
+            // 现在搜索JOIN-Parts
             boolean fromLoop = true;
             int fromStartPos = 0;
 
@@ -55,6 +60,7 @@ class SimpleStatementParser {
             }
 
             // Now search for JOIN-Parts
+            // 现在搜索JOIN-Parts
             boolean joinLoop = true;
             int joinStartPos = 0;
 
