@@ -27,10 +27,10 @@ public class SerialNClob extends SerialClob implements NClob {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_data);
+        out.writeObject(data);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _data = (char[])in.readObject();
+        data = (char[])in.readObject();
     }
 }

@@ -12,19 +12,19 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class ClientInfo {
-    private static final Log _logger = LogFactory.getLog(ClientInfo.class);
-    private static Properties _properties = null;
+    private static final Log logger = LogFactory.getLog(ClientInfo.class);
+    private static Properties properties = null;
 
     public static Properties getProperties(String propertiesToTransfer) {
-        if(_properties == null) {
+        if(properties == null) {
             // Initialize the properties with the first access
-            _properties = new Properties();
+            properties = new Properties();
 
             try {
                 // Deliver local host information
                 InetAddress iadr = InetAddress.getLocalHost();
-                _properties.put("vjdbc-client.address", iadr.getHostAddress());
-                _properties.put("vjdbc-client.name", iadr.getHostName());
+                properties.put("vjdbc-client.address", iadr.getHostAddress());
+                properties.put("vjdbc-client.name", iadr.getHostName());
 
                 // Split the passed string into pieces and put all system properties
                 // into the Properties object
@@ -35,16 +35,16 @@ public class ClientInfo {
                         String key = tok.nextToken();
                         String value = System.getProperty(key);
                         if(value != null) {
-                            _properties.put(key, value);
+                            properties.put(key, value);
                         }
                     }
                 }
             } catch (Exception e) {
-                _logger.info("Access-Exception, System-Properties can't be delivered to the server");
+                logger.info("Access-Exception, System-Properties can't be delivered to the server");
                 e.printStackTrace();
             }
         }
 
-        return _properties;
+        return properties;
     }
 }

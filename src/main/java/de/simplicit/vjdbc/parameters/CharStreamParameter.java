@@ -13,14 +13,14 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
 public class CharStreamParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -3934051486806729706L;
 
-    private char[] _value;
+    private char[] value;
 
     public CharStreamParameter() {
     }
 
     public CharStreamParameter(Reader x) throws SQLException {
         try {
-            _value = de.simplicit.vjdbc.serial.StreamSerializer.toCharArray(x);
+            value = de.simplicit.vjdbc.serial.StreamSerializer.toCharArray(x);
         } catch(IOException e) {
             throw SQLExceptionHelper.wrap(e);
         }
@@ -28,29 +28,29 @@ public class CharStreamParameter implements PreparedStatementParameter {
 
     public CharStreamParameter(Reader x, long length) throws SQLException {
         try {
-            _value = de.simplicit.vjdbc.serial.StreamSerializer.toCharArray(x, length);
+            value = de.simplicit.vjdbc.serial.StreamSerializer.toCharArray(x, length);
         } catch(IOException e) {
             throw SQLExceptionHelper.wrap(e);
         }
     }
 
     public char[] getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (char[])in.readObject();
+        value = (char[])in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setCharacterStream(index, new CharArrayReader(_value), _value.length);
+        pstmt.setCharacterStream(index, new CharArrayReader(value), value.length);
     }
 
     public String toString() {
-        return "CharStream: " + _value.length + " chars";
+        return "CharStream: " + value.length + " chars";
     }
 }

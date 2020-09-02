@@ -14,25 +14,25 @@ import java.sql.Savepoint;
 public class ConnectionRollbackWithSavepointCommand implements Command {
     static final long serialVersionUID = -5189425307111618293L;
 
-    private Long _uidOfSavepoint;
+    private Long uidOfSavepoint;
 
     public ConnectionRollbackWithSavepointCommand() {
     }
 
     public ConnectionRollbackWithSavepointCommand(Long uidOfSavepoint) {
-        _uidOfSavepoint = uidOfSavepoint;
+        this.uidOfSavepoint = uidOfSavepoint;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uidOfSavepoint);
+        out.writeLong(uidOfSavepoint);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uidOfSavepoint = in.readLong();
+        uidOfSavepoint = in.readLong();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
-        Savepoint sp = (Savepoint)ctx.getJDBCObject(_uidOfSavepoint);
+        Savepoint sp = (Savepoint)ctx.getJDBCObject(uidOfSavepoint);
         ((Connection)target).rollback(sp);
         return null;
     }

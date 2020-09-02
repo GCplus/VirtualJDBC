@@ -13,29 +13,29 @@ import java.sql.Statement;
 public class StatementExecuteCommand implements Command {
     private static final long serialVersionUID = 3760844562717291058L;
 
-    private String _sql;
+    private String sql;
 
     public StatementExecuteCommand() {
     }
 
     public StatementExecuteCommand(String sql) {
-        _sql = sql;
+        this.sql = sql;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeUTF(_sql);
+        out.writeUTF(sql);
     }
 
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
-        _sql = in.readUTF();
+        sql = in.readUTF();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
-        return ((Statement) target).execute(ctx.resolveOrCheckQuery(_sql));
+        return ((Statement) target).execute(ctx.resolveOrCheckQuery(sql));
     }
 
     public String toString() {
-        return "StatementExecuteCommand: " + _sql;
+        return "StatementExecuteCommand: " + sql;
     }
 }

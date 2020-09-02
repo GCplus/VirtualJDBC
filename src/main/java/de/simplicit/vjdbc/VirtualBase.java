@@ -15,17 +15,17 @@ import de.simplicit.vjdbc.serial.UIDEx;
  *
  */
 public abstract class VirtualBase {
-    protected UIDEx _objectUid;
-    protected DecoratedCommandSink _sink;
+    protected UIDEx objectUid;
+    protected DecoratedCommandSink sink;
 
     protected VirtualBase(UIDEx objectuid, DecoratedCommandSink sink) {
-        _objectUid = objectuid;
-        _sink = sink;
+        this.objectUid = objectuid;
+        this.sink = sink;
     }
 
     protected void finalize() throws Throwable {
-        _objectUid = null;
-        _sink = null;
+        objectUid = null;
+        sink = null;
     }
 
     /**
@@ -35,6 +35,6 @@ public abstract class VirtualBase {
      * @return _objectUid
      */
     public UIDEx getObjectUID() {
-        return _objectUid;
+        return objectUid;
     }
 }

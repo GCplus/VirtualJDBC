@@ -13,32 +13,32 @@ import java.sql.SQLException;
 public class BooleanParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 1915488329736405680L;
 
-    private boolean _value;
+    private boolean value;
     
     public BooleanParameter() {
     }
 
     public BooleanParameter(boolean value) {
-        _value = value;
+        this.value = value;
     }
     
     public boolean getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = in.readBoolean();
+        value = in.readBoolean();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(_value);
+        out.writeBoolean(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setBoolean(index, _value);
+        pstmt.setBoolean(index, value);
     }
 
     public String toString() {
-        return "boolean: " + (_value ? "true" : "false");
+        return "boolean: " + (value ? "true" : "false");
     }
 }

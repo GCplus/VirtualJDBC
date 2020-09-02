@@ -15,19 +15,19 @@ import java.util.Map;
 public class SerialRef implements Ref, Externalizable {
     static final long serialVersionUID = -9145419222061515405L;
 
-    private String _baseTypeName;
-    private Object _javaObject;
+    private String baseTypeName;
+    private Object javaObject;
 
     public SerialRef(Ref ref) throws SQLException {
-        _baseTypeName = ref.getBaseTypeName();
-        _javaObject = ref.getObject();
+        this.baseTypeName = ref.getBaseTypeName();
+        this.javaObject = ref.getObject();
     }
 
     public SerialRef() {
     }
 
     public String getBaseTypeName() {
-        return _baseTypeName;
+        return baseTypeName;
     }
 
     public Object getObject(Map map) {
@@ -35,7 +35,7 @@ public class SerialRef implements Ref, Externalizable {
     }
 
     public Object getObject() {
-        return _javaObject;
+        return javaObject;
     }
 
     public void setObject(Object value) {
@@ -43,12 +43,12 @@ public class SerialRef implements Ref, Externalizable {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeUTF(_baseTypeName);
-        out.writeObject(_javaObject);
+        out.writeUTF(baseTypeName);
+        out.writeObject(javaObject);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _baseTypeName = in.readUTF();
-        _javaObject = in.readObject();
+        baseTypeName = in.readUTF();
+        javaObject = in.readObject();
     }
 }

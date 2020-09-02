@@ -14,16 +14,16 @@ import java.net.Socket;
 import java.rmi.server.RMISocketFactory;
 
 public class SecureSocketFactory extends RMISocketFactory {
-    private SocketFactory _sslSocketFactory = SSLSocketFactory.getDefault();
-    private ServerSocketFactory _sslServerSocketFactory = SSLServerSocketFactory.getDefault();
+    private SocketFactory sslSocketFactory = SSLSocketFactory.getDefault();
+    private ServerSocketFactory sslServerSocketFactory = SSLServerSocketFactory.getDefault();
 
     public Socket createSocket(String host, int port)
             throws IOException {
-        return _sslSocketFactory.createSocket(host, port);
+        return sslSocketFactory.createSocket(host, port);
     }
 
     public ServerSocket createServerSocket(int port)
             throws IOException {
-        return _sslServerSocketFactory.createServerSocket(port);
+        return sslServerSocketFactory.createServerSocket(port);
     }
 }

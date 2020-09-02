@@ -13,36 +13,36 @@ import java.sql.SQLException;
 public class NullParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 2061806736191837513L;
 
-    private int _sqlType;
-    private String _typeName;
+    private int sqlType;
+    private String typeName;
     
     public NullParameter() {
     }
 
     public NullParameter(int sqltype, String typename) {
-        _sqlType = sqltype;
-        _typeName = typename;
+        this.sqlType = sqltype;
+        this.typeName = typename;
     }
     
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _sqlType = in.readInt();
-        _typeName = (String)in.readObject();
+        sqlType = in.readInt();
+        typeName = (String)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_sqlType);
-        out.writeObject(_typeName);
+        out.writeInt(sqlType);
+        out.writeObject(typeName);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        if(_typeName == null) {
-            pstmt.setNull(index, _sqlType);
+        if(typeName == null) {
+            pstmt.setNull(index, sqlType);
         } else {
-            pstmt.setNull(index, _sqlType, _typeName);
+            pstmt.setNull(index, sqlType, typeName);
         }
     }
 
     public String toString() {
-        return "Null, SQL-Type: " + _sqlType;
+        return "Null, SQL-Type: " + sqlType;
     }
 }

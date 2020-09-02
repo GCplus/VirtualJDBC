@@ -23,7 +23,7 @@ package de.simplicit.vjdbc.server.concurrent;
 
 public class ThreadFactoryUser {
 
-  protected ThreadFactory threadFactory_ = new DefaultThreadFactory();
+  protected ThreadFactory threadFactory = new DefaultThreadFactory();
 
   protected static class DefaultThreadFactory implements ThreadFactory {
     public Thread newThread(Runnable command) {
@@ -43,8 +43,8 @@ public class ThreadFactoryUser {
    **/
 
   public synchronized ThreadFactory setThreadFactory(ThreadFactory factory) {
-    ThreadFactory old = threadFactory_;
-    threadFactory_ = factory;
+    ThreadFactory old = threadFactory;
+    threadFactory = factory;
     return old;
   }
 
@@ -52,7 +52,7 @@ public class ThreadFactoryUser {
    * Get the factory for creating new threads.
    **/  
   public synchronized ThreadFactory getThreadFactory() {
-    return threadFactory_;
+    return threadFactory;
   }
 
 }

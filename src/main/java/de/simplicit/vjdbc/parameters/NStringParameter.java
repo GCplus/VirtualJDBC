@@ -13,32 +13,32 @@ import java.sql.SQLException;
 public class NStringParameter implements PreparedStatementParameter {
     private static final long serialVersionUID = 3458761646106361472L;
     
-    private String _value;
+    private String value;
     
     public NStringParameter() {
     }
 
     public NStringParameter(String value) {
-        _value = value;
+        this.value = value;
     }
     
     public String getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (String)in.readObject();
+        value = (String)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setNString(index, _value);
+        pstmt.setNString(index, value);
     }
 
     public String toString() {
-        return "NString: " + _value;
+        return "NString: " + value;
     }
 }

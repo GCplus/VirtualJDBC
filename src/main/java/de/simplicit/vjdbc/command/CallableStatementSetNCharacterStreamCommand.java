@@ -16,59 +16,59 @@ import java.sql.SQLException;
 public class CallableStatementSetNCharacterStreamCommand implements Command {
     static final long serialVersionUID = 8952810867158345906L;
 
-    private int _index;
-    private int _length;
-    private String _parameterName;
-    private char[] _charArray;
+    private int index;
+    private int length;
+    private String parameterName;
+    private char[] charArray;
 
     public CallableStatementSetNCharacterStreamCommand() {
     }
 
     public CallableStatementSetNCharacterStreamCommand(int index, Reader reader) throws IOException {
-        _index = index;
-        _charArray = StreamSerializer.toCharArray(reader);
-        _length = _charArray.length;
+        this.index = index;
+        this.charArray = StreamSerializer.toCharArray(reader);
+        this.length = charArray.length;
     }
 
     public CallableStatementSetNCharacterStreamCommand(String paramName, Reader reader) throws IOException {
-        _parameterName = paramName;
-        _charArray = StreamSerializer.toCharArray(reader);
-        _length = _charArray.length;
+        this.parameterName = paramName;
+        this.charArray = StreamSerializer.toCharArray(reader);
+        this.length = this.charArray.length;
     }
 
     public CallableStatementSetNCharacterStreamCommand(int index, Reader reader, int len) throws IOException {
-        _index = index;
-        _length = len;
-        _charArray = StreamSerializer.toCharArray(reader, len);
+        this.index = index;
+        this.length = len;
+        this.charArray = StreamSerializer.toCharArray(reader, len);
     }
 
     public CallableStatementSetNCharacterStreamCommand(String paramName, Reader reader, int len) throws IOException {
-        _parameterName = paramName;
-        _length = len;
-        _charArray = StreamSerializer.toCharArray(reader, len);
+        this.parameterName = paramName;
+        this.length = len;
+        this.charArray = StreamSerializer.toCharArray(reader, len);
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeInt(_length);
-        out.writeObject(_parameterName);
-        out.writeObject(_charArray);
+        out.writeInt(index);
+        out.writeInt(length);
+        out.writeObject(parameterName);
+        out.writeObject(charArray);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _length = in.readInt();
-        _parameterName = (String)in.readObject();
-        _charArray = (char[])in.readObject();
+        index = in.readInt();
+        length = in.readInt();
+        parameterName = (String)in.readObject();
+        charArray = (char[])in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
-        Reader reader = StreamSerializer.toReader(_charArray);
-        if(_parameterName != null) {
-            cstmt.setNCharacterStream(_parameterName, reader, _length);
+        Reader reader = StreamSerializer.toReader(charArray);
+        if(parameterName != null) {
+            cstmt.setNCharacterStream(parameterName, reader, length);
         } else {
-            cstmt.setNCharacterStream(_index, reader, _length);
+            cstmt.setNCharacterStream(index, reader, length);
         }
 
         return null;

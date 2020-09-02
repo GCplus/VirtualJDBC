@@ -10,35 +10,35 @@ import java.io.ObjectOutput;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class LongParameter implements PreparedStatementParameter {
+public class  LongParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 2047115344356276027L;
 
-    private long _value;
+    private long value;
     
     public LongParameter() {
     }
 
     public LongParameter(long value) {
-        _value = value;
+        this.value = value;
     }
     
     public long getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = in.readLong();
+        value = in.readLong();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_value);
+        out.writeLong(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setLong(index, _value);
+        pstmt.setLong(index, value);
     }
 
     public String toString() {
-        return "long: " + _value;
+        return "long: " + value;
     }
 }

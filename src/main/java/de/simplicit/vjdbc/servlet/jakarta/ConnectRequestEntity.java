@@ -19,16 +19,16 @@ import de.simplicit.vjdbc.serial.CallingContext;
  * @author Mike
  */
 class ConnectRequestEntity implements RequestEntity {
-    private final String _database;
-    private final Properties _props;
-    private final Properties _clientInfo;
-    private final CallingContext _ctx;
+    private final String database;
+    private final Properties props;
+    private final Properties clientInfo;
+    private final CallingContext ctx;
     
     public ConnectRequestEntity(String database, Properties props, Properties clientInfo, CallingContext ctx) {
-        _database = database;
-        _props = props;
-        _clientInfo = clientInfo;
-        _ctx = ctx;
+        this.database = database;
+        this.props = props;
+        this.clientInfo = clientInfo;
+        this.ctx = ctx;
     }
     
     public long getContentLength() {
@@ -45,10 +45,10 @@ class ConnectRequestEntity implements RequestEntity {
 
     public void writeRequest(OutputStream os) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeUTF(_database);
-        oos.writeObject(_props);
-        oos.writeObject(_clientInfo);
-        oos.writeObject(_ctx);
+        oos.writeUTF(database);
+        oos.writeObject(props);
+        oos.writeObject(clientInfo);
+        oos.writeObject(ctx);
         oos.flush();
     }
 }

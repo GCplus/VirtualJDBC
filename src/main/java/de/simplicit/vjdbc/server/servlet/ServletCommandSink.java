@@ -40,9 +40,9 @@ public class ServletCommandSink extends HttpServlet {
     private static final String INIT_PARAMETER_CONFIG_VARIABLES = "config-variables";
     private static final String DEFAULT_CONFIG_RESOURCE = "/WEB-INF/vjdbc-config.xml";
     private static final long serialVersionUID = 3257570624301249846L;
-    private static final Log _logger = LogFactory.getLog(ServletCommandSink.class);
+    private static final Log logger = LogFactory.getLog(ServletCommandSink.class);
 
-    private CommandProcessor _processor;
+    private CommandProcessor processor;
 
     public ServletCommandSink() {
     }
@@ -59,19 +59,20 @@ public class ServletCommandSink extends HttpServlet {
 
         ServletContext ctx = servletConfig.getServletContext();
 
-        _logger.info("Trying to get config resource " + configResource + "...");
+        logger.info("Trying to get config resource " + configResource + "...");
         InputStream configResourceInputStream = ctx.getResourceAsStream(configResource);
         if(null == configResourceInputStream) {
             try {
                 configResourceInputStream =
                     new FileInputStream(ctx.getRealPath(configResource));
             } catch (FileNotFoundException fnfe) {
+                fnfe.printStackTrace();
             }
         }
 
         if(configResourceInputStream == null) {
             String msg = "VJDBC-Configuration " + configResource + " not found !";
-            _logger.error(msg);
+            logger.error(msg);
             throw new ServletException(msg);
         }
 
@@ -80,7 +81,7 @@ public class ServletCommandSink extends HttpServlet {
         Properties configVariablesProps = null;
 
         if(configVariables != null) {
-            _logger.info("... using variables specified in " + configVariables);
+            logger.info("... using variables specified in " + configVariables);
 
             InputStream configVariablesInputStream = null;
 
@@ -95,7 +96,7 @@ public class ServletCommandSink extends HttpServlet {
                 configVariablesProps.load(configVariablesInputStream);
             } catch (IOException e) {
                 String msg = "Reading of configuration variables failed";
-                _logger.error(msg, e);
+                logger.error(msg, e);
                 throw new ServletException(msg, e);
             } finally {
                 if(configVariablesInputStream != null) {
@@ -109,11 +110,11 @@ public class ServletCommandSink extends HttpServlet {
         }
 
         try {
-            _logger.info("Initialize VJDBC-Configuration");
+            logger.info("Initialize VJDBC-Configuration");
             VJdbcConfiguration.init(configResourceInputStream, configVariablesProps);
-            _processor = CommandProcessor.getInstance();
+            processor = CommandProcessor.getInstance();
         } catch (ConfigurationException e) {
-            _logger.error("Initialization failed", e);
+            logger.error("Initialization failed", e);
             throw new ServletException("VJDBC-Initialization failed", e);
         } finally {
                 StreamCloser.close(configResourceInputStream);
@@ -155,7 +156,7 @@ public class ServletCommandSink extends HttpServlet {
                         Command cmd = (Command) ois.readObject();
                         CallingContext ctx = (CallingContext) ois.readObject();
                         // Delegate execution to the CommandProcessor
-                        objectToReturn = _processor.process(connuid, uid, cmd, ctx);
+                        objectToReturn = processor.process(connuid, uid, cmd, ctx);
                     } else if(method.equals(ServletCommandSinkIdentifier.CONNECT_COMMAND)) {
                         String url = ois.readUTF();
                         Properties props = (Properties) ois.readObject();
@@ -166,7 +167,7 @@ public class ServletCommandSink extends HttpServlet {
 
                         if(connectionConfiguration != null) {
                             Connection conn = connectionConfiguration.create(props);
-                            objectToReturn = _processor.registerConnection(conn, connectionConfiguration, clientInfo, ctx);
+                            objectToReturn = processor.registerConnection(conn, connectionConfiguration, clientInfo, ctx);
                         } else {
                             objectToReturn = new SQLException("VJDBC-Connection " + url + " not found");
                         }
@@ -188,7 +189,7 @@ public class ServletCommandSink extends HttpServlet {
                 httpServletResponse.sendRedirect("index.html");
             }
         } catch (Exception e) {
-            _logger.error("Unexpected Exception", e);
+            logger.error("Unexpected Exception", e);
             throw new ServletException(e);
         } finally {
             StreamCloser.close(ois);

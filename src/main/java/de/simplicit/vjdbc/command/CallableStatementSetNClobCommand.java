@@ -17,41 +17,41 @@ import java.sql.SQLException;
 public class CallableStatementSetNClobCommand implements Command {
     static final long serialVersionUID = 4264932633701227941L;
 
-    private int _index;
-    private String _parameterName;
+    private int index;
+    private String parameterName;
     private NClob clob;
 
     public CallableStatementSetNClobCommand() {
     }
 
     public CallableStatementSetNClobCommand(int index, NClob clob) throws IOException {
-        _index = index;
+        this.index = index;
         this.clob = clob;
     }
 
     public CallableStatementSetNClobCommand(String paramName, NClob clob) throws IOException {
-        _parameterName = paramName;
+        this.parameterName = paramName;
         this.clob = clob;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeUTF(_parameterName);
+        out.writeInt(index);
+        out.writeUTF(parameterName);
         out.writeObject(clob);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _parameterName = in.readUTF();
+        index = in.readInt();
+        parameterName = in.readUTF();
         clob = (NClob)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
-        if(_parameterName != null) {
-            cstmt.setNClob(_parameterName, clob);
+        if(parameterName != null) {
+            cstmt.setNClob(parameterName, clob);
         } else {
-            cstmt.setNClob(_index, clob);
+            cstmt.setNClob(index, clob);
         }
 
         return null;

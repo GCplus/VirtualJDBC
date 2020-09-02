@@ -6,6 +6,6 @@ package de.simplicit.vjdbc.server.config;
 
 public class DigesterRmiConfiguration extends RmiConfiguration {
     public void setCreateRegistry(String createRegistry) {
-        _createRegistry = ConfigurationUtil.getBooleanFromString(createRegistry);
+        this.createRegistry = ConfigurationUtil.getBooleanFromString(createRegistry);
     }
 }

@@ -11,80 +11,80 @@ import java.sql.*;
 import java.util.*;
 
 public class TableCache extends TimerTask {
-    private static final Log _logger = LogFactory.getLog(TableCache.class);
+    private static final Log logger = LogFactory.getLog(TableCache.class);
 
-    private static final Map<Integer, String> _sqlTypeMappingForHSql = new HashMap<Integer, String>();
+    private static final Map<Integer, String> sqlTypeMappingForHSql = new HashMap<Integer, String>();
 
-    private final Connection _vjdbcConnection;
-    private final Connection _hsqlConnection;
-    private final DatabaseMetaData _dbMetaData;
-    private final Statement _vjdbcStatement;
-    private final Statement _hsqlStatement;
-    private final Map<String, CacheEntry> _tableEntries = new HashMap<String, CacheEntry>();
-    private final Timer _cacheTimer = new Timer(true);
-    private final SimpleStatementParser _statementParser = new SimpleStatementParser();
+    private final Connection vjdbcConnection;
+    private final Connection hsqlConnection;
+    private final DatabaseMetaData dbMetaData;
+    private final Statement vjdbcStatement;
+    private final Statement hsqlStatement;
+    private final Map<String, CacheEntry> tableEntries = new HashMap<String, CacheEntry>();
+    private final Timer cacheTimer = new Timer(true);
+    private final SimpleStatementParser statementParser = new SimpleStatementParser();
 
     // Mappings for generation of the HSQL-Create-Table-Statements, some SQL
     // types won't be cached
     // 用于生成HSQL-Create-Table-Statement的映射，某些SQL类型不会被缓存
     static {
-        _sqlTypeMappingForHSql.put(Types.BIGINT, "BIGINT");
-        _sqlTypeMappingForHSql.put(Types.BIT, "BIT");
-        _sqlTypeMappingForHSql.put(Types.CHAR, "CHAR");
-        _sqlTypeMappingForHSql.put(Types.DATE, "DATE");
-        _sqlTypeMappingForHSql.put(Types.DECIMAL, "DECIMAL");
-        _sqlTypeMappingForHSql.put(Types.DOUBLE, "DOUBLE");
-        _sqlTypeMappingForHSql.put(Types.FLOAT, "FLOAT");
-        _sqlTypeMappingForHSql.put(Types.INTEGER, "INTEGER");
-        _sqlTypeMappingForHSql.put(Types.NUMERIC, "NUMERIC");
-        _sqlTypeMappingForHSql.put(Types.SMALLINT, "SMALLINT");
-        _sqlTypeMappingForHSql.put(Types.TIMESTAMP, "TIMESTAMP");
-        _sqlTypeMappingForHSql.put(Types.TINYINT, "TINYINT");
-        _sqlTypeMappingForHSql.put(Types.VARCHAR, "VARCHAR");
+        sqlTypeMappingForHSql.put(Types.BIGINT, "BIGINT");
+        sqlTypeMappingForHSql.put(Types.BIT, "BIT");
+        sqlTypeMappingForHSql.put(Types.CHAR, "CHAR");
+        sqlTypeMappingForHSql.put(Types.DATE, "DATE");
+        sqlTypeMappingForHSql.put(Types.DECIMAL, "DECIMAL");
+        sqlTypeMappingForHSql.put(Types.DOUBLE, "DOUBLE");
+        sqlTypeMappingForHSql.put(Types.FLOAT, "FLOAT");
+        sqlTypeMappingForHSql.put(Types.INTEGER, "INTEGER");
+        sqlTypeMappingForHSql.put(Types.NUMERIC, "NUMERIC");
+        sqlTypeMappingForHSql.put(Types.SMALLINT, "SMALLINT");
+        sqlTypeMappingForHSql.put(Types.TIMESTAMP, "TIMESTAMP");
+        sqlTypeMappingForHSql.put(Types.TINYINT, "TINYINT");
+        sqlTypeMappingForHSql.put(Types.VARCHAR, "VARCHAR");
     }
 
     // Internal management structure for the SQL-Statements of a table
     // 表的SQL语句的内部管理结构
     private static class CacheEntry {
-        boolean _isFilled = false;
-        long _lastTimeRefreshed = System.currentTimeMillis();
-        String _name;
-        int _refreshInterval;
-        String _create;
-        String _insert;
-        String _select;
-        String _delete;
-        String _drop;
+        boolean isFilled = false;
+        long lastTimeRefreshed = System.currentTimeMillis();
+        String name;
+        int refreshInterval;
+        String create;
+        String insert;
+        String select;
+        String delete;
+        String drop;
 
         CacheEntry(String name, int refreshInterval, String create, String insert, String select) {
-            _name = name;
-            _refreshInterval = refreshInterval;
-            _create = create;
-            _insert = insert;
-            _delete = "DELETE FROM " + name;
-            _select = select;
-            _drop = "DROP " + name;
+            this.name = name;
+            this.refreshInterval = refreshInterval;
+            this.create = create;
+            this.insert = insert;
+            this.delete = "DELETE FROM " + name;
+            this.select = select;
+            this.drop = "DROP " + name;
         }
     }
 
     public TableCache(Connection conn, String cachedTables) throws SQLException {
-        _vjdbcConnection = conn;
-        _dbMetaData = _vjdbcConnection.getMetaData();
+        this.vjdbcConnection = conn;
+        this.dbMetaData = vjdbcConnection.getMetaData();
         // Get a connection to a In-Memory-Database
         // 获取到内存中数据库的连接
-        _hsqlConnection = DriverManager.getConnection("jdbc:hsqldb:.", "sa", "");
+        this.hsqlConnection = DriverManager.getConnection("jdbc:hsqldb:.", "sa", "");
         // Statement for gathering of cached data
         // 用于收集缓存数据的声明
-        _vjdbcStatement = _vjdbcConnection.createStatement();
+        this.vjdbcStatement = this.vjdbcConnection.createStatement();
         // Statement for selecting the existing cache
         // 选择现有缓存的声明
-        _hsqlStatement = _hsqlConnection.createStatement();
+        this.hsqlStatement = this.hsqlConnection.createStatement();
         // Set up a timer to schedule cache refreshing at a fixed rate
         // 设置计时器以固定速率进行缓存刷新
-        _cacheTimer.scheduleAtFixedRate(this, 10000, 10000);
+        this.cacheTimer.scheduleAtFixedRate(this, 10000, 10000);
         // Parse the table string
         // 解析数据表的字符串
-        _logger.info("Caching of following tables:");
+        this.logger.info("Caching of following tables:");
         StringTokenizer tok = new StringTokenizer(cachedTables, ",");
         while(tok.hasMoreTokens()) {
             createCacheEntry(tok.nextToken());
@@ -94,22 +94,22 @@ public class TableCache extends TimerTask {
     public PreparedStatement getPreparedStatement(String sql) throws SQLException {
         // Get the tables of the SQL-Statement
         // 获取SQL语句中的表
-        Set<String> tables = _statementParser.getTablesOfSelectStatement(sql);
+        Set<String> tables = statementParser.getTablesOfSelectStatement(sql);
         // Caching is only possible when the returned list has tables
         // 仅当返回的列表包含表时才可以进行缓存
         boolean cachingPossible = tables.size() > 0;
 
         if(cachingPossible) {
             // Check if all tables can be cached
-            if(_tableEntries.keySet().containsAll(tables)) {
+            if(tableEntries.keySet().containsAll(tables)) {
                 // Now iterate through all table names and check if they are allowed to
                 // be cached. Caching of a statement is not possible if there is one
                 // table which isn't in the list of cached tables.
                 for (String tableName : tables) {
-                    CacheEntry ce = _tableEntries.get(tableName);
+                    CacheEntry ce = tableEntries.get(tableName);
 
                     if (ce != null) {
-                        if (!ce._isFilled) {
+                        if (!ce.isFilled) {
                             try {
                                 refreshCacheEntry(ce);
                             } catch (SQLException e) {
@@ -126,8 +126,8 @@ public class TableCache extends TimerTask {
         }
 
         if(cachingPossible) {
-        	_logger.debug("Returning prepared statement from HSQL for query " +sql);
-            return _hsqlConnection.prepareStatement(sql);
+        	logger.debug("Returning prepared statement from HSQL for query " +sql);
+            return hsqlConnection.prepareStatement(sql);
         } else {
             return null;
         }
@@ -140,14 +140,14 @@ public class TableCache extends TimerTask {
 
         try {
             // Prepare the INSERT-Statement
-            hsqlPreparedStatement = _hsqlConnection.prepareStatement(cacheEntry._insert);
+            hsqlPreparedStatement = hsqlConnection.prepareStatement(cacheEntry.insert);
             // Now get the Table content
-            vjdbcResultSet = _vjdbcStatement.executeQuery(cacheEntry._select);
+            vjdbcResultSet = vjdbcStatement.executeQuery(cacheEntry.select);
             // Read the meta data, this might throw an exception so previously
             // cached data won't be destroyed
             ResultSetMetaData rsMetaData = vjdbcResultSet.getMetaData();
             // Here we delete all rows in the cache
-            _hsqlStatement.executeUpdate(cacheEntry._delete);
+            hsqlStatement.executeUpdate(cacheEntry.delete);
             // And fill the HSQL-Destination with it
             while(vjdbcResultSet.next()) {
                 for(int i = 1; i <= rsMetaData.getColumnCount(); i++) {
@@ -157,15 +157,15 @@ public class TableCache extends TimerTask {
             }
 
             // Commit the whole changes
-            _hsqlConnection.commit();
+            hsqlConnection.commit();
             // Reset the refresh timer
-            cacheEntry._lastTimeRefreshed = System.currentTimeMillis();
-            cacheEntry._isFilled = true;
+            cacheEntry.lastTimeRefreshed = System.currentTimeMillis();
+            cacheEntry.isFilled = true;
         } catch(SQLException e) {
             // Remove the entry when an exception occurs
-            _logger.warn("Error while refreshing table " + cacheEntry._name + ", dropping it");
-            _hsqlStatement.executeUpdate(cacheEntry._drop);
-            cacheEntry._isFilled = false;
+            logger.warn("Error while refreshing table " + cacheEntry.name + ", dropping it");
+            hsqlStatement.executeUpdate(cacheEntry.drop);
+            cacheEntry.isFilled = false;
             throw e;
         } finally {
             if(vjdbcResultSet != null) {
@@ -193,15 +193,15 @@ public class TableCache extends TimerTask {
         if(colonPos > 0) {
             table = tableConfig.substring(0, colonPos);
             refreshInterval = Integer.parseInt(tableConfig.substring(colonPos + 1));
-            _logger.info("... " + table + " with refreshing interval " + refreshInterval);
+            logger.info("... " + table + " with refreshing interval " + refreshInterval);
         } else {
             table = tableConfig;
             refreshInterval = 0;
-            _logger.info("... " + table + ", no refreshing");
+            logger.info("... " + table + ", no refreshing");
         }
 
         // Get the column metadata of the correspondig table
-        ResultSet rs = _dbMetaData.getColumns(null, null, table.toUpperCase(), "%");
+        ResultSet rs = dbMetaData.getColumns(null, null, table.toUpperCase(), "%");
         // Create different StringBuffers for the future SQL-Statements
         StringBuilder sbCreate = new StringBuilder("CREATE TABLE " + table + " (");
         StringBuilder sbInsert = new StringBuilder("INSERT INTO " + table + " (");
@@ -212,7 +212,7 @@ public class TableCache extends TimerTask {
         while(rs.next()) {
             String columnName = rs.getString("COLUMN_NAME");
             int origDataType = rs.getInt("DATA_TYPE");
-            String dataType = _sqlTypeMappingForHSql.get(origDataType);
+            String dataType = sqlTypeMappingForHSql.get(origDataType);
 
             // There might be an unknown data type
             if(dataType != null) {
@@ -246,24 +246,24 @@ public class TableCache extends TimerTask {
         String insert = sbInsert.toString();
         String select = sbSelect.toString();
         // Execute the creation query
-        _hsqlStatement.executeQuery(create);
+        hsqlStatement.executeQuery(create);
         // If we got here the creation was successful and the new cache entry can be created
-        _tableEntries.put(table.toLowerCase(), new CacheEntry(table, refreshInterval, create, insert, select));
+        tableEntries.put(table.toLowerCase(), new CacheEntry(table, refreshInterval, create, insert, select));
     }
 
     public void run() {
         // Iterate through all table entries
-        for (CacheEntry tableEntry : _tableEntries.values()) {
+        for (CacheEntry tableEntry : tableEntries.values()) {
             // Refreshing necessary ?
-            if (tableEntry._refreshInterval > 0) {
+            if (tableEntry.refreshInterval > 0) {
                 // Now measure if the cache should be refreshed
-                if ((System.currentTimeMillis() - tableEntry._lastTimeRefreshed) > tableEntry._refreshInterval) {
+                if ((System.currentTimeMillis() - tableEntry.lastTimeRefreshed) > tableEntry.refreshInterval) {
                     try {
-                        _logger.debug("Refreshing cache for table " + tableEntry._name);
+                        logger.debug("Refreshing cache for table " + tableEntry.name);
                         refreshCacheEntry(tableEntry);
-                        _logger.debug("... successfully refreshed");
+                        logger.debug("... successfully refreshed");
                     } catch (SQLException e) {
-                        _logger.warn("... failed", e);
+                        logger.warn("... failed", e);
                     }
                 }
             }

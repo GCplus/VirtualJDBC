@@ -23,84 +23,84 @@ public class RowPacket implements Externalizable {
     private static final int DEFAULT_ARRAY_SIZE = 100;
     static final long serialVersionUID = 6366194574502000718L;
 
-    private static final Log _logger = LogFactory.getLog(RowPacket.class);
+    private static final Log logger = LogFactory.getLog(RowPacket.class);
 
-    private int _rowCount = 0;
-    private boolean _forwardOnly = false;
-    private boolean _lastPart = false;
+    private int rowCount = 0;
+    private boolean forwardOnly = false;
+    private boolean lastPart = false;
 
     // Transient attributes
-    private transient FlattenedColumnValues[] _flattenedColumnsValues = null;
-    private transient ArrayList<Object[]> _rows = null;
-    private transient int[] _columnTypes = null;
-    private transient int _offset = 0;
-    private transient int _maxrows = 0;
+    private transient FlattenedColumnValues[] flattenedColumnsValues = null;
+    private transient ArrayList<Object[]> rows = null;
+    private transient int[] columnTypes = null;
+    private transient int offset = 0;
+    private transient int maxrows = 0;
 
     public RowPacket() {
     }
 
     public RowPacket(int packetsize, boolean forwardOnly) {
-        _maxrows = packetsize;
-        _forwardOnly = forwardOnly;
+        this.maxrows = packetsize;
+        this.forwardOnly = forwardOnly;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(_forwardOnly);
-        out.writeBoolean(_lastPart);
-        out.writeInt(_rowCount);
-        if(_rowCount > 0) {
-            out.writeObject(_flattenedColumnsValues);
+        out.writeBoolean(forwardOnly);
+        out.writeBoolean(lastPart);
+        out.writeInt(rowCount);
+        if(rowCount > 0) {
+            out.writeObject(flattenedColumnsValues);
         }
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _forwardOnly = in.readBoolean();
-        _lastPart = in.readBoolean();
-        _rowCount = in.readInt();
-        if(_rowCount > 0) {
+        forwardOnly = in.readBoolean();
+        lastPart = in.readBoolean();
+        rowCount = in.readInt();
+        if(rowCount > 0) {
             FlattenedColumnValues[] flattenedColumns = (FlattenedColumnValues[]) in.readObject();
-            _rows = new ArrayList<Object[]>(_rowCount);
-            for(int i = 0; i < _rowCount; i++) {
+            rows = new ArrayList<Object[]>(rowCount);
+            for(int i = 0; i < rowCount; i++) {
                 Object[] row = new Object[flattenedColumns.length];
                 for(int j = 0; j < flattenedColumns.length; j++) {
                     row[j] = flattenedColumns[j].getValue(i);
                 }
-                _rows.add(row);
+                rows.add(row);
             }
         }
         else {
-            _rows = new ArrayList<Object[]>();
+            rows = new ArrayList<Object[]>();
         }
     }
 
     public Object[] get(int index) throws SQLException {
-        int adjustedIndex = index - _offset;
+        int adjustedIndex = index - offset;
 
         if(adjustedIndex < 0) {
             throw new SQLException("Index " + index + " is below the possible index");
-        } else if(adjustedIndex >= _rows.size()) {
+        } else if(adjustedIndex >= rows.size()) {
             throw new SQLException("Index " + index + " is above the possible index");
         } else {
-            return _rows.get(adjustedIndex);
+            return rows.get(adjustedIndex);
         }
     }
 
     public int size() {
-        return _offset + _rowCount;
+        return offset + rowCount;
     }
 
     public boolean isLastPart() {
-        return _lastPart;
+        return lastPart;
     }
 
     public boolean populate(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
 
         int columnCount = metaData.getColumnCount();
-        _rowCount = 0;
+        rowCount = 0;
 
         while (rs.next()) {
-            if(_rowCount == 0) {
+            if(rowCount == 0) {
                 prepareFlattenedColumns(metaData, columnCount);
             }
 
@@ -109,116 +109,116 @@ public class RowPacket implements Externalizable {
 
                 int internalIndex = i - 1;
 
-                switch (_columnTypes[internalIndex]) {
+                switch (columnTypes[internalIndex]) {
                 case Types.NULL:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, null);
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, null);
                     break;
 
                 case Types.CHAR:
                 case Types.VARCHAR:
                 case Types.LONGVARCHAR:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getString(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getString(i));
                     break;
 
                 case Types.NCHAR:
                 case Types.NVARCHAR:
                 case Types.LONGNVARCHAR:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getNString(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getNString(i));
                     break;
 
                 case Types.NUMERIC:
                 case Types.DECIMAL:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getBigDecimal(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getBigDecimal(i));
                     break;
 
                 case Types.BIT:
-                    _flattenedColumnsValues[internalIndex].setBoolean(_rowCount, rs.getBoolean(i));
+                    flattenedColumnsValues[internalIndex].setBoolean(rowCount, rs.getBoolean(i));
                     break;
 
                 case Types.TINYINT:
-                    _flattenedColumnsValues[internalIndex].setByte(_rowCount, rs.getByte(i));
+                    flattenedColumnsValues[internalIndex].setByte(rowCount, rs.getByte(i));
                     break;
 
                 case Types.SMALLINT:
-                    _flattenedColumnsValues[internalIndex].setShort(_rowCount, rs.getShort(i));
+                    flattenedColumnsValues[internalIndex].setShort(rowCount, rs.getShort(i));
                     break;
 
                 case Types.INTEGER:
-                    _flattenedColumnsValues[internalIndex].setInt(_rowCount, rs.getInt(i));
+                    flattenedColumnsValues[internalIndex].setInt(rowCount, rs.getInt(i));
                     break;
 
                 case Types.BIGINT:
-                    _flattenedColumnsValues[internalIndex].setLong(_rowCount, rs.getLong(i));
+                    flattenedColumnsValues[internalIndex].setLong(rowCount, rs.getLong(i));
                     break;
 
                 case Types.REAL:
-                    _flattenedColumnsValues[internalIndex].setFloat(_rowCount, rs.getFloat(i));
+                    flattenedColumnsValues[internalIndex].setFloat(rowCount, rs.getFloat(i));
                     break;
 
                 case Types.FLOAT:
                 case Types.DOUBLE:
-                    _flattenedColumnsValues[internalIndex].setDouble(_rowCount, rs.getDouble(i));
+                    flattenedColumnsValues[internalIndex].setDouble(rowCount, rs.getDouble(i));
                     break;
 
                 case Types.DATE:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getDate(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getDate(i));
                     break;
 
                 case Types.TIME:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getTime(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getTime(i));
                     break;
 
                 case Types.TIMESTAMP:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getTimestamp(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getTimestamp(i));
                     break;
 
                 case Types.BINARY:
                 case Types.VARBINARY:
                 case Types.LONGVARBINARY:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, rs.getBytes(i));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, rs.getBytes(i));
                     break;
 
                 case Types.JAVA_OBJECT:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialJavaObject(rs.getObject(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialJavaObject(rs.getObject(i)));
                     break;
 
                 case Types.CLOB:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialClob(rs.getClob(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialClob(rs.getClob(i)));
                     break;
 
                 case Types.NCLOB:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialNClob(rs.getNClob(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialNClob(rs.getNClob(i)));
                     break;
 
                 case Types.BLOB:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialBlob(rs.getBlob(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialBlob(rs.getBlob(i)));
                     break;
 
                 case Types.ARRAY:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialArray(rs.getArray(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialArray(rs.getArray(i)));
                     break;
 
                 case Types.STRUCT:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialStruct((Struct) rs.getObject(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialStruct((Struct) rs.getObject(i)));
                     break;
 
                 case ORACLE_ROW_ID:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialRowId(rs.getRowId(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialRowId(rs.getRowId(i)));
                     break;
 
                     // what oracle does instead of SQLXML in their 1.6 driver,
                     // don't ask me why, commented out so we don't need
                     // an oracle driver to compile this class
                     //case 2007:
-                    //_flattenedColumnsValues[internalIndex].setObject(_rowCount, new XMLType(((OracleResultSet)rs).getOPAQUE(i)));
+                    //flattenedColumnsValues[internalIndex].setObject(rowCount, new XMLType(((OracleResultSet)rs).getOPAQUE(i)));
                 case Types.SQLXML:
-                    _flattenedColumnsValues[internalIndex].setObject(_rowCount, new SerialSQLXML(rs.getSQLXML(i)));
+                    flattenedColumnsValues[internalIndex].setObject(rowCount, new SerialSQLXML(rs.getSQLXML(i)));
                     break;
 
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[internalIndex] == Types.BOOLEAN) {
-                            _flattenedColumnsValues[internalIndex].setBoolean(_rowCount, rs.getBoolean(i));
+                        if(columnTypes[internalIndex] == Types.BOOLEAN) {
+                            flattenedColumnsValues[internalIndex].setBoolean(rowCount, rs.getBoolean(i));
                         }
                         else {
                             foundMatch = false;
@@ -231,34 +231,34 @@ public class RowPacket implements Externalizable {
 
                 if(foundMatch) {
                     if(rs.wasNull()) {
-                        _flattenedColumnsValues[internalIndex].setIsNull(_rowCount);
+                        flattenedColumnsValues[internalIndex].setIsNull(rowCount);
                     }
                 } else {
-                    throw new SQLException("Unsupported JDBC-Type: " + _columnTypes[internalIndex]);
+                    throw new SQLException("Unsupported JDBC-Type: " + columnTypes[internalIndex]);
                 }
             }
 
-            _rowCount++;
+            rowCount++;
 
-            if(_maxrows > 0 && _rowCount == _maxrows) {
+            if(maxrows > 0 && rowCount == maxrows) {
                 break;
             }
         }
 
-        _lastPart = _maxrows == 0 || _rowCount < _maxrows;
+        lastPart = maxrows == 0 || rowCount < maxrows;
 
-        return _lastPart;
+        return lastPart;
     }
 
     private void prepareFlattenedColumns(ResultSetMetaData metaData, int columnCount) throws SQLException {
-        _columnTypes = new int[columnCount];
-        _flattenedColumnsValues = new FlattenedColumnValues[columnCount];
+        columnTypes = new int[columnCount];
+        flattenedColumnsValues = new FlattenedColumnValues[columnCount];
 
         for(int i = 1; i <= columnCount; i++) {
-            int columnType = _columnTypes[i - 1] = metaData.getColumnType(i);
+            int columnType = columnTypes[i - 1] = metaData.getColumnType(i);
 
-            if(_logger.isDebugEnabled()) {
-                _logger.debug("Column-Type " + i + ": " + metaData.getColumnType(i));
+            if(logger.isDebugEnabled()) {
+                logger.debug("Column-Type " + i + ": " + metaData.getColumnType(i));
             }
 
             Class componentType = null;
@@ -306,18 +306,18 @@ public class RowPacket implements Externalizable {
                 break;
             }
 
-            _flattenedColumnsValues[i - 1] = new FlattenedColumnValues(componentType, _maxrows == 0 ? DEFAULT_ARRAY_SIZE : _maxrows);
+            flattenedColumnsValues[i - 1] = new FlattenedColumnValues(componentType, maxrows == 0 ? DEFAULT_ARRAY_SIZE : maxrows);
         }
     }
 
     public void merge(RowPacket rsp) {
-        if(_forwardOnly) {
-            _offset += _rowCount;
-            _rowCount = rsp._rowCount;
-            _rows = rsp._rows;
+        if(forwardOnly) {
+            offset += rowCount;
+            rowCount = rsp.rowCount;
+            rows = rsp.rows;
         } else {
-            _rows.addAll(rsp._rows);
-            _rowCount = _rows.size();
+            rows.addAll(rsp.rows);
+            rowCount = rows.size();
         }
     }
 }

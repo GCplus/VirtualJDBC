@@ -14,24 +14,24 @@ import org.apache.commons.pool.impl.GenericObjectPool;
  * @author Mike
  */
 public class LoggingGenericObjectPool extends GenericObjectPool {
-    private static final Log _logger = LogFactory.getLog(LoggingGenericObjectPool.class);
+    private static final Log logger = LogFactory.getLog(LoggingGenericObjectPool.class);
     
-    private final String _idOfConnection;
+    private final String idOfConnection;
 
     public LoggingGenericObjectPool(String nameOfConnection) {
         super(null);
-        _idOfConnection = nameOfConnection;
+        idOfConnection = nameOfConnection;
     }
     
     public LoggingGenericObjectPool(String nameOfConnection, GenericObjectPool.Config config) {
         super(null, config);
-        _idOfConnection = nameOfConnection;
+        idOfConnection = nameOfConnection;
     }
         
     public synchronized void evict() throws Exception {
         super.evict();
-        if(_logger.isDebugEnabled()) {
-            _logger.debug("DBCP-Evictor: number of idle connections in '" + _idOfConnection + "' = " + getNumIdle());
+        if(logger.isDebugEnabled()) {
+            logger.debug("DBCP-Evictor: number of idle connections in '" + idOfConnection + "' = " + getNumIdle());
         }
     }
 }

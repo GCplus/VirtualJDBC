@@ -12,20 +12,20 @@ import java.io.ObjectOutput;
 public class SerialJavaObject implements Externalizable {
     private static final long serialVersionUID = 4050198631045215540L;
     
-    private Object _javaObject;
+    private Object javaObject;
 
     public SerialJavaObject(Object javaObject) {
-        _javaObject = javaObject;
+        this.javaObject = javaObject;
     }
 
     public SerialJavaObject() {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_javaObject);
+        out.writeObject(javaObject);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _javaObject = in.readObject();
+        javaObject = in.readObject();
     }
 }

@@ -15,14 +15,14 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ConnectionBrokerRmiImpl extends UnicastRemoteObject implements ConnectionBrokerRmi {
     private static final long serialVersionUID = 3257290235934029618L;
-    private int _remotingPort = 0;
+    private int remotingPort = 0;
 
     public ConnectionBrokerRmiImpl(int remotingPort) throws RemoteException {
         super(remotingPort);
-        _remotingPort = remotingPort;
+        this.remotingPort = remotingPort;
     }
 
     public CommandSinkRmi createCommandSink() throws RemoteException {
-        return new CommandSinkRmiImpl(_remotingPort);
+        return new CommandSinkRmiImpl(remotingPort);
     }
 }

@@ -31,22 +31,22 @@ import de.simplicit.vjdbc.util.StreamCloser;
  * @author Mike
  */
 public class ServletCommandSinkJakartaHttpClient extends AbstractServletCommandSinkClient {
-    private final String _urlExternalForm;
-    private final HttpClient _httpClient;
-    private final MultiThreadedHttpConnectionManager _multiThreadedHttpConnectionManager;
+    private final String urlExternalForm;
+    private final HttpClient httpClient;
+    private final MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager;
 
     public ServletCommandSinkJakartaHttpClient(String url, RequestEnhancer requestEnhancer) throws SQLException {
         super(url, requestEnhancer);
-        _urlExternalForm = _url.toExternalForm();
-        _multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
-        _httpClient = new HttpClient(_multiThreadedHttpConnectionManager);
+        this.urlExternalForm = super.url.toExternalForm();
+        this.multiThreadedHttpConnectionManager = new MultiThreadedHttpConnectionManager();
+        this.httpClient = new HttpClient(multiThreadedHttpConnectionManager);
         
-        _httpClient.getParams().setBooleanParameter("http.connection.stalecheck", false);
+        httpClient.getParams().setBooleanParameter("http.connection.stalecheck", false);
     }
     
     public void close() {
         super.close();
-        _multiThreadedHttpConnectionManager.shutdown();
+        multiThreadedHttpConnectionManager.shutdown();
     }
 
     public UIDEx connect(String database, Properties props, Properties clientInfo, CallingContext ctx) throws SQLException {
@@ -56,20 +56,20 @@ public class ServletCommandSinkJakartaHttpClient extends AbstractServletCommandS
 
         try {
             // Open connection and adjust the Input/Output
-            post = new PostMethod(_urlExternalForm);
+            post = new PostMethod(urlExternalForm);
             post.setDoAuthentication(false);
             post.setFollowRedirects(false);
             post.setRequestHeader("Content-type", "binary/x-java-serialized");
             post.setRequestHeader(ServletCommandSinkIdentifier.METHOD_IDENTIFIER, ServletCommandSinkIdentifier.CONNECT_COMMAND);
             // Finally let the optional Request-Enhancer set request headers
-            if(_requestEnhancer != null) {
-                _requestEnhancer.enhanceConnectRequest(new RequestModifierJakartaHttpClient(post));
+            if(requestEnhancer != null) {
+                requestEnhancer.enhanceConnectRequest(new RequestModifierJakartaHttpClient(post));
             }
             // Write the parameter objects using a ConnectRequestEntity
             post.setRequestEntity(new ConnectRequestEntity(database, props, clientInfo, ctx));
 
             // Call ...
-            _httpClient.executeMethod(post);
+            httpClient.executeMethod(post);
 
             // Check the HTTP status.
             if(post.getStatusCode() != HttpStatus.SC_OK) {
@@ -107,20 +107,20 @@ public class ServletCommandSinkJakartaHttpClient extends AbstractServletCommandS
         ObjectInputStream ois = null;
 
         try {
-            post = new PostMethod(_urlExternalForm);
+            post = new PostMethod(urlExternalForm);
             post.setDoAuthentication(false);
             post.setFollowRedirects(false);
             post.setContentChunked(false);
             post.setRequestHeader(ServletCommandSinkIdentifier.METHOD_IDENTIFIER, ServletCommandSinkIdentifier.PROCESS_COMMAND);
             // Finally let the optional Request-Enhancer set request properties
-            if(_requestEnhancer != null) {
-                _requestEnhancer.enhanceProcessRequest(new RequestModifierJakartaHttpClient(post));
+            if(requestEnhancer != null) {
+                requestEnhancer.enhanceProcessRequest(new RequestModifierJakartaHttpClient(post));
             }
             // Write the parameter objects using a ProcessRequestEntity
             post.setRequestEntity(new ProcessRequestEntity(connuid, uid, cmd, ctx));
 
             // Call ...
-            _httpClient.executeMethod(post);
+            httpClient.executeMethod(post);
 
             if(post.getStatusCode() != HttpStatus.SC_OK) {
                 throw SQLExceptionHelper.wrap(new HttpClientError(post.getStatusLine().toString()));

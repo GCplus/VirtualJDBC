@@ -28,7 +28,7 @@ public class ServletCommandSinkJdkHttpClient extends AbstractServletCommandSinkC
 
         try {
             // Open connection and adjust the Input/Output
-            conn = (HttpURLConnection)_url.openConnection();
+            conn = (HttpURLConnection)url.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
@@ -38,8 +38,8 @@ public class ServletCommandSinkJdkHttpClient extends AbstractServletCommandSinkC
             conn.setRequestProperty(ServletCommandSinkIdentifier.METHOD_IDENTIFIER,
                                     ServletCommandSinkIdentifier.CONNECT_COMMAND);
             // Finally let the optional Request-Enhancer set request properties
-            if(_requestEnhancer != null) {
-                _requestEnhancer.enhanceConnectRequest(new RequestModifierJdk(conn));
+            if(requestEnhancer != null) {
+                requestEnhancer.enhanceConnectRequest(new RequestModifierJdk(conn));
             }
             // Write the parameter objects to the ObjectOutputStream
             oos = new ObjectOutputStream(conn.getOutputStream());
@@ -81,14 +81,14 @@ public class ServletCommandSinkJdkHttpClient extends AbstractServletCommandSinkC
         ObjectInputStream ois = null;
 
         try {
-            conn = (HttpURLConnection)_url.openConnection();
+            conn = (HttpURLConnection)url.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty(ServletCommandSinkIdentifier.METHOD_IDENTIFIER, ServletCommandSinkIdentifier.PROCESS_COMMAND);
             // Finally let the optional Request-Enhancer set request properties
-            if(_requestEnhancer != null) {
-                _requestEnhancer.enhanceProcessRequest(new RequestModifierJdk(conn));
+            if(requestEnhancer != null) {
+                requestEnhancer.enhanceProcessRequest(new RequestModifierJdk(conn));
             }
             conn.connect();
 

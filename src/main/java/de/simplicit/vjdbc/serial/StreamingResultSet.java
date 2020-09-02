@@ -22,30 +22,30 @@ import java.util.Map;
 public class StreamingResultSet implements ResultSet, Externalizable {
     static final long serialVersionUID = 8291019975153433161L;
 
-    private static final Log _logger = LogFactory.getLog(StreamingResultSet.class);
+    private static final Log logger = LogFactory.getLog(StreamingResultSet.class);
 
-    private int[] _columnTypes;
-    private String[] _columnNames;
-    private String[] _columnLabels;
-    private RowPacket _rows;
-    private int _rowPacketSize;
-    private boolean _forwardOnly;
-    private String _charset;
-    private boolean _lastPartReached = true;
-    private UIDEx _remainingResultSet = null;
-    private SerialResultSetMetaData _metaData = null;
+    private int[] columnTypes;
+    private String[] columnNames;
+    private String[] columnLabels;
+    private RowPacket rows;
+    private int rowPacketSize;
+    private boolean forwardOnly;
+    private String charset;
+    private boolean lastPartReached = true;
+    private UIDEx remainingResultSet = null;
+    private SerialResultSetMetaData metaData = null;
 
-    private transient DecoratedCommandSink _commandSink = null;
-    private transient int _cursor = -1;
-    private transient int _lastReadColumn = 0;
-    private transient Object[] _actualRow;
-    private transient int _fetchDirection;
-    private transient boolean _prefetchMetaData;
-    private transient Statement _statement;
+    private transient DecoratedCommandSink commandSink = null;
+    private transient int cursor = -1;
+    private transient int lastReadColumn = 0;
+    private transient Object[] actualRow;
+    private transient int fetchDirection;
+    private transient boolean prefetchMetaData;
+    private transient Statement statement;
 
     protected void finalize() throws Throwable {
         super.finalize();
-        if(_remainingResultSet != null) {
+        if(remainingResultSet != null) {
             close();
         }
     }
@@ -54,50 +54,50 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_columnTypes);
-        out.writeObject(_columnNames);
-        out.writeObject(_columnLabels);
-        out.writeObject(_rows);
-        out.writeInt(_rowPacketSize);
-        out.writeBoolean(_forwardOnly);
-        out.writeUTF(_charset);
-        out.writeBoolean(_lastPartReached);
-        out.writeObject(_remainingResultSet);
-        out.writeObject(_metaData);
+        out.writeObject(columnTypes);
+        out.writeObject(columnNames);
+        out.writeObject(columnLabels);
+        out.writeObject(rows);
+        out.writeInt(rowPacketSize);
+        out.writeBoolean(forwardOnly);
+        out.writeUTF(charset);
+        out.writeBoolean(lastPartReached);
+        out.writeObject(remainingResultSet);
+        out.writeObject(metaData);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _columnTypes = (int[])in.readObject();
-        _columnNames = (String[])in.readObject();
-        _columnLabels = (String[])in.readObject();
-        _rows = (RowPacket)in.readObject();
-        _rowPacketSize = in.readInt();
-        _forwardOnly = in.readBoolean();
-        _charset = in.readUTF();
-        _lastPartReached = in.readBoolean();
-        _remainingResultSet = (UIDEx)in.readObject();
-        _metaData = (SerialResultSetMetaData)in.readObject();
+        columnTypes = (int[])in.readObject();
+        columnNames = (String[])in.readObject();
+        columnLabels = (String[])in.readObject();
+        rows = (RowPacket)in.readObject();
+        rowPacketSize = in.readInt();
+        forwardOnly = in.readBoolean();
+        charset = in.readUTF();
+        lastPartReached = in.readBoolean();
+        remainingResultSet = (UIDEx)in.readObject();
+        metaData = (SerialResultSetMetaData)in.readObject();
 
-        _cursor = -1;
+        cursor = -1;
     }
 
     public StreamingResultSet(int rowPacketSize, boolean forwardOnly, boolean prefetchMetaData, String charset) {
-        _rowPacketSize = rowPacketSize;
-        _forwardOnly = forwardOnly;
-        _prefetchMetaData = prefetchMetaData;
-        _charset = charset;
+        this.rowPacketSize = rowPacketSize;
+        this.forwardOnly = forwardOnly;
+        this.prefetchMetaData = prefetchMetaData;
+        this.charset = charset;
     }
 
     public void setStatement(Statement stmt) {
-        _statement = stmt;
+        statement = stmt;
     }
 
     public void setCommandSink(DecoratedCommandSink sink) {
-        _commandSink = sink;
+        commandSink = sink;
     }
 
     public void setRemainingResultSetUID(UIDEx reg) {
-        _remainingResultSet = reg;
+        remainingResultSet = reg;
     }
 
     public boolean populate(ResultSet rs) throws SQLException {
@@ -105,51 +105,51 @@ public class StreamingResultSet implements ResultSet, Externalizable {
 
         // Fetch the meta data immediately if required. Succeeding getMetaData() calls
         // on the ResultSet won't require an additional remote call
-        if(_prefetchMetaData) {
-            _logger.debug("Fetching MetaData of ResultSet");
-            _metaData = new SerialResultSetMetaData(metaData);
+        if(prefetchMetaData) {
+            logger.debug("Fetching MetaData of ResultSet");
+            metaData = new SerialResultSetMetaData(metaData);
         }
 
         int columnCount = metaData.getColumnCount();
-        _columnTypes = new int[columnCount];
-        _columnNames = new String[columnCount];
-        _columnLabels = new String[columnCount];
+        columnTypes = new int[columnCount];
+        columnNames = new String[columnCount];
+        columnLabels = new String[columnCount];
 
         for(int i = 1; i <= columnCount; i++) {
-            _columnTypes[i-1] = metaData.getColumnType(i);
-            _columnNames[i-1] = metaData.getColumnName(i).toLowerCase();
-            _columnLabels[i-1] = metaData.getColumnLabel(i).toLowerCase();
+            columnTypes[i-1] = metaData.getColumnType(i);
+            columnNames[i-1] = metaData.getColumnName(i).toLowerCase();
+            columnLabels[i-1] = metaData.getColumnLabel(i).toLowerCase();
         }
 
         // Create first ResultSet-Part
-        _rows = new RowPacket(_rowPacketSize, _forwardOnly);
+        rows = new RowPacket(rowPacketSize, forwardOnly);
         // Populate it
-        _rows.populate(rs);
+        rows.populate(rs);
 
-        _lastPartReached = _rows.isLastPart();
+        lastPartReached = rows.isLastPart();
 
-        return _lastPartReached;
+        return lastPartReached;
     }
 
     public boolean next() throws SQLException {
         boolean result = false;
 
-        if(++_cursor < _rows.size()) {
-            _actualRow = _rows.get(_cursor);
+        if(++cursor < rows.size()) {
+            actualRow = rows.get(cursor);
             result = true;
         } else {
-            if(!_lastPartReached) {
+            if(!lastPartReached) {
                 try {
-                    SerializableTransport st = (SerializableTransport)_commandSink.process(_remainingResultSet, new NextRowPacketCommand());
+                    SerializableTransport st = (SerializableTransport)commandSink.process(remainingResultSet, new NextRowPacketCommand());
                     RowPacket rsp = (RowPacket)st.getTransportee();
 
                     if(rsp.isLastPart()) {
-                        _lastPartReached = true;
+                        lastPartReached = true;
                     }
 
                     if(rsp.size() > 0) {
-                        _rows.merge(rsp);
-                        _actualRow = _rows.get(_cursor);
+                        rows.merge(rsp);
+                        actualRow = rows.get(cursor);
                         result = true;
                     }
                 } catch(Exception e) {
@@ -162,29 +162,29 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public void close() throws SQLException {
-        _cursor = -1;
-        if(_remainingResultSet != null) {
+        cursor = -1;
+        if(remainingResultSet != null) {
             // The server-side created StreamingResultSet is garbage-collected after it was send over the wire. Thus
             // we have to check here if it is such a server object because in this case we don't have to try the remote
             // call which indeed causes a NPE.
-            if(_commandSink != null) {
-                _commandSink.process(_remainingResultSet, new DestroyCommand(_remainingResultSet, JdbcInterfaceType.RESULTSETHOLDER));
+            if(commandSink != null) {
+                commandSink.process(remainingResultSet, new DestroyCommand(remainingResultSet, JdbcInterfaceType.RESULTSETHOLDER));
             }
-            _remainingResultSet = null;
+            remainingResultSet = null;
         }
-        if (((VirtualStatement)_statement).isCloseOnCompletion()) {
-            _statement.close();
+        if (((VirtualStatement)statement).isCloseOnCompletion()) {
+            statement.close();
         }
     }
 
     public boolean wasNull() {
-        return _actualRow[_lastReadColumn] == null;
+        return actualRow[lastReadColumn] == null;
     }
 
     public String getString(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return _actualRow[columnIndex].toString();
+            return actualRow[columnIndex].toString();
         } else {
             return null;
         }
@@ -193,9 +193,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public boolean getBoolean(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value;
@@ -233,7 +233,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value;
                         }
@@ -250,9 +250,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public byte getByte(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? (byte)1 : (byte)0;
@@ -290,7 +290,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? (byte)1 : (byte)0;
                         }
@@ -307,9 +307,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public short getShort(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? (short)1 : (short)0;
@@ -347,7 +347,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? (short)1 : (short)0;
                         }
@@ -364,9 +364,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public int getInt(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? 1 : 0;
@@ -404,7 +404,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? 1 : 0;
                         }
@@ -421,9 +421,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public long getLong(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? 1 : 0;
@@ -461,7 +461,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? 1 : 0;
                         }
@@ -478,9 +478,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public float getFloat(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? 1.0f : 0.0f;
@@ -518,7 +518,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? 1 : 0;
                         }
@@ -535,9 +535,9 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public double getDouble(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object value = _actualRow[columnIndex];
+            Object value = actualRow[columnIndex];
 
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.BIT:
                     // Boolean
                     return (Boolean) value ? 1.0 : 0.0;
@@ -575,7 +575,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                     }
                 default:
                     if(JavaVersionInfo.use16Api) {
-                        if(_columnTypes[columnIndex] == Types.BOOLEAN) {
+                        if(columnTypes[columnIndex] == Types.BOOLEAN) {
                             // Boolean
                             return (Boolean) value ? 1 : 0;
                         }
@@ -592,7 +592,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return internalGetBigDecimal(_actualRow[columnIndex], _columnTypes[columnIndex], scale);
+            return internalGetBigDecimal(actualRow[columnIndex], columnTypes[columnIndex], scale);
         } else {
             return null;
         }
@@ -601,7 +601,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public byte[] getBytes(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (byte[])_actualRow[columnIndex];
+            return (byte[])actualRow[columnIndex];
         } else {
             return null;
         }
@@ -610,16 +610,16 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Date getDate(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.DATE:
-                    return (Date)_actualRow[columnIndex];
+                    return (Date)actualRow[columnIndex];
                 case Types.TIME:
-                    return getCleanDate((((Time)_actualRow[columnIndex]).getTime()));
+                    return getCleanDate((((Time)actualRow[columnIndex]).getTime()));
                 case Types.TIMESTAMP:
-                    return getCleanDate(((Timestamp)_actualRow[columnIndex]).getTime());
+                    return getCleanDate(((Timestamp)actualRow[columnIndex]).getTime());
             }
 
-            throw new SQLException("Can't convert type to Date: " + _actualRow[columnIndex].getClass());
+            throw new SQLException("Can't convert type to Date: " + actualRow[columnIndex].getClass());
         } else {
             return null;
         }
@@ -628,18 +628,18 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Time getTime(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.TIME:
-                    return (Time)_actualRow[columnIndex];
+                    return (Time)actualRow[columnIndex];
                 case Types.DATE:
-                    Date date = ((Date)_actualRow[columnIndex]);
+                    Date date = ((Date)actualRow[columnIndex]);
                     return getCleanTime(date.getTime());
                 case Types.TIMESTAMP:
-                    Timestamp timestamp = ((Timestamp)_actualRow[columnIndex]);
+                    Timestamp timestamp = ((Timestamp)actualRow[columnIndex]);
                     return getCleanTime(timestamp.getTime());
             }
 
-            throw new SQLException("Can't convert type to Time: " + _actualRow[columnIndex].getClass());
+            throw new SQLException("Can't convert type to Time: " + actualRow[columnIndex].getClass());
         } else {
             return null;
         }
@@ -648,16 +648,16 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            switch(_columnTypes[columnIndex]) {
+            switch(columnTypes[columnIndex]) {
                 case Types.TIME:
-                    return new Timestamp(((Time)_actualRow[columnIndex]).getTime());
+                    return new Timestamp(((Time)actualRow[columnIndex]).getTime());
                 case Types.DATE:
-                    return new Timestamp(((Date)_actualRow[columnIndex]).getTime());
+                    return new Timestamp(((Date)actualRow[columnIndex]).getTime());
                 case Types.TIMESTAMP:
-                    return ((Timestamp)_actualRow[columnIndex]);
+                    return ((Timestamp)actualRow[columnIndex]);
             }
 
-            throw new SQLException("Can't convert type to Timestamp: " + _actualRow[columnIndex].getClass());
+            throw new SQLException("Can't convert type to Timestamp: " + actualRow[columnIndex].getClass());
         } else {
             return null;
         }
@@ -674,7 +674,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public InputStream getBinaryStream(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Object obj = _actualRow[columnIndex];
+            Object obj = actualRow[columnIndex];
 
             byte[] bytes;
 
@@ -682,7 +682,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
                 bytes = (byte[])obj;
             } else if(obj instanceof String) {
                 try {
-                    bytes = ((String)obj).getBytes(_charset);
+                    bytes = ((String)obj).getBytes(charset);
                 } catch(UnsupportedEncodingException e) {
                     throw SQLExceptionHelper.wrap(e);
                 }
@@ -762,7 +762,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public SQLWarning getWarnings() throws SQLException {
-        if(_cursor < 0) {
+        if(cursor < 0) {
             throw new SQLException("ResultSet already closed");
         } else {
             return null;
@@ -777,11 +777,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public ResultSetMetaData getMetaData() throws SQLException {
-        if(_metaData == null) {
-            SerializableTransport st = (SerializableTransport)_commandSink.process(_remainingResultSet, new ResultSetGetMetaDataCommand());
+        if(metaData == null) {
+            SerializableTransport st = (SerializableTransport)commandSink.process(remainingResultSet, new ResultSetGetMetaDataCommand());
             if(st != null) {
                 try {
-                    _metaData = (SerialResultSetMetaData)st.getTransportee();
+                    metaData = (SerialResultSetMetaData)st.getTransportee();
                 } catch(Exception e) {
                     throw new SQLException("Can't get ResultSetMetaData, reason: " + e.toString());
                 }
@@ -790,13 +790,13 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             }
         }
 
-        return _metaData;
+        return metaData;
     }
 
     public Object getObject(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return _actualRow[columnIndex];
+            return actualRow[columnIndex];
         }
         else {
             return null;
@@ -814,7 +814,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Reader getCharacterStream(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return new StringReader((String)_actualRow[columnIndex]);
+            return new StringReader((String)actualRow[columnIndex]);
         }
         else {
             return null;
@@ -828,7 +828,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return internalGetBigDecimal(_actualRow[columnIndex], _columnTypes[columnIndex], -1);
+            return internalGetBigDecimal(actualRow[columnIndex], columnTypes[columnIndex], -1);
         }
         else {
             return null;
@@ -912,37 +912,37 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public boolean isBeforeFirst() {
-        return _cursor < 0;
+        return cursor < 0;
     }
 
     public boolean isAfterLast() {
-        return _rows.isLastPart() && (_cursor == _rows.size());
+        return rows.isLastPart() && (cursor == rows.size());
     }
 
     public boolean isFirst() {
-        return _cursor == 0;
+        return cursor == 0;
     }
 
     public boolean isLast() {
-        return _rows.isLastPart() && (_cursor == (_rows.size() - 1));
+        return rows.isLastPart() && (cursor == (rows.size() - 1));
     }
 
     public void beforeFirst() {
-        _cursor = -1;
-        _actualRow = null;
+        cursor = -1;
+        actualRow = null;
     }
 
     public void afterLast() {
         // Request all remaining Row-Packets
 //        while(requestNextRowPacket()) ;
-        _cursor = _rows.size();
-        _actualRow = null;
+        cursor = rows.size();
+        actualRow = null;
     }
 
     public boolean first() {
         try {
-            _cursor = 0;
-            _actualRow = _rows.get(_cursor);
+            cursor = 0;
+            actualRow = rows.get(cursor);
             return true;
         } catch (SQLException e) {
             return false;
@@ -953,8 +953,8 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         try {
             // Request all remaining Row-Packets
 //            while(requestNextRowPacket()) ;
-            _cursor = _rows.size() - 1;
-            _actualRow = _rows.get(_cursor);
+            cursor = rows.size() - 1;
+            actualRow = rows.get(cursor);
             return true;
         } catch (SQLException e) {
             return false;
@@ -962,7 +962,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public int getRow() {
-        return _cursor + 1;
+        return cursor + 1;
     }
 
     public boolean absolute(int row) throws SQLException {
@@ -970,15 +970,15 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public boolean relative(int step) throws SQLException {
-        return setCursor(_cursor + step);
+        return setCursor(cursor + step);
     }
 
     public boolean previous() throws SQLException {
-        if(_forwardOnly) {
+        if(forwardOnly) {
             throw new SQLException("previous() not possible on Forward-Only-ResultSet");
         } else {
-            if(_cursor > 0) {
-                _actualRow = _rows.get(--_cursor);
+            if(cursor > 0) {
+                actualRow = rows.get(--cursor);
                 return true;
             } else {
                 return false;
@@ -987,11 +987,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public void setFetchDirection(int direction) {
-        _fetchDirection = direction;
+        fetchDirection = direction;
     }
 
     public int getFetchDirection() {
-        return _fetchDirection;
+        return fetchDirection;
     }
 
     public void setFetchSize(int rows) {
@@ -1002,7 +1002,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public int getType() {
-        return _forwardOnly ? ResultSet.TYPE_FORWARD_ONLY : ResultSet.TYPE_SCROLL_INSENSITIVE;
+        return forwardOnly ? ResultSet.TYPE_FORWARD_ONLY : ResultSet.TYPE_SCROLL_INSENSITIVE;
     }
 
     public int getConcurrency() {
@@ -1202,7 +1202,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public Statement getStatement() {
-        return _statement;
+        return statement;
     }
 
     public Object getObject(int i, Map map) {
@@ -1212,7 +1212,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Ref getRef(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (Ref)_actualRow[columnIndex];
+            return (Ref)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1222,7 +1222,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Blob getBlob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (Blob)_actualRow[columnIndex];
+            return (Blob)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1232,7 +1232,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Clob getClob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (Clob)_actualRow[columnIndex];
+            return (Clob)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1242,7 +1242,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Array getArray(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (Array)_actualRow[columnIndex];
+            return (Array)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1295,7 +1295,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Time getTime(int columnIndex, Calendar cal) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            Time time = (Time)_actualRow[columnIndex];
+            Time time = (Time)actualRow[columnIndex];
             cal.setTime(time);
             return (Time)cal.getTime();
         }
@@ -1326,7 +1326,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public URL getURL(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (URL)_actualRow[columnIndex];
+            return (URL)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1373,16 +1373,16 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         int result = -1;
         String nameLowercase = name.toLowerCase();
         // first search in the columns names (hit is very likely)
-        for(int i = 0; i < _columnNames.length; ++i) {
-            if(_columnNames[i].equals(nameLowercase)) {
+        for(int i = 0; i < columnNames.length; ++i) {
+            if(columnNames[i].equals(nameLowercase)) {
                 result = i;
                 break;
             }
         }
         // not found ? then search in the labels
         if(result < 0) {
-                for(int i = 0; i < _columnLabels.length; ++i) {
-                    if(_columnLabels[i].equals(nameLowercase)) {
+                for(int i = 0; i < columnLabels.length; ++i) {
+                    if(columnLabels[i].equals(nameLowercase)) {
                         result = i;
                         break;
                     }
@@ -1392,28 +1392,28 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             throw new SQLException("Unknown column " + name);
         }
         else {
-            _lastReadColumn = result;
+            lastReadColumn = result;
         }
 
         return result + 1;
     }
 
     private boolean preGetCheckNull(int index) {
-        _lastReadColumn = index;
-        boolean wasNull = _actualRow[_lastReadColumn] == null;
+        lastReadColumn = index;
+        boolean wasNull = actualRow[lastReadColumn] == null;
         return !wasNull;
     }
 
     private boolean requestNextRowPacket() throws SQLException {
-        if(!_lastPartReached) {
+        if(!lastPartReached) {
             try {
-                SerializableTransport st = (SerializableTransport)_commandSink.process(_remainingResultSet, new NextRowPacketCommand());
+                SerializableTransport st = (SerializableTransport)commandSink.process(remainingResultSet, new NextRowPacketCommand());
                 RowPacket rsp = (RowPacket)st.getTransportee();
                 if(rsp.isLastPart()) {
-                    _lastPartReached = true;
+                    lastPartReached = true;
                 }
                 if(rsp.size() > 0) {
-                    _rows.merge(rsp);
+                    rows.merge(rsp);
                     return true;
                 } else {
                     return false;
@@ -1428,17 +1428,17 @@ public class StreamingResultSet implements ResultSet, Externalizable {
 
     private boolean setCursor(int row) throws SQLException {
         if(row >= 0) {
-            if(row < _rows.size()) {
-                _cursor = row;
-                _actualRow = _rows.get(_cursor);
+            if(row < rows.size()) {
+                cursor = row;
+                actualRow = rows.get(cursor);
                 return true;
             } else {
                 // If new row is not in the range of the actually available
                 // rows then try to load the next row packets successively
                 while(requestNextRowPacket()) {
-                    if(row < _rows.size()) {
-                        _cursor = row;
-                        _actualRow = _rows.get(_cursor);
+                    if(row < rows.size()) {
+                        cursor = row;
+                        actualRow = rows.get(cursor);
                         return true;
                     }
                 }
@@ -1471,13 +1471,13 @@ public class StreamingResultSet implements ResultSet, Externalizable {
 
     /* start JDBC4 support */
     public RowId getRowId(int parameterIndex) throws SQLException {
-        return (RowId)_commandSink.process(_remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getRowId",
+        return (RowId)commandSink.process(remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getRowId",
                 new Object[]{parameterIndex},
                 ParameterTypeCombinations.INT));
     }
 
     public RowId getRowId(String parameterName) throws SQLException {
-        return (RowId)_commandSink.process(_remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getRowId",
+        return (RowId)commandSink.process(remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getRowId",
                 new Object[]{parameterName},
                 ParameterTypeCombinations.STR));
     }
@@ -1495,11 +1495,11 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     }
 
     public int getHoldability() throws SQLException {
-        return _commandSink.processWithIntResult(_remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getHoldability"));
+        return commandSink.processWithIntResult(remainingResultSet, CommandPool.getReflectiveCommand(JdbcInterfaceType.RESULTSETHOLDER, "getHoldability"));
     }
 
     public boolean isClosed() {
-        return (_cursor < 0);
+        return (cursor < 0);
     }
 
     public void updateNString(int columnIndex, String nString) {
@@ -1521,7 +1521,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public NClob getNClob(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (NClob)_actualRow[columnIndex];
+            return (NClob)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1535,7 +1535,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public SQLXML getSQLXML(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return (SQLXML)_actualRow[columnIndex];
+            return (SQLXML)actualRow[columnIndex];
         }
         else {
             return null;
@@ -1557,7 +1557,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public String getNString(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return _actualRow[columnIndex].toString();
+            return actualRow[columnIndex].toString();
         } else {
             return null;
         }
@@ -1570,7 +1570,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public Reader getNCharacterStream(int columnIndex) {
         columnIndex--;
         if(preGetCheckNull(columnIndex)) {
-            return new StringReader((String)_actualRow[columnIndex]);
+            return new StringReader((String)actualRow[columnIndex]);
         }
         else {
             return null;

@@ -13,32 +13,32 @@ import java.sql.SQLException;
 public class ByteParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -6844809323174032034L;
 
-    private byte _value;
+    private byte value;
     
     public ByteParameter() {
     }
 
     public ByteParameter(byte value) {
-        _value = value;
+        this.value = value;
     }
 
     public byte getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = in.readByte();
+        value = in.readByte();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeByte(_value);
+        out.writeByte(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setByte(index, _value);
+        pstmt.setByte(index, value);
     }
 
     public String toString() {
-        return "byte: " + _value;
+        return "byte: " + value;
     }
 }

@@ -13,32 +13,32 @@ import java.sql.SQLException;
 public class ShortParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 5384886497454301576L;
 
-    private short _value;
+    private short value;
     
     public ShortParameter() {
     }
 
     public ShortParameter(short value) {
-        _value = value;
+        this.value = value;
     }
 
     public short getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = in.readShort();
+        value = in.readShort();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeShort(_value);
+        out.writeShort(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setShort(index, _value);
+        pstmt.setShort(index, value);
     }
 
     public String toString() {
-        return "short: " + _value;
+        return "short: " + value;
     }
 }

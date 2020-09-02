@@ -14,169 +14,169 @@ import java.util.Map;
 public class SerialArray implements Array, Externalizable {
     private static final long serialVersionUID = 3256722892212418873L;
 
-    private int _baseType;
-    private String _baseTypeName;
-    private Object _array;
+    private int baseType;
+    private String baseTypeName;
+    private Object array;
 
     public SerialArray() {
     }
 
     public SerialArray(int baseType, String typeName, Object[] elements) {
-        _baseType = baseType;
-        _baseTypeName = typeName;
-        _array = elements;
+        this.baseType = baseType;
+        this.baseTypeName = typeName;
+        this.array = elements;
     }
 
     public SerialArray(String typeName, Object[] elements) {
 
         if ("array".equalsIgnoreCase(typeName)) {
-            _baseType = Types.ARRAY;
+            baseType = Types.ARRAY;
         } else if ("bigint".equalsIgnoreCase(typeName)) {
-            _baseType = Types.BIGINT;
+            baseType = Types.BIGINT;
         } else if ("binary".equalsIgnoreCase(typeName)) {
-            _baseType = Types.BINARY;
+            baseType = Types.BINARY;
         } else if ("bit".equalsIgnoreCase(typeName)) {
-            _baseType = Types.BIT;
+            baseType = Types.BIT;
         } else if ("blob".equalsIgnoreCase(typeName)) {
-            _baseType = Types.BLOB;
+            baseType = Types.BLOB;
         } else if ("boolean".equalsIgnoreCase(typeName)) {
-            _baseType = Types.BOOLEAN;
+            baseType = Types.BOOLEAN;
         } else if ("char".equalsIgnoreCase(typeName)) {
-            _baseType = Types.CHAR;
+            baseType = Types.CHAR;
         } else if ("clob".equalsIgnoreCase(typeName)) {
-            _baseType = Types.CLOB;
+            baseType = Types.CLOB;
         } else if ("datalink".equalsIgnoreCase(typeName)) {
-            _baseType = Types.DATALINK;
+            baseType = Types.DATALINK;
         } else if ("date".equalsIgnoreCase(typeName)) {
-            _baseType = Types.DATE;
+            baseType = Types.DATE;
         } else if ("decimal".equalsIgnoreCase(typeName)) {
-            _baseType = Types.DECIMAL;
+            baseType = Types.DECIMAL;
         } else if ("distinct".equalsIgnoreCase(typeName)) {
-            _baseType = Types.DISTINCT;
+            baseType = Types.DISTINCT;
         } else if ("double".equalsIgnoreCase(typeName)) {
-            _baseType = Types.DOUBLE;
+            baseType = Types.DOUBLE;
         } else if ("float".equalsIgnoreCase(typeName)) {
-            _baseType = Types.FLOAT;
+            baseType = Types.FLOAT;
         } else if ("integer".equalsIgnoreCase(typeName)) {
-            _baseType = Types.INTEGER;
+            baseType = Types.INTEGER;
         } else if ("java_object".equalsIgnoreCase(typeName)) {
-            _baseType = Types.JAVA_OBJECT;
+            baseType = Types.JAVA_OBJECT;
         } else if ("longnvarchar".equalsIgnoreCase(typeName)) {
-            _baseType = Types.LONGNVARCHAR;
+            baseType = Types.LONGNVARCHAR;
         } else if ("longvarbinary".equalsIgnoreCase(typeName)) {
-            _baseType = Types.LONGVARBINARY;
+            baseType = Types.LONGVARBINARY;
         } else if ("longvarchar".equalsIgnoreCase(typeName)) {
-            _baseType = Types.LONGVARCHAR;
+            baseType = Types.LONGVARCHAR;
         } else if ("nchar".equalsIgnoreCase(typeName)) {
-            _baseType = Types.NCHAR;
+            baseType = Types.NCHAR;
         } else if ("nclob".equalsIgnoreCase(typeName)) {
-            _baseType = Types.NCLOB;
+            baseType = Types.NCLOB;
         } else if ("null".equalsIgnoreCase(typeName)) {
-            _baseType = Types.NULL;
+            baseType = Types.NULL;
         } else if ("numeric".equalsIgnoreCase(typeName)) {
-            _baseType = Types.NUMERIC;
+            baseType = Types.NUMERIC;
         } else if ("nvarchar".equalsIgnoreCase(typeName)) {
-            _baseType = Types.NVARCHAR;
+            baseType = Types.NVARCHAR;
         } else if ("other".equalsIgnoreCase(typeName)) {
-            _baseType = Types.OTHER;
+            baseType = Types.OTHER;
         } else if ("real".equalsIgnoreCase(typeName)) {
-            _baseType = Types.REAL;
+            baseType = Types.REAL;
         } else if ("ref".equalsIgnoreCase(typeName)) {
-            _baseType = Types.REF;
+            baseType = Types.REF;
         } else if ("rowid".equalsIgnoreCase(typeName)) {
-            _baseType = Types.ROWID;
+            baseType = Types.ROWID;
         } else if ("smallint".equalsIgnoreCase(typeName)) {
-            _baseType = Types.SMALLINT;
+            baseType = Types.SMALLINT;
         } else if ("sqlxml".equalsIgnoreCase(typeName)) {
-            _baseType = Types.SQLXML;
+            baseType = Types.SQLXML;
         } else if ("struct".equalsIgnoreCase(typeName)) {
-            _baseType = Types.STRUCT;
+            baseType = Types.STRUCT;
         } else if ("time".equalsIgnoreCase(typeName)) {
-            _baseType = Types.TIME;
+            baseType = Types.TIME;
         } else if ("timestamp".equalsIgnoreCase(typeName)) {
-            _baseType = Types.TIMESTAMP;
+            baseType = Types.TIMESTAMP;
         } else if ("tinyint".equalsIgnoreCase(typeName)) {
-            _baseType = Types.TINYINT;
+            baseType = Types.TINYINT;
         } else if ("varbinary".equalsIgnoreCase(typeName)) {
-            _baseType = Types.VARBINARY;
+            baseType = Types.VARBINARY;
         } else if ("varchar".equalsIgnoreCase(typeName)) {
-            _baseType = Types.VARCHAR;
+            baseType = Types.VARCHAR;
         }
-        _baseTypeName = typeName;
-        _array = (Object)elements;
+        baseTypeName = typeName;
+        array = elements;
     }
 
     public SerialArray(Array arr) throws SQLException {
-        _baseType = arr.getBaseType();
-        _baseTypeName = arr.getBaseTypeName();
-        _array = arr.getArray();
+        baseType = arr.getBaseType();
+        baseTypeName = arr.getBaseTypeName();
+        array = arr.getArray();
 
-        if(_baseType == Types.STRUCT) {
-            Object[] orig = (Object[])_array;
+        if(baseType == Types.STRUCT) {
+            Object[] orig = (Object[])array;
             Struct[] cpy = new SerialStruct[orig.length];
             for(int i = 0; i < orig.length; i++) {
                 cpy[i] = new SerialStruct((Struct)orig[i]);
             }
-            _array = cpy;
+            array = cpy;
         }
         arr.free();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_baseType);
-        out.writeObject(_baseTypeName);
-        out.writeObject(_array);
+        out.writeInt(baseType);
+        out.writeObject(baseTypeName);
+        out.writeObject(array);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _baseType = in.readInt();
-        _baseTypeName = (String)in.readObject();
-        _array = in.readObject();
+        baseType = in.readInt();
+        baseTypeName = (String)in.readObject();
+        array = in.readObject();
     }
 
     /* start JDBC4 support */
-    public void free() throws SQLException {
-        _array = null;
+    public void free() {
+        array = null;
     }
     /* end JDBC4 support */
 
-    public String getBaseTypeName() throws SQLException {
-        return _baseTypeName;
+    public String getBaseTypeName() {
+        return baseTypeName;
     }
 
-    public int getBaseType() throws SQLException {
-        return _baseType;
+    public int getBaseType() {
+        return baseType;
     }
 
-    public Object getArray() throws SQLException {
-        return _array;
+    public Object getArray() {
+        return array;
     }
 
-    public Object getArray(Map map) throws SQLException {
+    public Object getArray(Map map) {
         throw new UnsupportedOperationException("getArray(Map) not supported");
     }
 
-    public Object getArray(long index, int count) throws SQLException {
+    public Object getArray(long index, int count) {
         throw new UnsupportedOperationException("getArray(index, count) not supported");
     }
 
-    public Object getArray(long index, int count, Map map) throws SQLException {
+    public Object getArray(long index, int count, Map map) {
         throw new UnsupportedOperationException("getArray(index, count, Map) not supported");
     }
 
-    public ResultSet getResultSet() throws SQLException {
+    public ResultSet getResultSet() {
         throw new UnsupportedOperationException("getResultSet() not supported");
     }
 
-    public ResultSet getResultSet(Map map) throws SQLException {
+    public ResultSet getResultSet(Map map) {
         throw new UnsupportedOperationException("getResultSet(Map) not supported");
     }
 
-    public ResultSet getResultSet(long index, int count) throws SQLException {
+    public ResultSet getResultSet(long index, int count) {
         throw new UnsupportedOperationException("getResultSet(index, count) not supported");
     }
 
-    public ResultSet getResultSet(long index, int count, Map map) throws SQLException {
+    public ResultSet getResultSet(long index, int count, Map map) {
         throw new UnsupportedOperationException("getResultSet(index, count, Map) not supported");
     }
 }

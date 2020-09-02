@@ -13,27 +13,27 @@ import java.sql.Statement;
 public class StatementExecuteBatchCommand implements Command {
     static final long serialVersionUID = -995205757280796006L;
 
-    private String[] _sql;
+    private String[] sql;
 
     public StatementExecuteBatchCommand() {
     }
 
     public StatementExecuteBatchCommand(String[] sql) {
-        _sql = sql;
+        this.sql = sql;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_sql);
+        out.writeObject(sql);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _sql = (String[])in.readObject();
+        sql = (String[])in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         Statement stmt = (Statement)target;
         stmt.clearBatch();
-        for (String s : _sql) {
+        for (String s : sql) {
             stmt.addBatch(ctx.resolveOrCheckQuery(s));
         }
         return stmt.executeBatch();
@@ -41,7 +41,7 @@ public class StatementExecuteBatchCommand implements Command {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (String s : _sql) {
+        for (String s : sql) {
             sb.append(s);
             sb.append('\n');
         }

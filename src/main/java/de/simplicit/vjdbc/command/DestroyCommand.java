@@ -18,31 +18,31 @@ import java.sql.SQLException;
 public class DestroyCommand implements Command {
     static final long serialVersionUID = 4457392123395584636L;
 
-    private static final Log _logger = LogFactory.getLog(DestroyCommand.class);
-    private Long _uid;
-    private int _interfaceType;
+    private static final Log logger = LogFactory.getLog(DestroyCommand.class);
+    private Long uid;
+    private int interfaceType;
 
     public DestroyCommand() {
     }
 
     public DestroyCommand(UIDEx regentry, int interfaceType) {
-        _uid = regentry.getUID();
-        _interfaceType = interfaceType;
+        this.uid = regentry.getUID();
+        this.interfaceType = interfaceType;
     }
 
     public DestroyCommand(Long uid, int interfaceType) {
-    	this._uid = uid;
-    	this._interfaceType = interfaceType;
+    	this.uid = uid;
+    	this.interfaceType = interfaceType;
     }
     
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uid);
-        out.writeInt(_interfaceType);
+        out.writeLong(uid);
+        out.writeInt(interfaceType);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uid = in.readLong();
-        _interfaceType = in.readInt();
+        uid = in.readLong();
+        interfaceType = in.readInt();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
@@ -51,43 +51,43 @@ public class DestroyCommand implements Command {
     	 * JDBC objects, such as ResultSet, Statements, etc.
     	 */
     	if(target instanceof Connection) {
-    		if(_logger.isDebugEnabled()) {
-    			_logger.debug("******************************************************");
-    			_logger.debug("Destroy command for Connection found!");
-    			_logger.debug("destroying and closing all related JDBC objects first.");
-    			_logger.debug("******************************************************");
+    		if(logger.isDebugEnabled()) {
+    			logger.debug("******************************************************");
+    			logger.debug("Destroy command for Connection found!");
+    			logger.debug("destroying and closing all related JDBC objects first.");
+    			logger.debug("******************************************************");
     		}
     		ctx.closeAllRelatedJdbcObjects();
     	}
     	// now we are ready to go on and close this connection
     	
-        Object removed = ctx.removeJDBCObject(_uid);
+        Object removed = ctx.removeJDBCObject(uid);
 
         // Check for identity
         if(removed == target) {
-            if(_logger.isDebugEnabled()) {
-                _logger.debug("Removed " + target.getClass().getName() + " with UID " + _uid);
+            if(logger.isDebugEnabled()) {
+                logger.debug("Removed " + target.getClass().getName() + " with UID " + uid);
             }
             try {
-                Class targetClass = JdbcInterfaceType._interfaces[_interfaceType];
+                Class targetClass = JdbcInterfaceType._interfaces[interfaceType];
                 Method mth = targetClass.getDeclaredMethod("close", new Class[0]);
                 mth.invoke(target, (Object[])null);
-                if(_logger.isDebugEnabled()) {
-                    _logger.debug("Invoked close() successfully");
+                if(logger.isDebugEnabled()) {
+                    logger.debug("Invoked close() successfully");
                 }
             } catch(NoSuchMethodException e) {
                 // Object doesn't support close()
-            	if(_logger.isDebugEnabled()) {
-            		_logger.debug("close() not supported");
+            	if(logger.isDebugEnabled()) {
+            		logger.debug("close() not supported");
             	}
             } catch(Exception e) {
-                if(_logger.isDebugEnabled()) {
-                    _logger.debug("Invocation of close() failed", e);
+                if(logger.isDebugEnabled()) {
+                    logger.debug("Invocation of close() failed", e);
                 }
             }
         } else {
-            if(_logger.isWarnEnabled()) {
-                _logger.warn("Target object " + target + " wasn't registered with UID " + _uid);
+            if(logger.isWarnEnabled()) {
+                logger.warn("Target object " + target + " wasn't registered with UID " + uid);
             }
         }
         return null;

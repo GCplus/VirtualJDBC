@@ -13,32 +13,32 @@ import java.sql.SQLException;
 public class FloatParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -2273786408954216402L;
 
-    private float _value;
+    private float value;
 
     public FloatParameter() {
     }
     
     public FloatParameter(float value) {
-        _value = value;
+        this.value = value;
     }
     
     public float getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = in.readFloat();
+        value = in.readFloat();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeFloat(_value);
+        out.writeFloat(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setFloat(index, _value);
+        pstmt.setFloat(index, value);
     }
 
     public String toString() {
-        return "float: " + _value;
+        return "float: " + value;
     }
 }

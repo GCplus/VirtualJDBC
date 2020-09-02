@@ -23,21 +23,21 @@ import java.util.Properties;
 @Remote
 public class EjbCommandSinkBean implements EjbCommandSink, EjbCommandSinkProxy {
 
-    private static final Log _logger = LogFactory.getLog(EjbCommandSinkBean.class);
+    private static final Log logger = LogFactory.getLog(EjbCommandSinkBean.class);
 
-    private transient CommandProcessor _processor;
+    private transient CommandProcessor processor;
 
     public EjbCommandSinkBean() {
-        _processor = CommandProcessor.getInstance();
+        this.processor = CommandProcessor.getInstance();
     }
 
     public UIDEx connect(String url, Properties props, Properties clientInfo,
                          CallingContext ctx)
         throws SQLException {
         try {
-            return _processor.createConnection(url, props, clientInfo, ctx);
+            return processor.createConnection(url, props, clientInfo, ctx);
         } catch (Exception e) {
-            _logger.error(url, e);
+            logger.error(url, e);
             throw SQLExceptionHelper.wrap(e);
         }
     }
@@ -46,11 +46,11 @@ public class EjbCommandSinkBean implements EjbCommandSink, EjbCommandSinkProxy {
                           CallingContext ctx)
         throws SQLException {
 
-        return _processor.process(connuid, uid, cmd, ctx);
+        return processor.process(connuid, uid, cmd, ctx);
     }
 
     public void close() {
-        _processor = null;
+        processor = null;
     }
 
     @Override

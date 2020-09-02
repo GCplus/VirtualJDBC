@@ -25,10 +25,10 @@ import de.simplicit.vjdbc.serial.*;
 import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
 public class VirtualPreparedStatement extends VirtualStatement implements PreparedStatement {
-    private static final PreparedStatementParameter[] _emptyParameters = new PreparedStatementParameter[0];
+    private static final PreparedStatementParameter[] emptyParameters = new PreparedStatementParameter[0];
 
-    protected PreparedStatementParameter[] _paramList = new PreparedStatementParameter[10];
-    protected int _maxIndex = 0;
+    protected PreparedStatementParameter[] paramList = new PreparedStatementParameter[10];
+    protected int maxIndex = 0;
 
     public VirtualPreparedStatement(UIDEx reg, Connection connection, String sql, DecoratedCommandSink sink, int resultSetType) {
         super(reg, connection, sink, resultSetType);
@@ -41,11 +41,11 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         try {
             reduceParam();
 
-            SerializableTransport st = (SerializableTransport) _sink.process(_objectUid,
-                    new PreparedStatementQueryCommand(_paramList, _resultSetType), true);
+            SerializableTransport st = (SerializableTransport) sink.process(objectUid,
+                    new PreparedStatementQueryCommand(paramList, _resultSetType), true);
             result = (StreamingResultSet) st.getTransportee();
             result.setStatement(this);
-            result.setCommandSink(_sink);
+            result.setCommandSink(sink);
         } catch (Exception e) {
             throw SQLExceptionHelper.wrap(e);
         }
@@ -55,7 +55,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
 
     public int executeUpdate() throws SQLException {
         reduceParam();
-        return _sink.processWithIntResult(_objectUid, new PreparedStatementUpdateCommand(_paramList));
+        return sink.processWithIntResult(objectUid, new PreparedStatementUpdateCommand(paramList));
     }
 
     public void setNull(int parameterIndex, int sqlType) {
@@ -127,7 +127,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
     }
 
     public void clearParameters()   {
-        Arrays.fill(_paramList, null);
+        Arrays.fill(paramList, null);
     }
 
     public void setObject(int parameterIndex, Object x, int targetSqlType, int scale)   {
@@ -144,20 +144,20 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
 
     public boolean execute() throws SQLException {
         reduceParam();
-        return _sink.processWithBooleanResult(_objectUid, new PreparedStatementExecuteCommand(_paramList));
+        return sink.processWithBooleanResult(objectUid, new PreparedStatementExecuteCommand(paramList));
     }
 
     public void addBatch()   {
         reduceParam();
-        PreparedStatementParameter[] paramListClone = new PreparedStatementParameter[_paramList.length];
-        System.arraycopy(_paramList, 0, paramListClone, 0, _paramList.length);
+        PreparedStatementParameter[] paramListClone = new PreparedStatementParameter[paramList.length];
+        System.arraycopy(paramList, 0, paramListClone, 0, paramList.length);
         _batchCollector.add(paramListClone);
         clearParameters();
     }
 
     public int[] executeBatch() throws SQLException {
         try {
-            return (int[]) _sink.process(_objectUid, new PreparedStatementExecuteBatchCommand(_batchCollector));
+            return (int[]) sink.process(objectUid, new PreparedStatementExecuteBatchCommand(_batchCollector));
         } finally {
             _batchCollector.clear();
         }
@@ -185,7 +185,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
 
     public ResultSetMetaData getMetaData() throws SQLException {
         try {
-            SerializableTransport st = (SerializableTransport) _sink.process(_objectUid, CommandPool
+            SerializableTransport st = (SerializableTransport) sink.process(objectUid, CommandPool
                     .getReflectiveCommand(JdbcInterfaceType.PREPAREDSTATEMENT, "getMetaData"));
             return (SerialResultSetMetaData) st.getTransportee();
         } catch (Exception e) {
@@ -218,26 +218,26 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
     }
 
     protected void setParam(int index, PreparedStatementParameter parm) {
-        if(_paramList.length < index) {
-            List tmp = Arrays.asList(_paramList);
+        if(paramList.length < index) {
+            List tmp = Arrays.asList(paramList);
             PreparedStatementParameter[] newArray = new PreparedStatementParameter[index * 2];
-            _paramList = (PreparedStatementParameter[]) tmp.toArray(newArray);
+            paramList = (PreparedStatementParameter[]) tmp.toArray(newArray);
         }
 
-        if(_maxIndex < index) {
-            _maxIndex = index;
+        if(maxIndex < index) {
+            maxIndex = index;
         }
 
-        _paramList[index - 1] = parm;
+        paramList[index - 1] = parm;
     }
 
     protected void reduceParam() {
-        if(_maxIndex > 0) {
-            PreparedStatementParameter[] tmpArray = new PreparedStatementParameter[_maxIndex];
-            System.arraycopy(_paramList, 0, tmpArray, 0, _maxIndex);
-            _paramList = tmpArray;
+        if(maxIndex > 0) {
+            PreparedStatementParameter[] tmpArray = new PreparedStatementParameter[maxIndex];
+            System.arraycopy(paramList, 0, tmpArray, 0, maxIndex);
+            paramList = tmpArray;
         } else {
-            _paramList = _emptyParameters;
+            paramList = emptyParameters;
         }
     }
 

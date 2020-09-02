@@ -18,19 +18,19 @@ import java.util.TimerTask;
  * there aren't any RMI-Calls for a specific time (lease value).
  */
 public class KeepAliveTimerTask extends TimerTask implements CommandSinkListener {
-    private static Command _dummyCommand = new PingCommand();
-    private DecoratedCommandSink _sink;
-    private boolean _ignoreNextPing = false;
+    private static Command dummyCommand = new PingCommand();
+    private DecoratedCommandSink sink;
+    private boolean ignoreNextPing = false;
 
     public KeepAliveTimerTask(DecoratedCommandSink sink) {
-        _sink = sink;
-        _sink.setListener(this);
+        this.sink = sink;
+        this.sink.setListener(this);
     }
 
     public void preExecution(Command cmd) {
         // Next ping can be ignored when there are commands processed
         // to the sink
-        _ignoreNextPing = true;
+        ignoreNextPing = true;
     }
 
     public void postExecution(Command cmd) {
@@ -38,10 +38,10 @@ public class KeepAliveTimerTask extends TimerTask implements CommandSinkListener
 
     public void run() {
         try {
-            if(_ignoreNextPing) {
-                _ignoreNextPing = false;
+            if(ignoreNextPing) {
+                ignoreNextPing = false;
             } else {
-                _sink.process(null, _dummyCommand);
+                sink.process(null, dummyCommand);
             }
         } catch(SQLException e) {
             // Ignore it, sink is already closed

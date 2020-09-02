@@ -16,29 +16,29 @@ import java.util.List;
 public class PreparedStatementExecuteBatchCommand implements Command {
     static final long serialVersionUID = 2439854950000135145L;
 
-    private List _batchCommands;
+    private List batchCommands;
 
     public PreparedStatementExecuteBatchCommand() {
     }
 
     public PreparedStatementExecuteBatchCommand(List batches) {
-        _batchCommands = batches;
+        this.batchCommands = batches;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_batchCommands);
+        out.writeObject(batchCommands);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _batchCommands = (List)in.readObject();
+        batchCommands = (List)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         PreparedStatement pstmt = (PreparedStatement)target;
         pstmt.clearBatch();
 
-        for(int i = 0, n = _batchCommands.size(); i < n; i++) {
-            PreparedStatementParameter[] parms = (PreparedStatementParameter[])_batchCommands.get(i);
+        for(int i = 0, n = batchCommands.size(); i < n; i++) {
+            PreparedStatementParameter[] parms = (PreparedStatementParameter[])batchCommands.get(i);
             for(int j = 0; j < parms.length; j++) {
                 parms[j].setParameter(pstmt, j + 1);
             }
@@ -51,8 +51,8 @@ public class PreparedStatementExecuteBatchCommand implements Command {
     public String toString() {
         StringBuffer sb = new StringBuffer("PreparedStatementExecuteBatchCommand\n");
 
-        for(int i = 0; i < _batchCommands.size(); i++) {
-            PreparedStatementParameter[] preparedStatementParameters = (PreparedStatementParameter[])_batchCommands.get(i);
+        for(int i = 0; i < batchCommands.size(); i++) {
+            PreparedStatementParameter[] preparedStatementParameters = (PreparedStatementParameter[])batchCommands.get(i);
 
             sb.append("Parameter-Set ").append(i).append(":\n");
 

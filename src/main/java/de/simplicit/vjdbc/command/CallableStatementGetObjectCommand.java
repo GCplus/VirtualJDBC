@@ -19,87 +19,87 @@ import java.util.Map;
 public class CallableStatementGetObjectCommand implements Command {
     static final long serialVersionUID = 7045834396073252820L;
 
-    private int _index;
-    private String _parameterName;
-    private Map _map;
-    private Class _clazz;
+    private int index;
+    private String parameterName;
+    private Map map;
+    private Class clazz;
 
     public CallableStatementGetObjectCommand() {
     }
 
     public CallableStatementGetObjectCommand(int index) {
-        _index = index;
-        _map = null;
-        _clazz = null;
+        this.index = index;
+        this.map = null;
+        this.clazz = null;
     }
 
     public CallableStatementGetObjectCommand(int index, Class clazz) {
-        _index = index;
-        _map = null;
-        _clazz = clazz;
+        this.index = index;
+        this.map = null;
+        this.clazz = clazz;
     }
 
     public CallableStatementGetObjectCommand(int index, Map map) {
-        _index = index;
-        _map = map;
-        _clazz = null;
+        this.index = index;
+        this.map = map;
+        this.clazz = null;
     }
 
     public CallableStatementGetObjectCommand(String paramName) {
-        _parameterName = paramName;
-        _map = null;
-        _clazz = null;
+        this.parameterName = paramName;
+        this.map = null;
+        this.clazz = null;
     }
 
     public CallableStatementGetObjectCommand(String paramName, Class clazz) {
-        _parameterName = paramName;
-        _map = null;
-        _clazz = clazz;
+        this.parameterName = paramName;
+        this.map = null;
+        this.clazz = clazz;
     }
 
     public CallableStatementGetObjectCommand(String paramName, Map map) {
-        _parameterName = paramName;
-        _map = map;
-        _clazz = null;
+        this.parameterName = paramName;
+        this.map = map;
+        this.clazz = null;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeObject(_parameterName);
-        out.writeObject(_map);
+        out.writeInt(index);
+        out.writeObject(parameterName);
+        out.writeObject(map);
 
-        out.writeBoolean(_clazz != null);
-        if (_clazz != null) out.writeUTF(_clazz.getName());
+        out.writeBoolean(clazz != null);
+        if (clazz != null) out.writeUTF(clazz.getName());
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _parameterName = (String)in.readObject();
-        _map = (Map)in.readObject();
+        index = in.readInt();
+        parameterName = (String)in.readObject();
+        map = (Map)in.readObject();
         if (in.readBoolean())
-            _clazz = Class.forName(in.readUTF());
+            clazz = Class.forName(in.readUTF());
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
         Object result;
 
-        if(_parameterName != null) {
-            if(_map != null) {
-                result = cstmt.getObject(_parameterName, _map);
-            } else if (_clazz != null) {
+        if(parameterName != null) {
+            if(map != null) {
+                result = cstmt.getObject(parameterName, map);
+            } else if (clazz != null) {
                 result =
-                    cstmt.getObject(_parameterName, _clazz);
+                    cstmt.getObject(parameterName, clazz);
             } else {
-                result = cstmt.getObject(_parameterName);
+                result = cstmt.getObject(parameterName);
             }
         } else {
-            if(_map != null) {
-                result = cstmt.getObject(_index, _map);
-            } else if (_clazz != null) {
-                result = cstmt.getObject(_index, _clazz);
+            if(map != null) {
+                result = cstmt.getObject(index, map);
+            } else if (clazz != null) {
+                result = cstmt.getObject(index, clazz);
             } else {
-                result = cstmt.getObject(_index);
+                result = cstmt.getObject(index);
             }
         }
 

@@ -21,67 +21,67 @@ import de.simplicit.vjdbc.server.config.ConnectionConfiguration;
  * result when nextRowPacket is called.
  */
 public class ResultSetHolder {
-    private static final Log _logger = LogFactory.getLog(ResultSetHolder.class);
+    private static final Log logger = LogFactory.getLog(ResultSetHolder.class);
 
-    private final Object _lock = new Object();
-    private boolean _readerThreadIsRunning = false;
+    private final Object lock = new Object();
+    private boolean readerThreadIsRunning = false;
 
-    private ResultSet _resultSet;
-    private SerializableTransport _currentSerializedRowPacket;
-    private final ConnectionConfiguration _connectionConfiguration;
-    private boolean _lastPartReached;
-    private SQLException _lastOccurredException = null;
+    private ResultSet resultSet;
+    private SerializableTransport currentSerializedRowPacket;
+    private final ConnectionConfiguration connectionConfiguration;
+    private boolean lastPartReached;
+    private SQLException lastOccurredException = null;
 
     ResultSetHolder(ResultSet resultSet, ConnectionConfiguration config, boolean lastPartReached) throws SQLException {
-        _resultSet = resultSet;
-        _connectionConfiguration = config;
-        _lastPartReached = lastPartReached;
-        if(!_lastPartReached) {
-            synchronized(_lock) {
+        this.resultSet = resultSet;
+        this.connectionConfiguration = config;
+        this.lastPartReached = lastPartReached;
+        if(!this.lastPartReached) {
+            synchronized(lock) {
                 readNextRowPacket();
             }
         }
     }
 
     public ResultSetMetaData getMetaData() throws SQLException {
-        synchronized (_lock) {
-            return _resultSet.getMetaData();
+        synchronized (lock) {
+            return resultSet.getMetaData();
         }
     }
 
     public void close() throws SQLException {
-        synchronized (_lock) {
-            _resultSet.close();
-            _resultSet = null;
+        synchronized (lock) {
+            resultSet.close();
+            resultSet = null;
         }
     }
 
     public SerializableTransport nextRowPacket() throws SQLException {
-        synchronized (_lock) {
+        synchronized (lock) {
             // If the reader thread is still running we must wait
             // for the lock to be released by the reader
-            while(_readerThreadIsRunning) {
+            while(readerThreadIsRunning) {
                 try {
                     // Wait for the reader thread to finish
-                    _lock.wait();
+                    lock.wait();
                 } catch (InterruptedException e) {
                     String msg = "Reader thread interrupted unexpectedly";
                     // Some unexpected exception occured, we must leave the loop here as the
                     // termination flag might not be reset to false.
-                    _logger.error(msg, e);
-                    _lastOccurredException = new SQLException(msg);
+                    logger.error(msg, e);
+                    lastOccurredException = new SQLException(msg);
                     break;
                 }
             }
 
             // If any exception occured in the worker thread it will
             // be delivered to the client as a normal SQL exception
-            if(_lastOccurredException != null) {
-                throw _lastOccurredException;
+            if(lastOccurredException != null) {
+                throw lastOccurredException;
             }
 
             // Remember current row packet as the result
-            SerializableTransport result = _currentSerializedRowPacket;
+            SerializableTransport result = currentSerializedRowPacket;
             // Start next reader thread
             readNextRowPacket();
             // Return the result
@@ -90,45 +90,45 @@ public class ResultSetHolder {
     }
 
     private void readNextRowPacket() throws SQLException {
-        if(_resultSet != null && !_lastPartReached) {
+        if(resultSet != null && !lastPartReached) {
             // Start the thread
             try {
-                _connectionConfiguration.execute(new Runnable() {
+                connectionConfiguration.execute(new Runnable() {
                     public void run() {
                         // Aquire lock immediately
-                        synchronized (_lock) {
+                        synchronized (lock) {
                             try {
                                 // When the ResultSet is null here, the client closed the ResultSet concurrently right
                                 // after the upper check "_resultSet != null".
-                                if(_resultSet != null) {
-                                    RowPacket rowPacket = new RowPacket(_connectionConfiguration.getRowPacketSize(), false);
+                                if(resultSet != null) {
+                                    RowPacket rowPacket = new RowPacket(connectionConfiguration.getRowPacketSize(), false);
                                     // Populate the new RowPacket using the ResultSet
-                                    _lastPartReached = rowPacket.populate(_resultSet);
-                                    _currentSerializedRowPacket = new SerializableTransport(rowPacket, _connectionConfiguration.getCompressionModeAsInt(),
-                                            _connectionConfiguration.getCompressionThreshold());
+                                    lastPartReached = rowPacket.populate(resultSet);
+                                    currentSerializedRowPacket = new SerializableTransport(rowPacket, connectionConfiguration.getCompressionModeAsInt(),
+                                            connectionConfiguration.getCompressionThreshold());
                                 }
                             } catch (SQLException e) {
                                 // Just remember the exception, it will be thrown at
                                 // the next call to nextRowPacket
-                                _lastOccurredException = e;
+                                lastOccurredException = e;
                             } finally {
-                                _readerThreadIsRunning = false;
+                                readerThreadIsRunning = false;
                                 // Notify possibly waiting subsequent Readers
-                                _lock.notify();
+                                lock.notify();
                             }
                         }
                     }
                 });
 
                 // Set the flag that the reader thread is considered to be running.
-                _readerThreadIsRunning = true;
+                readerThreadIsRunning = true;
             } catch (InterruptedException e) {
                 String msg = "Reader thread interrupted unexpectedly";
-                _logger.error(msg, e);
+                logger.error(msg, e);
                 throw new SQLException(msg);
             }
         } else {
-            _currentSerializedRowPacket = null;
+            currentSerializedRowPacket = null;
         }
     }
 }

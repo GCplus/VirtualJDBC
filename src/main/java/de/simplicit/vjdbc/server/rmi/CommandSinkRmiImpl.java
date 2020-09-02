@@ -19,21 +19,21 @@ import de.simplicit.vjdbc.server.command.CommandProcessor;
 public class CommandSinkRmiImpl extends UnicastRemoteObject implements CommandSinkRmi, Unreferenced {
     private static final long serialVersionUID = 3257566187649840185L;
     
-    private final CommandProcessor _processor;
+    private final CommandProcessor processor;
 
     public CommandSinkRmiImpl(int remotingPort) throws RemoteException {
         super(remotingPort);
-        _processor = CommandProcessor.getInstance();
+        this.processor = CommandProcessor.getInstance();
     }
 
     public void unreferenced() {
     }
 
     public UIDEx connect(String url, Properties props, Properties clientInfo, CallingContext ctx) throws SQLException, RemoteException {
-        return _processor.createConnection(url, props, clientInfo, ctx);
+        return processor.createConnection(url, props, clientInfo, ctx);
     }
 
     public Object process(Long connuid, Long uid, Command cmd, CallingContext ctx) throws SQLException, RemoteException {
-        return _processor.process(connuid, uid, cmd, ctx);
+        return processor.process(connuid, uid, cmd, ctx);
     }
 }

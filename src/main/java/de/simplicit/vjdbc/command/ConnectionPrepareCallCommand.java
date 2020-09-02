@@ -13,55 +13,55 @@ import java.sql.SQLException;
 public class ConnectionPrepareCallCommand implements Command {
     private static final long serialVersionUID = 3258125843279655728L;
 
-    private String _sql;
-    private Integer _resultSetType;
-    private Integer _resultSetConcurrency;
-    private Integer _resultSetHoldability;
+    private String sql;
+    private Integer resultSetType;
+    private Integer resultSetConcurrency;
+    private Integer resultSetHoldability;
 
     public ConnectionPrepareCallCommand() {
     }
 
     public ConnectionPrepareCallCommand(String sql) {
-        _sql = sql;
+        this.sql = sql;
     }
 
     public ConnectionPrepareCallCommand(String sql, int resultSetType, int resultSetConcurrency) {
-        _sql = sql;
-        _resultSetType = resultSetType;
-        _resultSetConcurrency = resultSetConcurrency;
+        this.sql = sql;
+        this.resultSetType = resultSetType;
+        this.resultSetConcurrency = resultSetConcurrency;
     }
 
     public ConnectionPrepareCallCommand(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
-        _sql = sql;
-        _resultSetType = resultSetType;
-        _resultSetConcurrency = resultSetConcurrency;
-        _resultSetHoldability = resultSetHoldability;
+        this.sql = sql;
+        this.resultSetType = resultSetType;
+        this.resultSetConcurrency = resultSetConcurrency;
+        this.resultSetHoldability = resultSetHoldability;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeUTF(_sql);
-        out.writeObject(_resultSetType);
-        out.writeObject(_resultSetConcurrency);
-        out.writeObject(_resultSetHoldability);
+        out.writeUTF(sql);
+        out.writeObject(resultSetType);
+        out.writeObject(resultSetConcurrency);
+        out.writeObject(resultSetHoldability);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _sql = in.readUTF();
-        _resultSetType = (Integer)in.readObject();
-        _resultSetConcurrency = (Integer)in.readObject();
-        _resultSetHoldability = (Integer)in.readObject();
+        sql = in.readUTF();
+        resultSetType = (Integer)in.readObject();
+        resultSetConcurrency = (Integer)in.readObject();
+        resultSetHoldability = (Integer)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         // Resolve and check the query
-        String sql = ctx.resolveOrCheckQuery(_sql);
+        String sql = ctx.resolveOrCheckQuery(this.sql);
         // Switch to the correct call
-        if(_resultSetType != null && _resultSetConcurrency != null) {
-            if(_resultSetHoldability != null) {
-                return ((Connection) target).prepareCall(sql, _resultSetType, _resultSetConcurrency, _resultSetHoldability);
+        if(resultSetType != null && resultSetConcurrency != null) {
+            if(resultSetHoldability != null) {
+                return ((Connection) target).prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
             }
             else {
-                return ((Connection) target).prepareCall(sql, _resultSetType, _resultSetConcurrency);
+                return ((Connection) target).prepareCall(sql, resultSetType, resultSetConcurrency);
             }
         }
         else {

@@ -16,20 +16,20 @@ import de.simplicit.vjdbc.servlet.RequestModifier;
  *
  */
 final class RequestModifierJakartaHttpClient implements RequestModifier {
-    private final PostMethod _postMethod;
+    private final PostMethod postMethod;
     
     /**
      * Package visibility, doesn't make sense for other packages.
      * @param {urlConnection} Wrapped URLConnection
      */
     RequestModifierJakartaHttpClient(PostMethod postMethod) {
-        _postMethod = postMethod;
+        this.postMethod = postMethod;
     }
     
     /* (non-Javadoc)
      * @see de.simplicit.vjdbc.servlet.RequestModifier#addRequestProperty(java.lang.String, java.lang.String)
      */
     public void addRequestHeader(String key, String value) {
-        _postMethod.addRequestHeader(key, value);
+        postMethod.addRequestHeader(key, value);
     }
 }

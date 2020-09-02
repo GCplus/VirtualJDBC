@@ -17,9 +17,9 @@ import java.util.zip.Deflater;
 public class SerializableTransport implements Externalizable {
     static final long serialVersionUID = -5634734498572640609L;
 
-    private boolean _isCompressed;
-    private Object _transportee;
-    private transient Object _original;
+    private boolean isCompressed;
+    private Object transportee;
+    private transient Object original;
 
     public SerializableTransport() {
     }
@@ -33,15 +33,15 @@ public class SerializableTransport implements Externalizable {
     }
 
     public Object getTransportee() throws IOException, ClassNotFoundException {
-        if(_original == null) {
-            if(_isCompressed) {
+        if(original == null) {
+            if(isCompressed) {
                 inflate();
             } else {
-                _original = _transportee;
+                original = transportee;
             }
         }
 
-        return _original;
+        return original;
     }
 
     private void deflate(Object crs, int compressionMode, long minimumSize) {
@@ -49,35 +49,35 @@ public class SerializableTransport implements Externalizable {
             try {
                 byte[] serializedObject = serializeObject(crs);
                 if(serializedObject.length >= minimumSize) {
-                    _transportee = Zipper.zip(serializedObject, compressionMode);
-                    _isCompressed = true;
+                    transportee = Zipper.zip(serializedObject, compressionMode);
+                    isCompressed = true;
                 } else {
-                    _transportee = crs;
-                    _isCompressed = false;
+                    transportee = crs;
+                    isCompressed = false;
                 }
             } catch(IOException e) {
-                _transportee = crs;
-                _isCompressed = false;
+                transportee = crs;
+                isCompressed = false;
             }
         } else {
-            _transportee = crs;
-            _isCompressed = false;
+            transportee = crs;
+            isCompressed = false;
         }
     }
 
     private void inflate() throws IOException, ClassNotFoundException {
-        byte[] unzipped = Zipper.unzip((byte[])_transportee);
-        _original = deserializeObject(unzipped);
+        byte[] unzipped = Zipper.unzip((byte[])transportee);
+        original = deserializeObject(unzipped);
     }
     
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _isCompressed = in.readBoolean();
-        _transportee = in.readObject();
+        isCompressed = in.readBoolean();
+        transportee = in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(_isCompressed);
-        out.writeObject(_transportee);
+        out.writeBoolean(isCompressed);
+        out.writeObject(transportee);
     }
 
     private static byte[] serializeObject(Object obj) throws IOException {

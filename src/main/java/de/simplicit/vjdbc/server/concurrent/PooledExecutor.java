@@ -354,27 +354,27 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   public static final long DEFAULT_KEEPALIVETIME = 60 * 1000;
 
   /** The maximum number of threads allowed in pool. **/
-  protected int maximumPoolSize_ = DEFAULT_MAXIMUMPOOLSIZE;
+  protected int maximumPoolSize = DEFAULT_MAXIMUMPOOLSIZE;
 
   /** The minumum number of threads to maintain in pool. **/
-  protected int minimumPoolSize_ = DEFAULT_MINIMUMPOOLSIZE;
+  protected int minimumPoolSize = DEFAULT_MINIMUMPOOLSIZE;
 
   /**  Current pool size.  **/
-  protected int poolSize_ = 0;
+  protected int poolSize = 0;
 
   /** The maximum time for an idle thread to wait for new task. **/
-  protected long keepAliveTime_ = DEFAULT_KEEPALIVETIME;
+  protected long keepAliveTime = DEFAULT_KEEPALIVETIME;
 
   /** 
    * Shutdown flag - latches true when a shutdown method is called 
    * in order to disable queuing/handoffs of new tasks.
    **/
-  protected boolean shutdown_ = false;
+  protected boolean shutdown = false;
 
   /**
    * The channel used to hand off the command to a thread in the pool.
    **/
-  protected final Channel handOff_;
+  protected final Channel handOff;
 
   /**
    * The set of active threads, declared as a map from workers to
@@ -382,10 +382,10 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * may also be useful in subclasses that need to perform other
    * thread management chores.
    **/
-  protected final Map threads_;
+  protected final Map threads;
 
   /** The current handler for unserviceable requests. **/
-  protected BlockedExecutionHandler blockedExecutionHandler_;
+  protected BlockedExecutionHandler blockedExecutionHandler;
 
   /** 
    * Create a new pool with all default settings
@@ -419,10 +419,10 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    **/
 
   public PooledExecutor(Channel channel, int maxPoolSize) {
-    maximumPoolSize_ = maxPoolSize;
-    handOff_ = channel;
+    maximumPoolSize = maxPoolSize;
+    handOff = channel;
     runWhenBlocked();
-    threads_ = new HashMap();
+    threads = new HashMap();
   }
   
   /** 
@@ -431,7 +431,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * blocking policy once this limit is exceeded.
    **/
   public synchronized int getMaximumPoolSize() { 
-    return maximumPoolSize_; 
+    return maximumPoolSize;
   }
 
   /** 
@@ -446,7 +446,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    **/
   public synchronized void setMaximumPoolSize(int newMaximum) { 
     if (newMaximum <= 0) throw new IllegalArgumentException();
-    maximumPoolSize_ = newMaximum; 
+    maximumPoolSize = newMaximum;
   }
 
   /** 
@@ -456,7 +456,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * to handle this request.
    **/
   public synchronized int getMinimumPoolSize() { 
-    return minimumPoolSize_; 
+    return minimumPoolSize;
   }
 
   /** 
@@ -468,7 +468,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    **/
   public synchronized void setMinimumPoolSize(int newMinimum) { 
     if (newMinimum < 0) throw new IllegalArgumentException();
-    minimumPoolSize_ = newMinimum; 
+    minimumPoolSize = newMinimum;
   }
   
   /** 
@@ -477,7 +477,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * returning
    **/
   public synchronized int getPoolSize() { 
-    return poolSize_; 
+    return poolSize;
   }
 
   /** 
@@ -486,7 +486,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * value means not to wait at all.
    **/
   public synchronized long getKeepAliveTime() { 
-    return keepAliveTime_; 
+    return keepAliveTime;
   }
 
   /** 
@@ -495,17 +495,17 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * value means not to wait at all.
    **/
   public synchronized void setKeepAliveTime(long msecs) { 
-    keepAliveTime_ = msecs; 
+    keepAliveTime = msecs;
   }
 
   /** Get the handler for blocked execution **/
   public synchronized BlockedExecutionHandler getBlockedExecutionHandler() {
-    return blockedExecutionHandler_;
+    return blockedExecutionHandler;
   }
 
   /** Set the handler for blocked execution **/
   public synchronized void setBlockedExecutionHandler(BlockedExecutionHandler h) {
-    blockedExecutionHandler_ = h;
+    blockedExecutionHandler = h;
   }
 
   /**
@@ -515,8 +515,8 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   protected void addThread(Runnable command) {
     Worker worker = new Worker(command);
     Thread thread = getThreadFactory().newThread(worker);
-    threads_.put(worker, thread);
-    ++poolSize_;
+    threads.put(worker, thread);
+    ++poolSize;
     thread.start();
   }
 
@@ -529,7 +529,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
     int ncreated = 0;
     for (int i = 0; i < numberOfThreads; ++i) {
       synchronized(this) { 
-        if (poolSize_ < maximumPoolSize_) {
+        if (poolSize < maximumPoolSize) {
           addThread(null);
           ++ncreated;
         }
@@ -548,7 +548,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * themselves respond to interrupts.
    **/
   public synchronized void interruptAll() {
-    for (Object o : threads_.values()) {
+    for (Object o : threads.values()) {
       Thread t = (Thread) o;
       t.interrupt();
     }
@@ -571,8 +571,8 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    */
   public synchronized void shutdownNow(BlockedExecutionHandler handler) {
     setBlockedExecutionHandler(handler);
-    shutdown_ = true; // don't allow new tasks
-    minimumPoolSize_ = maximumPoolSize_ = 0; // don't make new threads
+    shutdown = true; // don't allow new tasks
+    minimumPoolSize = maximumPoolSize = 0; // don't make new threads
     interruptAll(); // interrupt all existing threads
   }
 
@@ -593,9 +593,9 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    **/
   public synchronized void shutdownAfterProcessingCurrentlyQueuedTasks(BlockedExecutionHandler handler) {
     setBlockedExecutionHandler(handler);
-    shutdown_ = true;
-    if (poolSize_ == 0) // disable new thread construction when idle
-      minimumPoolSize_ = maximumPoolSize_ = 0;
+    shutdown = true;
+    if (poolSize == 0) // disable new thread construction when idle
+      minimumPoolSize = maximumPoolSize = 0;
   }
 
   /** 
@@ -603,7 +603,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * threads.
    */
   public synchronized boolean isTerminatedAfterShutdown() {
-    return shutdown_ && poolSize_ == 0;
+    return shutdown && poolSize == 0;
   }
 
   /**
@@ -618,9 +618,9 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * @exception InterruptedException if the current thread has been interrupted in the course of waiting
    */
   public synchronized boolean awaitTerminationAfterShutdown(long maxWaitTime) throws InterruptedException {
-    if (!shutdown_)
+    if (!shutdown)
       throw new IllegalStateException();
-    if (poolSize_ == 0)
+    if (poolSize == 0)
       return true;
     long waitTime = maxWaitTime;
     if (waitTime <= 0)
@@ -628,7 +628,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
     long start = System.currentTimeMillis();
     for (;;) {
       wait(waitTime);
-      if (poolSize_ == 0)
+      if (poolSize == 0)
         return true;
       waitTime = maxWaitTime - (System.currentTimeMillis() - start);
       if (waitTime <= 0) 
@@ -645,9 +645,9 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * @exception InterruptedException if the current thread has been interrupted in the course of waiting
    */
   public synchronized void awaitTerminationAfterShutdown() throws InterruptedException {
-    if (!shutdown_)
+    if (!shutdown)
       throw new IllegalStateException();
-    while (poolSize_ > 0)
+    while (poolSize > 0)
       wait();
   }
 
@@ -673,7 +673,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
     Vector tasks = new Vector();
     for (;;) {
       try {
-        Object x = handOff_.poll(0);
+        Object x = handOff.poll(0);
         if (x == null) 
           break;
         else
@@ -691,17 +691,17 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Cleanup method called upon termination of worker thread.
    **/
   protected synchronized void workerDone(Worker w) {
-    threads_.remove(w);
-    if (--poolSize_ == 0 && shutdown_) { 
-      maximumPoolSize_ = minimumPoolSize_ = 0; // disable new threads
+    threads.remove(w);
+    if (--poolSize == 0 && shutdown) {
+      maximumPoolSize = minimumPoolSize = 0; // disable new threads
       notifyAll(); // notify awaitTerminationAfterShutdown
     }
 
     // Create a replacement if needed
-    if (poolSize_ == 0 || poolSize_ < minimumPoolSize_) {
+    if (poolSize == 0 || poolSize < minimumPoolSize) {
       try {
-         Runnable r = (Runnable)(handOff_.poll(0));
-         if (r != null && !shutdown_) // just consume task if shut down
+         Runnable r = (Runnable)(handOff.poll(0));
+         if (r != null && !shutdown) // just consume task if shut down
            addThread(r);
       } catch(InterruptedException ie) {
       ie.printStackTrace();
@@ -715,14 +715,14 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   protected Runnable getTask() throws InterruptedException {
     long waitTime;
     synchronized(this) {
-      if (poolSize_ > maximumPoolSize_) // Cause to die if too many threads
+      if (poolSize > maximumPoolSize) // Cause to die if too many threads
         return null;
-      waitTime = (shutdown_)? 0 : keepAliveTime_;
+      waitTime = (shutdown)? 0 : keepAliveTime;
     }
     if (waitTime >= 0) 
-      return (Runnable)(handOff_.poll(waitTime));
+      return (Runnable)(handOff.poll(waitTime));
     else 
-      return (Runnable)(handOff_.take());
+      return (Runnable)(handOff.take());
   }
   
 
@@ -730,14 +730,14 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Class defining the basic run loop for pooled threads.
    **/
   protected class Worker implements Runnable {
-    protected Runnable firstTask_;
+    protected Runnable firstTask;
 
-    protected Worker(Runnable firstTask) { firstTask_ = firstTask; }
+    protected Worker(Runnable firstTask) { this.firstTask = firstTask; }
 
     public void run() {
       try {
-        Runnable task = firstTask_;
-        firstTask_ = null; // enable GC
+        Runnable task = firstTask;
+        firstTask = null; // enable GC
 
         if (task != null) {
           task.run();
@@ -794,10 +794,10 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   protected class WaitWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) throws InterruptedException{
       synchronized(PooledExecutor.this) {
-        if (shutdown_)
+        if (shutdown)
           return true;
       }
-      handOff_.put(command);
+      handOff.put(command);
       return true;
     }
   }
@@ -851,8 +851,8 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    **/
   protected class DiscardOldestWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) throws InterruptedException{
-      handOff_.poll(0);
-      if (!handOff_.offer(command, 0))
+      handOff.poll(0);
+      if (!handOff.offer(command, 0))
         command.run();
       return true;
     }
@@ -874,22 +874,22 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   public void execute(Runnable command) throws InterruptedException {
     for (;;) {
       synchronized(this) { 
-        if (!shutdown_) {
-          int size = poolSize_;
+        if (!shutdown) {
+          int size = poolSize;
 
           // Ensure minimum number of threads
-          if (size < minimumPoolSize_) {
+          if (size < minimumPoolSize) {
             addThread(command);
             return;
           }
           
           // Try to give to existing thread
-          if (handOff_.offer(command, 0)) { 
+          if (handOff.offer(command, 0)) {
             return;
           }
           
           // If cannot handoff and still under maximum, create new thread
-          if (size < maximumPoolSize_) {
+          if (size < maximumPoolSize) {
             addThread(command);
             return;
           }

@@ -17,7 +17,7 @@ import java.util.Map;
  * on the serverside by just transporting the array identifier instead of big objects.
  */
 public class ParameterTypeCombinations {
-    public static final Class[][] _typeCombinations = new Class[][]{
+    public static final Class[][] typeCombinations = new Class[][]{
         new Class[0], // 0
         new Class[]{Boolean.TYPE}, // 1
         new Class[]{Integer.TYPE}, // 2

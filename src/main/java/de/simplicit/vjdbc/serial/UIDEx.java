@@ -14,71 +14,71 @@ public class UIDEx implements Externalizable {
 
     private static long s_cookie = 1;
     
-    private Long _uid = s_cookie++;
-    private int _value1 = Integer.MIN_VALUE;
-    private int _value2 = Integer.MIN_VALUE;
+    private Long uid = s_cookie++;
+    private int value1 = Integer.MIN_VALUE;
+    private int value2 = Integer.MIN_VALUE;
 
     public UIDEx() {
     }
 
     public UIDEx(int value1) {
-        _value1 = value1;
+        this.value1 = value1;
     }
 
     public UIDEx(int value1, int value2) {
-        _value1 = value1;
-        _value2 = value2;
+        this.value1 = value1;
+        this.value2 = value2;
     }
 
     public UIDEx(Long uid, int value1) {
-        _uid = uid;
-        _value1 = value1;
+        this.uid = uid;
+        this.value1 = value1;
     }
 
     public UIDEx(Long uid, int value1, int value2) {
-        _uid = uid;
-        _value1 = value1;
-        _value2 = value2;
+        this.uid = uid;
+        this.value1 = value1;
+        this.value2 = value2;
     }
 
     public Long getUID() {
-        return _uid;
+        return uid;
     }
 
     public int getValue1() {
-        return _value1;
+        return value1;
     }
 
     public int getValue2() {
-        return _value2;
+        return value2;
     }
 
     public void resetValues() {
-        _value1 = Integer.MIN_VALUE;
-        _value2 = Integer.MIN_VALUE;
+        value1 = Integer.MIN_VALUE;
+        value2 = Integer.MIN_VALUE;
     }
 
     public int hashCode() {
-        return _uid.hashCode();
+        return uid.hashCode();
     }
 
     public boolean equals(Object obj) {
-        return (obj instanceof UIDEx) && (_uid.equals(((UIDEx)obj)._uid));
+        return (obj instanceof UIDEx) && (uid.equals(((UIDEx)obj).uid));
     }
     
     public String toString() {
-        return _uid.toString();
+        return uid.toString();
     }
     
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeLong(_uid);
-        out.writeInt(_value1);
-        out.writeInt(_value2);
+        out.writeLong(uid);
+        out.writeInt(value1);
+        out.writeInt(value2);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _uid = in.readLong();
-        _value1 = in.readInt();
-        _value2 = in.readInt();
+        uid = in.readLong();
+        value1 = in.readInt();
+        value2 = in.readInt();
     }
 }

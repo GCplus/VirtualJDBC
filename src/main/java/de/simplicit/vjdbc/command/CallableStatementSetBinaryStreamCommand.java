@@ -16,59 +16,59 @@ import java.sql.SQLException;
 public class CallableStatementSetBinaryStreamCommand implements Command {
     static final long serialVersionUID = 4264932633701227941L;
 
-    private int _index;
-    private int _length;
-    private String _parameterName;
-    private byte[] _byteArray;
+    private int index;
+    private int length;
+    private String parameterName;
+    private byte[] byteArray;
 
     public CallableStatementSetBinaryStreamCommand() {
     }
 
     public CallableStatementSetBinaryStreamCommand(int index, InputStream is) throws IOException {
-        _index = index;
-        _byteArray = StreamSerializer.toByteArray(is);
-        _length = _byteArray.length;
+        this.index = index;
+        this.byteArray = StreamSerializer.toByteArray(is);
+        this.length = byteArray.length;
     }
 
     public CallableStatementSetBinaryStreamCommand(String paramName, InputStream is) throws IOException {
-        _parameterName = paramName;
-        _byteArray = StreamSerializer.toByteArray(is);
-        _length = _byteArray.length;
+        this.parameterName = paramName;
+        this.byteArray = StreamSerializer.toByteArray(is);
+        this.length = byteArray.length;
     }
 
     public CallableStatementSetBinaryStreamCommand(int index, InputStream is, int len) throws IOException {
-        _index = index;
-        _byteArray = StreamSerializer.toByteArray(is);
-        _length = len;
+        this.index = index;
+        this.byteArray = StreamSerializer.toByteArray(is);
+        this.length = len;
     }
 
     public CallableStatementSetBinaryStreamCommand(String paramName, InputStream is, int len) throws IOException {
-        _parameterName = paramName;
-        _byteArray = StreamSerializer.toByteArray(is);
-        _length = len;
+        this.parameterName = paramName;
+        this.byteArray = StreamSerializer.toByteArray(is);
+        this.length = len;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeInt(_length);
-        out.writeObject(_parameterName);
-        out.writeObject(_byteArray);
+        out.writeInt(index);
+        out.writeInt(length);
+        out.writeObject(parameterName);
+        out.writeObject(byteArray);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _length = in.readInt();
-        _parameterName = (String)in.readObject();
-        _byteArray = (byte[])in.readObject();
+        index = in.readInt();
+        length = in.readInt();
+        parameterName = (String)in.readObject();
+        byteArray = (byte[])in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
-        InputStream is = StreamSerializer.toInputStream(_byteArray);
-        if(_parameterName != null) {
-            cstmt.setBinaryStream(_parameterName, is, _length);
+        InputStream is = StreamSerializer.toInputStream(byteArray);
+        if(parameterName != null) {
+            cstmt.setBinaryStream(parameterName, is, length);
         } else {
-            cstmt.setBinaryStream(_index, is, _length);
+            cstmt.setBinaryStream(index, is, length);
         }
 
         return null;

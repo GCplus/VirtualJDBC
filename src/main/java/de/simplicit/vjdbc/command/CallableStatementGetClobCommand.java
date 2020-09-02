@@ -17,37 +17,37 @@ import java.sql.SQLException;
 public class CallableStatementGetClobCommand implements Command {
     static final long serialVersionUID = 8230491873823084213L;
 
-    private int _index;
-    private String _parameterName;
+    private int index;
+    private String parameterName;
 
     public CallableStatementGetClobCommand() {
     }
 
     public CallableStatementGetClobCommand(int index) {
-        _index = index;
+        this.index = index;
     }
 
     public CallableStatementGetClobCommand(String paramName) {
-        _parameterName = paramName;
+        this.parameterName = paramName;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeObject(_parameterName);
+        out.writeInt(this.index);
+        out.writeObject(this.parameterName);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _parameterName = (String)in.readObject();
+        index = in.readInt();
+        parameterName = (String)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
         Clob result;
-        if(_parameterName != null) {
-            result = cstmt.getClob(_parameterName);
+        if(parameterName != null) {
+            result = cstmt.getClob(parameterName);
         } else {
-            result = cstmt.getClob(_index);
+            result = cstmt.getClob(index);
         }
         return new SerializableTransport(new SerialClob(result), ctx.getCompressionMode(), ctx.getCompressionThreshold());
     }

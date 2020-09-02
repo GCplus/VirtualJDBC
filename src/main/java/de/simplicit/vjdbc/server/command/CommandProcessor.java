@@ -36,22 +36,22 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
  * client to the responsible connection object.
  */
 public class CommandProcessor {
-    private static final Log _logger = LogFactory.getLog(CommandProcessor.class);
-    private static CommandProcessor _singleton;
+    private static final Log logger = LogFactory.getLog(CommandProcessor.class);
+    private static CommandProcessor singleton;
 
     private static boolean closeConnectionsOnKill = true;
     private static long s_connectionId = 1;
-    private Timer _timer = null;
-    private final Map<Long, ConnectionEntry> _connectionEntries =
+    private Timer timer = null;
+    private final Map<Long, ConnectionEntry> connectionEntries =
         Collections.synchronizedMap(new HashMap<Long, ConnectionEntry>());
-    private final OcctConfiguration _occtConfig;
+    private final OcctConfiguration occtConfig;
 
     public static CommandProcessor getInstance() {
-        if(_singleton == null) {
-            _singleton = new CommandProcessor();
+        if(singleton == null) {
+            singleton = new CommandProcessor();
             installShutdownHook();
         }
-        return _singleton;
+        return singleton;
     }
 
     public static void setDontCloseConnectionsOnKill()
@@ -60,16 +60,16 @@ public class CommandProcessor {
     }
 
     private CommandProcessor() {
-        _occtConfig = VJdbcConfiguration.singleton().getOcctConfiguration();
+        occtConfig = VJdbcConfiguration.singleton().getOcctConfiguration();
 
-        if(_occtConfig.getCheckingPeriodInMillis() > 0) {
-            _logger.debug("OCCT starts");
+        if(occtConfig.getCheckingPeriodInMillis() > 0) {
+            logger.debug("OCCT starts");
 
-            _timer = new Timer(true);
-            _timer.scheduleAtFixedRate(new OrphanedConnectionCollectorTask(), _occtConfig.getCheckingPeriodInMillis(), _occtConfig
+            timer = new Timer(true);
+            timer.scheduleAtFixedRate(new OrphanedConnectionCollectorTask(), occtConfig.getCheckingPeriodInMillis(), occtConfig
                     .getCheckingPeriodInMillis());
         } else {
-            _logger.info("OCCT is turned off");
+            logger.info("OCCT is turned off");
         }
     }
 
@@ -86,7 +86,7 @@ public class CommandProcessor {
         ConnectionConfiguration connectionConfiguration = VJdbcConfiguration.singleton().getConnection(url);
 
         if(connectionConfiguration != null) {
-            _logger.debug("Found connection configuration " + connectionConfiguration.getId());
+            logger.debug("Found connection configuration " + connectionConfiguration.getId());
 
             Connection conn;
             try {
@@ -95,12 +95,12 @@ public class CommandProcessor {
                 throw SQLExceptionHelper.wrap(e);
             }
 
-            _logger.debug("Created connection, registering it now ...");
+            logger.debug("Created connection, registering it now ...");
 
             UIDEx reg = registerConnection(conn, connectionConfiguration, clientInfo, ctx);
 
-            if(_logger.isDebugEnabled()) {
-                _logger.debug("Registered " + conn.getClass().getName() + " with UID " + reg);
+            if(logger.isDebugEnabled()) {
+                logger.debug("Registered " + conn.getClass().getName() + " with UID " + reg);
             }
 
             return reg;
@@ -110,7 +110,7 @@ public class CommandProcessor {
     }
 
     public ConnectionEntry getConnectionEntry(long connid) {
-        return _connectionEntries.get(connid);
+        return connectionEntries.get(connid);
     }
 
     public synchronized UIDEx registerConnection(Connection conn, ConnectionConfiguration config, Properties clientInfo, CallingContext ctx) {
@@ -118,7 +118,7 @@ public class CommandProcessor {
         // calling-contexts should be delivered at all
         Long connid = s_connectionId++;
         UIDEx reg = new UIDEx(connid, config.isTraceOrphanedObjects() ? 1 : 0);
-        _connectionEntries.put(connid, new ConnectionEntry(connid, conn, config, clientInfo, ctx));
+        connectionEntries.put(connid, new ConnectionEntry(connid, conn, config, clientInfo, ctx));
         return reg;
     }
 
@@ -138,19 +138,19 @@ public class CommandProcessor {
     }
 
     public void destroy() {
-        _logger.info("Destroying CommandProcessor ...");
+        logger.info("Destroying CommandProcessor ...");
 
         // Stop the timer
-        if(_timer != null) {
-            _timer.cancel();
+        if(timer != null) {
+            timer.cancel();
         }
 
         if (closeConnectionsOnKill) {
 
             // Copy ConnectionEntries for closing
-            ArrayList copyOfConnectionEntries = new ArrayList(_connectionEntries.values());
+            ArrayList copyOfConnectionEntries = new ArrayList(connectionEntries.values());
             // and clear the map immediately
-            _connectionEntries.clear();
+            connectionEntries.clear();
 
             for (Object copyOfConnectionEntry : copyOfConnectionEntries) {
                 ConnectionEntry connectionEntry = (ConnectionEntry) copyOfConnectionEntry;
@@ -159,23 +159,23 @@ public class CommandProcessor {
                 }
             }
         } else {
-            _connectionEntries.clear();
+            connectionEntries.clear();
         }
-        _singleton = null;
+        singleton = null;
 
-        _logger.info("CommandProcessor successfully destroyed");
+        logger.info("CommandProcessor successfully destroyed");
     }
 
     public Object process(Long connuid, Long uid, Command cmd, CallingContext ctx) throws SQLException {
         Object result = null;
 
-        if(_logger.isDebugEnabled()) {
-            _logger.debug(cmd);
+        if(logger.isDebugEnabled()) {
+            logger.debug(cmd);
         }
 
         if(connuid != null) {
             // Retrieving connection entry for the UID
-            ConnectionEntry connentry = _connectionEntries.get(connuid);
+            ConnectionEntry connentry = connectionEntries.get(connuid);
 
             if(connentry != null) {
                 try {
@@ -191,14 +191,14 @@ public class CommandProcessor {
                         result = connentry.executeCommand(uid, cmd, ctx);
                     }
                 } catch (SQLException e) {
-                    if(_logger.isDebugEnabled()) {
-                        _logger.debug("SQLException", e);
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("SQLException", e);
                     }
                     // Wrap the SQLException into something that can be safely thrown
                     throw SQLExceptionHelper.wrap(e);
                 } catch (Throwable e) {
                     // Serious runtime error occured, wrap it in an SQLException
-                    _logger.error(e);
+                    logger.error(e);
                     throw SQLExceptionHelper.wrap(e);
                 } finally {
                     // When there are no more JDBC objects left in the connection entry (that
@@ -207,24 +207,24 @@ public class CommandProcessor {
                     if(!connentry.hasJdbcObjects()) {
                         // As remove can be called asynchronously here, we must check the
                         // return value.
-                        if(_connectionEntries.remove(connuid) != null) {
-                            _logger.info("Connection " + connuid + " closed, statistics:");
+                        if(connectionEntries.remove(connuid) != null) {
+                            logger.info("Connection " + connuid + " closed, statistics:");
                             connentry.traceConnectionStatistics();
                         }
                     }
                 }
             } else {
                 if(cmd instanceof DestroyCommand) {
-                    _logger.debug("Connection entry already gone, DestroyCommand will be ignored");
+                    logger.debug("Connection entry already gone, DestroyCommand will be ignored");
                 } else {
                     String msg = "Unknown connection entry " + connuid + " for command " + cmd.toString();
-                    _logger.error(msg);
+                    logger.error(msg);
                     throw new SQLException(msg);
                 }
             }
         } else {
             String msg = "Connection id is null";
-            _logger.fatal(msg);
+            logger.fatal(msg);
             throw new SQLException(msg);
         }
 
@@ -240,21 +240,21 @@ public class CommandProcessor {
     private class OrphanedConnectionCollectorTask extends TimerTask {
         public void run() {
             try {
-                _logger.debug("Checking for orphaned connections ...");
+                logger.debug("Checking for orphaned connections ...");
 
                 long millis = System.currentTimeMillis();
 
-                for(Iterator<Long> it = _connectionEntries.keySet().iterator(); it.hasNext();) {
+                for(Iterator<Long> it = connectionEntries.keySet().iterator(); it.hasNext();) {
                     Long key = it.next();
-                    ConnectionEntry connentry = _connectionEntries.get(key);
+                    ConnectionEntry connentry = connectionEntries.get(key);
 
                     // Synchronize here so that the process-Method doesn't
                     // access the same entry concurrently
                     synchronized (connentry) {
                         long idleTime = millis - connentry.getLastAccess();
 
-                        if(!connentry.isActive() && (idleTime > _occtConfig.getTimeoutInMillis())) {
-                            _logger.info("Closing orphaned connection " + key + " after being idle for about " + (idleTime / 1000) + "sec");
+                        if(!connentry.isActive() && (idleTime > occtConfig.getTimeoutInMillis())) {
+                            logger.info("Closing orphaned connection " + key + " after being idle for about " + (idleTime / 1000) + "sec");
                             // The close method doesn't throw an exception
                             connentry.close();
                             it.remove();
@@ -266,14 +266,14 @@ public class CommandProcessor {
                 // connection-entry map while this iteration is ongoing. We just ignore the
                 // exception and let the entry stay in the map until the next run of the
                 // OCCT (the last access time isn't modified until the next run).
-                if(_logger.isDebugEnabled()) {
+                if(logger.isDebugEnabled()) {
                     String msg = "ConcurrentModificationException in OCCT";
-                    _logger.debug(msg, e);
+                    logger.debug(msg, e);
                 }
             } catch (RuntimeException e) {
                 // Any other error will be propagated so that the timer task is stopped
                 String msg = "Unexpected Runtime-Exception in OCCT";
-                _logger.fatal(msg, e);
+                logger.fatal(msg, e);
             }
         }
     }

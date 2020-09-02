@@ -16,32 +16,32 @@ import java.sql.SQLException;
 public class ArrayParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 82417815012404533L;
 
-    private SerialArray _value;
+    private SerialArray value;
 
     public ArrayParameter() {
     }
     
     public ArrayParameter(Array value) throws SQLException {
-        _value = new SerialArray(value);
+        this.value = new SerialArray(value);
     }
     
     public SerialArray getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (SerialArray)in.readObject();
+        value = (SerialArray)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }    
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setArray(index, _value);
+        pstmt.setArray(index, value);
     }
 
     public String toString() {
-        return "Array: " + _value;
+        return "Array: " + value;
     }
 }

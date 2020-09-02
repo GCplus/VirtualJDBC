@@ -17,13 +17,13 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
  *
  */
 public abstract class AbstractServletCommandSinkClient implements CommandSink {
-    protected URL _url;
-    protected RequestEnhancer _requestEnhancer;
+    protected URL url;
+    protected RequestEnhancer requestEnhancer;
 
     public AbstractServletCommandSinkClient(String url, RequestEnhancer requestEnhancer) throws SQLException {
         try {
-            _url = new URL(url);
-            _requestEnhancer = requestEnhancer;
+            this.url = new URL(url);
+            this.requestEnhancer = requestEnhancer;
         } catch(IOException e) {
             throw SQLExceptionHelper.wrap(e);
         }

@@ -14,32 +14,32 @@ import java.sql.SQLException;
 public class BigDecimalParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -8577950851500487084L;
 
-    private BigDecimal _value;
+    private BigDecimal value;
 
     public BigDecimalParameter() {
     }
     
     public BigDecimalParameter(BigDecimal value) {
-        _value = value;
+        this.value = value;
     }
     
     public BigDecimal getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (BigDecimal)in.readObject();
+        value = (BigDecimal)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }    
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setBigDecimal(index, _value);
+        pstmt.setBigDecimal(index, value);
     }
 
     public String toString() {
-        return "BigDecimal: " + _value.toString();
+        return "BigDecimal: " + value.toString();
     }
 }

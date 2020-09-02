@@ -15,16 +15,16 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class CommandSinkRmiProxy implements CommandSink {
-    private CommandSinkRmi _targetSink;
+    private CommandSinkRmi targetSink;
 
     public CommandSinkRmiProxy(CommandSinkRmi target) {
-        _targetSink = target;
+        this.targetSink = target;
     }
 
     public UIDEx connect(String url, Properties props, Properties clientInfo, CallingContext ctx) throws SQLException {
-        if(_targetSink != null) {
+        if(targetSink != null) {
             try {
-                return _targetSink.connect(url, props, clientInfo, ctx);
+                return targetSink.connect(url, props, clientInfo, ctx);
             } catch (RemoteException e) {
                 throw SQLExceptionHelper.wrap(e);
             }
@@ -35,9 +35,9 @@ public class CommandSinkRmiProxy implements CommandSink {
     }
 
     public Object process(Long connuid, Long uid, Command cmd, CallingContext ctx) throws SQLException {
-        if(_targetSink != null) {
+        if(targetSink != null) {
             try {
-                return _targetSink.process(connuid, uid, cmd, ctx);
+                return targetSink.process(connuid, uid, cmd, ctx);
             } catch (RemoteException e) {
                 throw SQLExceptionHelper.wrap(e);
             }
@@ -47,6 +47,6 @@ public class CommandSinkRmiProxy implements CommandSink {
     }
 
     public void close() {
-        _targetSink = null;
+        targetSink = null;
     }
 }

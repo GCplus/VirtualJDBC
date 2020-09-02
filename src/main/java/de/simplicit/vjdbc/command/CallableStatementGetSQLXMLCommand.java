@@ -17,37 +17,37 @@ import java.sql.SQLException;
 public class CallableStatementGetSQLXMLCommand implements Command {
     static final long serialVersionUID = 4203440656745793953L;
 
-    private int _index;
-    private String _parameterName;
+    private int index;
+    private String parameterName;
 
     public CallableStatementGetSQLXMLCommand() {
     }
 
     public CallableStatementGetSQLXMLCommand(int index) {
-        _index = index;
+        this.index = index;
     }
 
     public CallableStatementGetSQLXMLCommand(String paramName) {
-        _parameterName = paramName;
+        this.parameterName = paramName;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeObject(_parameterName);
+        out.writeInt(index);
+        out.writeObject(parameterName);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _parameterName = (String)in.readObject();
+        index = in.readInt();
+        parameterName = (String)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
         SQLXML result;
-        if(_parameterName != null) {
-            result = cstmt.getSQLXML(_parameterName);
+        if(parameterName != null) {
+            result = cstmt.getSQLXML(parameterName);
         } else {
-            result = cstmt.getSQLXML(_index);
+            result = cstmt.getSQLXML(index);
         }
         return new SerializableTransport(new SerialSQLXML(result), ctx.getCompressionMode(), ctx.getCompressionThreshold());
     }

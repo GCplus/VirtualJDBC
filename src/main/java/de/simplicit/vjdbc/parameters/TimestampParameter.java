@@ -15,40 +15,40 @@ import java.util.Calendar;
 public class TimestampParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -3786979212713144035L;
 
-    private Timestamp _value;
-    private Calendar _calendar;
+    private Timestamp value;
+    private Calendar calendar;
     
     public TimestampParameter() {
     }
 
     public TimestampParameter(Timestamp value, Calendar cal) {
-        _value = value;
-        _calendar = cal;
+        this.value = value;
+        this.calendar = cal;
     }
     
     public Timestamp getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (Timestamp)in.readObject();
-        _calendar = (Calendar)in.readObject();
+        value = (Timestamp)in.readObject();
+        calendar = (Calendar)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
-        out.writeObject(_calendar);
+        out.writeObject(value);
+        out.writeObject(calendar);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        if(_calendar == null) {
-            pstmt.setTimestamp(index, _value);
+        if(calendar == null) {
+            pstmt.setTimestamp(index, value);
         } else {
-            pstmt.setTimestamp(index, _value, _calendar);
+            pstmt.setTimestamp(index, value, calendar);
         }
     }
 
     public String toString() {
-        return "Timestamp: " + _value;
+        return "Timestamp: " + value;
     }
 }

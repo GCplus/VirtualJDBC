@@ -15,16 +15,16 @@ public class ByteStreamParameter implements PreparedStatementParameter {
     public static final int TYPE_UNICODE = 2;
     public static final int TYPE_BINARY = 3;
 
-    private int _type;
-    private byte[] _value;
-    private long _length;
+    private int type;
+    private byte[] value;
+    private long length;
 
     public ByteStreamParameter() {
     }
 
     public ByteStreamParameter(int type, InputStream x, long length) throws SQLException {
-        _type = type;
-        _length = length;
+        this.type = type;
+        this.length = length;
 
         BufferedInputStream s = new BufferedInputStream(x);
         try {
@@ -36,11 +36,11 @@ public class ByteStreamParameter implements PreparedStatementParameter {
                     bos.write(buf, 0, br);
                 }
             }
-            _value = bos.toByteArray();
+            value = bos.toByteArray();
             // Adjust length to the amount of read bytes if the user provided
             // -1 as the length parameter
-            if(_length < 0) {
-                _length = _value.length;
+            if(length < 0) {
+                this.length = value.length;
             }
         } catch(IOException e) {
             throw new SQLException("InputStream conversion to byte-array failed");
@@ -54,42 +54,42 @@ public class ByteStreamParameter implements PreparedStatementParameter {
     }
 
     public byte[] getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _type = in.readInt();
-        _value = (byte[])in.readObject();
-        _length = in.readLong();
+        type = in.readInt();
+        value = (byte[])in.readObject();
+        length = in.readLong();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_type);
-        out.writeObject(_value);
-        out.writeLong(_length);
+        out.writeInt(type);
+        out.writeObject(value);
+        out.writeLong(length);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(_value);
+        ByteArrayInputStream bais = new ByteArrayInputStream(value);
 
-        switch(_type) {
+        switch(type) {
             case TYPE_ASCII:
-                pstmt.setAsciiStream(index, bais, _length);
+                pstmt.setAsciiStream(index, bais, length);
                 break;
 
             case TYPE_UNICODE:
                 // its ok to downcast here as there is no setUnicodeStream()
                 // variant with a long length value
-                pstmt.setUnicodeStream(index, bais, (int)_length);
+                pstmt.setUnicodeStream(index, bais, (int)length);
                 break;
 
             case TYPE_BINARY:
-                pstmt.setBinaryStream(index, bais, _length);
+                pstmt.setBinaryStream(index, bais, length);
                 break;
         }
     }
 
     public String toString() {
-        return "ByteStream: " + _length + " bytes";
+        return "ByteStream: " + length + " bytes";
     }
 }

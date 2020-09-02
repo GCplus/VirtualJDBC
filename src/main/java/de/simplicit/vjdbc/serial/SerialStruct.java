@@ -15,38 +15,38 @@ import java.util.Map;
 public class SerialStruct implements Struct, Externalizable {
     private static final long serialVersionUID = 3256444694312792625L;
 
-    private String _sqlTypeName;
-    private Object[] _attributes;
+    private String sqlTypeName;
+    private Object[] attributes;
 
     public SerialStruct() {
     }
 
     public SerialStruct(String typeName, Object[] attributes) {
-        _sqlTypeName = typeName;
-        _attributes = attributes;
+        this.sqlTypeName = typeName;
+        this.attributes = attributes;
     }
 
     public SerialStruct(Struct struct) throws SQLException {
-        _sqlTypeName = struct.getSQLTypeName();
-        _attributes = struct.getAttributes();
+        this.sqlTypeName = struct.getSQLTypeName();
+        this.attributes = struct.getAttributes();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_sqlTypeName);
-        out.writeObject(_attributes);
+        out.writeObject(sqlTypeName);
+        out.writeObject(attributes);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _sqlTypeName = (String)in.readObject();
-        _attributes = (Object[])in.readObject();
+        sqlTypeName = (String)in.readObject();
+        attributes = (Object[])in.readObject();
     }
 
     public String getSQLTypeName() {
-        return _sqlTypeName;
+        return sqlTypeName;
     }
 
     public Object[] getAttributes() {
-        return _attributes;
+        return attributes;
     }
 
     public Object[] getAttributes(Map map) {

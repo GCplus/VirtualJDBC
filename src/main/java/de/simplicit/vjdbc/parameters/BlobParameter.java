@@ -16,28 +16,28 @@ import java.sql.SQLException;
 public class BlobParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 7120087686097706094L;
 
-    private SerialBlob _value;
+    private SerialBlob value;
 
     public BlobParameter() {
     }
     
     public BlobParameter(Blob value) throws SQLException {
-        _value = new SerialBlob(value);
+        this.value = new SerialBlob(value);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (SerialBlob)in.readObject();
+        value = (SerialBlob)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }    
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setBlob(index, _value);
+        pstmt.setBlob(index, value);
     }
 
     public String toString() {
-        return "Blob: " + _value;
+        return "Blob: " + value;
     }
 }

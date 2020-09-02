@@ -10,16 +10,16 @@ import de.simplicit.vjdbc.command.Command;
 import de.simplicit.vjdbc.serial.CallingContext;
 
 public class ProcessRequestEntity implements RequestEntity {
-    private final Long _connuid;
-    private final Long _uid;
-    private final Command _cmd;
-    private final CallingContext _ctx;
+    private final Long connuid;
+    private final Long uid;
+    private final Command cmd;
+    private final CallingContext ctx;
     
     public ProcessRequestEntity(Long connuid, Long uid, Command cmd, CallingContext ctx) {
-        _connuid = connuid;
-        _uid = uid;
-        _cmd = cmd;
-        _ctx = ctx;
+        this.connuid = connuid;
+        this.uid = uid;
+        this.cmd = cmd;
+        this.ctx = ctx;
     }
     
     public long getContentLength() {
@@ -36,10 +36,10 @@ public class ProcessRequestEntity implements RequestEntity {
 
     public void writeRequest(OutputStream os) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(_connuid);
-        oos.writeObject(_uid);
-        oos.writeObject(_cmd);
-        oos.writeObject(_ctx);
+        oos.writeObject(connuid);
+        oos.writeObject(uid);
+        oos.writeObject(cmd);
+        oos.writeObject(ctx);
         oos.flush();
     }
 }

@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class SerialBlob implements Blob, Externalizable {
     private static final long serialVersionUID = 3258134639489857079L;
 
-    private byte[] _data;
+    private byte[] data;
 
     public SerialBlob() {
     }
@@ -25,7 +25,7 @@ public class SerialBlob implements Blob, Externalizable {
             while((len = is.read(buff)) > 0) {
                 baos.write(buff, 0, len);
             }
-            _data = baos.toByteArray();
+            data = baos.toByteArray();
             other.free();
         } catch(IOException e) {
             throw new SQLException("Can't retrieve contents of Blob", e.toString());
@@ -55,7 +55,7 @@ public class SerialBlob implements Blob, Externalizable {
         while((len = is.read(buff)) > 0) {
             baos.write(buff, 0, len);
         }
-        _data = baos.toByteArray();
+        data = baos.toByteArray();
     }
 
     public void init(InputStream is, long length) throws IOException {
@@ -67,25 +67,25 @@ public class SerialBlob implements Blob, Externalizable {
             baos.write(buff, 0, len);
             toRead -= len;
         }
-        _data = baos.toByteArray();
+        data = baos.toByteArray();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_data);
+        out.writeObject(data);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _data = (byte[])in.readObject();
+        data = (byte[])in.readObject();
     }
 
     public long length() {
-        return _data.length;
+        return data.length;
     }
 
     public byte[] getBytes(long pos, int length) {
         if (pos <= Integer.MAX_VALUE) {
             byte[] result = new byte[length];
-            System.arraycopy(_data, (int)pos - 1, result, 0, length);
+            System.arraycopy(data, (int)pos - 1, result, 0, length);
             return result;
         }
 
@@ -94,13 +94,13 @@ public class SerialBlob implements Blob, Externalizable {
         // APIs
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (long i = 0; i < length; ++i) {
-            baos.write(_data[(int)(pos + i)]);
+            baos.write(data[(int)(pos + i)]);
         }
         return baos.toByteArray();
     }
 
     public InputStream getBinaryStream() {
-        return new ByteArrayInputStream(_data);
+        return new ByteArrayInputStream(data);
     }
 
     public long position(byte[] pattern, long start) {
@@ -130,7 +130,7 @@ public class SerialBlob implements Blob, Externalizable {
     /* start JDBC4 support */
     public InputStream getBinaryStream(long pos, long length) {
         if (pos <= Integer.MAX_VALUE && length <= Integer.MAX_VALUE) {
-            return new ByteArrayInputStream(_data, (int)pos, (int)length);
+            return new ByteArrayInputStream(data, (int)pos, (int)length);
         }
 
         // very slow but gets around problems with the pos being represented
@@ -138,13 +138,13 @@ public class SerialBlob implements Blob, Externalizable {
         // APIs
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (long i = 0; i < length; ++i) {
-            baos.write(_data[(int)(i + pos)]);
+            baos.write(data[(int)(i + pos)]);
         }
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
     public void free() {
-        _data = null;
+        data = null;
     }
     /* end JDBC4 support */
 }

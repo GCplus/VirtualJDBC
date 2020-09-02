@@ -22,12 +22,12 @@ import org.xml.sax.SAXException;
  * or be built up programmatically.
  */
 public class VJdbcConfiguration {
-    private static final Log _logger = LogFactory.getLog(VJdbcConfiguration.class);
-    private static VJdbcConfiguration _singleton;
+    private static final Log logger = LogFactory.getLog(VJdbcConfiguration.class);
+    private static VJdbcConfiguration singleton;
 
-    private OcctConfiguration _occtConfiguration = new OcctConfiguration();
-    private RmiConfiguration _rmiConfiguration;
-    private final List _connections = new ArrayList();
+    private OcctConfiguration occtConfiguration = new OcctConfiguration();
+    private RmiConfiguration rmiConfiguration;
+    private final List connections = new ArrayList();
     private static boolean useStreamingResultSet = true;
 
     /**
@@ -51,10 +51,10 @@ public class VJdbcConfiguration {
      * @param customConfig 配置
      */
     public static void init(VJdbcConfiguration customConfig) {
-        if(_singleton != null) {
-            _logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
+        if(singleton != null) {
+            logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
         } else {
-            _singleton = customConfig;
+            singleton = customConfig;
         }
     }
 
@@ -73,17 +73,17 @@ public class VJdbcConfiguration {
      * @throws ConfigurationException 配置异常
      */
     public static void init(String configResource, Properties configVariables) throws ConfigurationException {
-        if(_singleton != null) {
-            _logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
+        if(singleton != null) {
+            logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
         } else {
             try {
-                _singleton = new VJdbcConfiguration(configResource, configVariables);
-                if(_logger.isInfoEnabled()) {
-                    _singleton.log();
+                singleton = new VJdbcConfiguration(configResource, configVariables);
+                if(logger.isInfoEnabled()) {
+                    singleton.log();
                 }
             } catch(Exception e) {
                 String msg = "VJdbc-Configuration failed";
-                _logger.error(msg, e);
+                logger.error(msg, e);
                 throw new ConfigurationException(msg, e);
             }
         }
@@ -95,17 +95,17 @@ public class VJdbcConfiguration {
      * @throws ConfigurationException 配置异常
      */
     public static void init(InputStream configResourceInputStream, Properties configVariables) throws ConfigurationException {
-        if(_singleton != null) {
-            _logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
+        if(singleton != null) {
+            logger.warn("VJdbcConfiguration already initialized, init-Call is ignored");
         } else {
             try {
-                _singleton = new VJdbcConfiguration(configResourceInputStream, configVariables);
-                if(_logger.isInfoEnabled()) {
-                    _singleton.log();
+                singleton = new VJdbcConfiguration(configResourceInputStream, configVariables);
+                if(logger.isInfoEnabled()) {
+                    singleton.log();
                 }
             } catch(Exception e) {
                 String msg = "VJdbc-Configuration failed";
-                _logger.error(msg, e);
+                logger.error(msg, e);
                 throw new ConfigurationException(msg, e);
             }
         }
@@ -118,10 +118,10 @@ public class VJdbcConfiguration {
      * previously
      */
     public static VJdbcConfiguration singleton() {
-        if(_singleton == null) {
+        if(singleton == null) {
             throw new RuntimeException("VJdbc-Configuration is not initialized !");
         }
-        return _singleton;
+        return singleton;
     }
 
     /**
@@ -131,11 +131,11 @@ public class VJdbcConfiguration {
     }
 
     public OcctConfiguration getOcctConfiguration() {
-        return _occtConfiguration;
+        return occtConfiguration;
     }
 
     public void setOcctConfiguration(OcctConfiguration occtConfiguration) {
-        _occtConfiguration = occtConfiguration;
+        this.occtConfiguration = occtConfiguration;
     }
 
     /**
@@ -143,7 +143,7 @@ public class VJdbcConfiguration {
      * @return RmiConfiguration object or null
      */
     public RmiConfiguration getRmiConfiguration() {
-        return _rmiConfiguration;
+        return rmiConfiguration;
     }
 
     /**
@@ -151,7 +151,7 @@ public class VJdbcConfiguration {
      * @param rmiConfiguration RmiConfiguration object to be used.
      */
     public void setRmiConfiguration(RmiConfiguration rmiConfiguration) {
-        _rmiConfiguration = rmiConfiguration;
+        this.rmiConfiguration = rmiConfiguration;
     }
 
     /**
@@ -160,7 +160,7 @@ public class VJdbcConfiguration {
      * @return ConnectionConfiguration or null
      */
     public ConnectionConfiguration getConnection(String name) {
-        for (Object connection : _connections) {
+        for (Object connection : connections) {
             ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             if (connectionConfiguration.getId().equals(name)) {
                 return connectionConfiguration;
@@ -176,10 +176,10 @@ public class VJdbcConfiguration {
      */
     public void addConnection(ConnectionConfiguration connectionConfiguration) throws ConfigurationException {
         if(getConnection(connectionConfiguration.getId()) == null) {
-            _connections.add(connectionConfiguration);
+            connections.add(connectionConfiguration);
         } else {
             String msg = "Connection configuration for " + connectionConfiguration.getId() + " already exists";
-            _logger.error(msg);
+            logger.error(msg);
             throw new ConfigurationException(msg);
         }
     }
@@ -210,7 +210,7 @@ public class VJdbcConfiguration {
 
     private void validateConnections() throws ConfigurationException {
         // Call the validation method of the configuration
-        for (Object connection : _connections) {
+        for (Object connection : connections) {
             ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             connectionConfiguration.validate();
         }
@@ -270,11 +270,11 @@ public class VJdbcConfiguration {
     }
 
     private void log() {
-        if(_rmiConfiguration != null) {
-            _rmiConfiguration.log();
+        if(rmiConfiguration != null) {
+            rmiConfiguration.log();
         }
-        _occtConfiguration.log();
-        for (Object connection : _connections) {
+        occtConfiguration.log();
+        for (Object connection : connections) {
             ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             connectionConfiguration.log();
         }

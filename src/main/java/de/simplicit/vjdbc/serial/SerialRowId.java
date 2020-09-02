@@ -18,7 +18,7 @@ public class SerialRowId implements RowId, Externalizable {
     private String str;
     private int hashCode;
 
-    public SerialRowId(RowId rowId) throws SQLException {
+    public SerialRowId(RowId rowId) {
         bytes = rowId.getBytes();
         str = rowId.toString();
         hashCode = rowId.hashCode();

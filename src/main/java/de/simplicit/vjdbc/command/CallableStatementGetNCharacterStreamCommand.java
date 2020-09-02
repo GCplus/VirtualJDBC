@@ -14,37 +14,37 @@ import java.sql.SQLException;
 public class CallableStatementGetNCharacterStreamCommand implements Command {
     static final long serialVersionUID = -8218845136435435097L;
 
-    private int _index;
-    private String _parameterName;
+    private int index;
+    private String parameterName;
 
     public CallableStatementGetNCharacterStreamCommand() {
     }
 
     public CallableStatementGetNCharacterStreamCommand(int index) {
-        _index = index;
+        this.index = index;
     }
 
     public CallableStatementGetNCharacterStreamCommand(String paramName) {
-        _parameterName = paramName;
+        this.parameterName = paramName;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeObject(_parameterName);
+        out.writeInt(index);
+        out.writeObject(parameterName);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _parameterName = (String)in.readObject();
+        index = in.readInt();
+        parameterName = (String)in.readObject();
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         CallableStatement cstmt = (CallableStatement)target;
         Reader result;
-        if(_parameterName != null) {
-            result = cstmt.getNCharacterStream(_parameterName);
+        if(parameterName != null) {
+            result = cstmt.getNCharacterStream(parameterName);
         } else {
-            result = cstmt.getNCharacterStream(_index);
+            result = cstmt.getNCharacterStream(index);
         }
         try {
             // read reader and return as a char[]

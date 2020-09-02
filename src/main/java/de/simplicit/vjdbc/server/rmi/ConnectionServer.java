@@ -20,10 +20,10 @@ import java.rmi.server.RMISocketFactory;
 import java.util.Properties;
 
 public class ConnectionServer {
-    private static final Log _logger = LogFactory.getLog(ConnectionServer.class);
+    private static final Log logger = LogFactory.getLog(ConnectionServer.class);
 
-    private RmiConfiguration _rmiConfiguration;
-    private Registry _registry;
+    private RmiConfiguration rmiConfiguration;
+    private Registry registry;
 
     public static void main(String[] args) {
         try {
@@ -50,7 +50,7 @@ public class ConnectionServer {
             ConnectionServer connectionServer = new ConnectionServer();
             connectionServer.serve();
         } catch (Throwable e) {
-            _logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -58,30 +58,30 @@ public class ConnectionServer {
     }
 
     public void serve() throws IOException {
-        _rmiConfiguration = VJdbcConfiguration.singleton().getRmiConfiguration();
+        rmiConfiguration = VJdbcConfiguration.singleton().getRmiConfiguration();
 
-        if(_rmiConfiguration == null) {
-            _logger.debug("No RMI-Configuration specified in VJdbc-Configuration, using default configuration");
-            _rmiConfiguration = new RmiConfiguration();
+        if(rmiConfiguration == null) {
+            logger.debug("No RMI-Configuration specified in VJdbc-Configuration, using default configuration");
+            rmiConfiguration = new RmiConfiguration();
         }
 
-        if(_rmiConfiguration.isUseSSL()) {
-            _logger.info("Using SSL sockets for communication");
+        if(rmiConfiguration.isUseSSL()) {
+            logger.info("Using SSL sockets for communication");
             RMISocketFactory.setSocketFactory(new SecureSocketFactory());
         }
 
-        if(_rmiConfiguration.isCreateRegistry()) {
-            _logger.info("Starting RMI-Registry on port " + _rmiConfiguration.getPort());
-            _registry = LocateRegistry.createRegistry(_rmiConfiguration.getPort());
+        if(rmiConfiguration.isCreateRegistry()) {
+            logger.info("Starting RMI-Registry on port " + rmiConfiguration.getPort());
+            registry = LocateRegistry.createRegistry(rmiConfiguration.getPort());
         } else {
-            _logger.info("Using RMI-Registry on port " + _rmiConfiguration.getPort());
-            _registry = LocateRegistry.getRegistry(_rmiConfiguration.getPort());
+            logger.info("Using RMI-Registry on port " + rmiConfiguration.getPort());
+            registry = LocateRegistry.getRegistry(rmiConfiguration.getPort());
         }
 
         installShutdownHook();
 
-        _logger.info("Binding remote object to '" + _rmiConfiguration.getObjectName() + "'");
-        _registry.rebind(_rmiConfiguration.getObjectName(), new ConnectionBrokerRmiImpl(_rmiConfiguration.getRemotingPort()));
+        logger.info("Binding remote object to '" + rmiConfiguration.getObjectName() + "'");
+        registry.rebind(rmiConfiguration.getObjectName(), new ConnectionBrokerRmiImpl(rmiConfiguration.getRemotingPort()));
     }
 
     private void installShutdownHook() {
@@ -89,12 +89,12 @@ public class ConnectionServer {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 try {
-                    _logger.info("Unbinding remote object");
-                    _registry.unbind(_rmiConfiguration.getObjectName());
+                    logger.info("Unbinding remote object");
+                    registry.unbind(rmiConfiguration.getObjectName());
                 } catch (RemoteException e) {
-                    _logger.error("Remote exception", e);
+                    logger.error("Remote exception", e);
                 } catch (NotBoundException e) {
-                    _logger.error("Not bound exception", e);
+                    logger.error("Not bound exception", e);
                 }
             }
         }));

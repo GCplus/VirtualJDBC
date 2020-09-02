@@ -14,7 +14,7 @@ import java.io.*;
 public class CallingContext implements Externalizable {
     private static final long serialVersionUID = 3906934495134101813L;
     
-    private String _stackTrace;
+    private String stackTrace;
         
     public CallingContext() {
         Throwable t = new Exception();
@@ -23,18 +23,18 @@ public class CallingContext implements Externalizable {
         pw.println("--- The orphaned object was created within the following calling context ---");
         t.printStackTrace(pw);
         pw.println("----------------------- End of calling context -----------------------------");
-        _stackTrace = sw.toString();
+        stackTrace = sw.toString();
     }
     
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _stackTrace = (String)in.readObject();
+        stackTrace = (String)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_stackTrace);
+        out.writeObject(stackTrace);
     }
     
     public String getStackTrace() {
-        return _stackTrace;
+        return stackTrace;
     }
 }

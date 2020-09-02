@@ -15,35 +15,35 @@ import java.sql.SQLException;
 public class PreparedStatementQueryCommand implements Command, ResultSetProducerCommand {
     static final long serialVersionUID = -7028150330288724130L;
 
-    protected PreparedStatementParameter[] _params;
-    protected int _resultSetType;
+    protected PreparedStatementParameter[] params;
+    protected int resultSetType;
 
     public PreparedStatementQueryCommand() {
     }
 
     public PreparedStatementQueryCommand(PreparedStatementParameter[] params, int resultSetType) {
-        _params = params;
-        _resultSetType = resultSetType;
+        this.params = params;
+        this.resultSetType = resultSetType;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_resultSetType);
-        out.writeObject(_params);
+        out.writeInt(resultSetType);
+        out.writeObject(params);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _resultSetType = in.readInt();
-        _params = (PreparedStatementParameter[])in.readObject();
+        resultSetType = in.readInt();
+        params = (PreparedStatementParameter[])in.readObject();
     }
 
     public int getResultSetType() {
-        return _resultSetType;
+        return resultSetType;
     }
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         PreparedStatement pstmt = (PreparedStatement)target;
-        for(int i = 0; i < _params.length; i++) {
-            _params[i].setParameter(pstmt, i + 1);
+        for(int i = 0; i < params.length; i++) {
+            params[i].setParameter(pstmt, i + 1);
         }
         return pstmt.executeQuery();
     }
@@ -51,10 +51,10 @@ public class PreparedStatementQueryCommand implements Command, ResultSetProducer
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("PreparedStatementQueryCommand");
-        if(_params != null && _params.length > 0) {
+        if(params != null && params.length > 0) {
             sb.append(" with parameters\n");
-            for(int i = 0, n = _params.length; i < n; i++) {
-                sb.append("\t[").append(i + 1).append("] = ").append(_params[i]);
+            for(int i = 0, n = params.length; i < n; i++) {
+                sb.append("\t[").append(i + 1).append("] = ").append(params[i]);
                 if(i < n - 1) {
                     sb.append("\n");
                 }

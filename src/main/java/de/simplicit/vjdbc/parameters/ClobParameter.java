@@ -16,32 +16,32 @@ import java.sql.SQLException;
 public class ClobParameter implements PreparedStatementParameter {
     static final long serialVersionUID = -8231456859022053216L;
 
-    private SerialClob _value;
+    private SerialClob value;
 
     public ClobParameter() {
     }
     
     public ClobParameter(Clob value) throws SQLException {
-        _value = new SerialClob(value);
+        this.value = new SerialClob(value);
     }
     
     public SerialClob getValue() {
-        return _value;
+        return value;
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (SerialClob)in.readObject();
+        value = (SerialClob)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setClob(index, _value);
+        pstmt.setClob(index, value);
     }
 
     public String toString() {
-        return "Clob: " + _value;
+        return "Clob: " + value;
     }
 }

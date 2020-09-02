@@ -16,28 +16,28 @@ import java.sql.SQLException;
 public class RefParameter implements PreparedStatementParameter {
     static final long serialVersionUID = 8647675527971168478L;
 
-    private SerialRef _value;
+    private SerialRef value;
 
     public RefParameter() {
     }
     
     public RefParameter(Ref value) throws SQLException {
-        _value = new SerialRef(value);
+        this.value = new SerialRef(value);
     }
     
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _value = (SerialRef)in.readObject();
+        value = (SerialRef)in.readObject();
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(_value);
+        out.writeObject(value);
     }
 
     public void setParameter(PreparedStatement pstmt, int index) throws SQLException {
-        pstmt.setRef(index, _value);
+        pstmt.setRef(index, value);
     }
 
     public String toString() {
-        return "Ref: " + _value;
+        return "Ref: " + value;
     }
 }

@@ -17,48 +17,48 @@ import java.sql.SQLException;
 public class CallableStatementSetObjectCommand implements Command {
     static final long serialVersionUID = -9132697894345849726L;
 
-    private int _index;
-    private String _paramName;
-    private Integer _targetSqlType;
-    private Integer _scale;
-    private SerializableTransport _transport;
+    private int index;
+    private String paramName;
+    private Integer targetSqlType;
+    private Integer scale;
+    private SerializableTransport transport;
 
     public CallableStatementSetObjectCommand() {
     }
 
     public CallableStatementSetObjectCommand(int index, Integer targetSqlType, Integer scale) {
-        _index = index;
-        _targetSqlType = targetSqlType;
-        _scale = scale;
-        _transport = null;
+        this.index = index;
+        this.targetSqlType = targetSqlType;
+        this.scale = scale;
+        this.transport = null;
     }
 
     public CallableStatementSetObjectCommand(String paramName, Integer targetSqlType, Integer scale) {
-        _paramName = paramName;
-        _targetSqlType = targetSqlType;
-        _scale = scale;
-        _transport = null;
+        this.paramName = paramName;
+        this.targetSqlType = targetSqlType;
+        this.scale = scale;
+        this.transport = null;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(_index);
-        out.writeObject(_paramName);
-        out.writeObject(_targetSqlType);
-        out.writeObject(_scale);
-        out.writeObject(_transport);
+        out.writeInt(index);
+        out.writeObject(paramName);
+        out.writeObject(targetSqlType);
+        out.writeObject(scale);
+        out.writeObject(transport);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        _index = in.readInt();
-        _paramName = (String)in.readObject();
-        _targetSqlType = (Integer)in.readObject();
-        _scale = (Integer)in.readObject();
-        _transport = (SerializableTransport)in.readObject();
+        index = in.readInt();
+        paramName = (String)in.readObject();
+        targetSqlType = (Integer)in.readObject();
+        scale = (Integer)in.readObject();
+        transport = (SerializableTransport)in.readObject();
     }
 
     public void setObject(Object obj) throws SQLException {
         if(obj instanceof Serializable) {
-            _transport = new SerializableTransport(obj);
+            transport = new SerializableTransport(obj);
         } else {
             throw new SQLException("Object of type " + obj.getClass().getName() + " is not serializable");
         }
@@ -69,30 +69,30 @@ public class CallableStatementSetObjectCommand implements Command {
 
         Object obj;
         try {
-            obj = _transport.getTransportee();
+            obj = transport.getTransportee();
         } catch(Exception e) {
             throw SQLExceptionHelper.wrap(e);
         }
 
-        if(_paramName != null) {
-            if(_targetSqlType != null) {
-                if(_scale != null) {
-                    cstmt.setObject(_paramName, obj, _targetSqlType.intValue(), _scale.intValue());
+        if(paramName != null) {
+            if(targetSqlType != null) {
+                if(scale != null) {
+                    cstmt.setObject(paramName, obj, targetSqlType, scale);
                 } else {
-                    cstmt.setObject(_paramName, obj, _targetSqlType.intValue());
+                    cstmt.setObject(paramName, obj, targetSqlType);
                 }
             } else {
-                cstmt.setObject(_paramName, obj);
+                cstmt.setObject(paramName, obj);
             }
         } else {
-            if(_targetSqlType != null) {
-                if(_scale != null) {
-                    cstmt.setObject(_index, obj, _targetSqlType.intValue(), _scale.intValue());
+            if(targetSqlType != null) {
+                if(scale != null) {
+                    cstmt.setObject(index, obj, targetSqlType, scale);
                 } else {
-                    cstmt.setObject(_index, obj, _targetSqlType.intValue());
+                    cstmt.setObject(index, obj, targetSqlType);
                 }
             } else {
-                cstmt.setObject(_index, obj);
+                cstmt.setObject(index, obj);
             }
         }
 

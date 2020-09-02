@@ -9,26 +9,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 class ArrayAccessors {
-    private static final Map<Class, ArrayAccess> _arrayAccessors = new HashMap<Class, ArrayAccess>();
-    private static final ArrayAccess _objectArrayFiller = new ArrayAccessObject();
+    private static final Map<Class, ArrayAccess> arrayAccessors = new HashMap<Class, ArrayAccess>();
+    private static final ArrayAccess objectArrayFiller = new ArrayAccessObject();
 
     static {
-        _arrayAccessors.put(Boolean.TYPE, new ArrayAccessBoolean());
-        _arrayAccessors.put(Byte.TYPE, new ArrayAccessByte());
-        _arrayAccessors.put(Character.TYPE, new ArrayAccessCharacter());
-        _arrayAccessors.put(Short.TYPE, new ArrayAccessShort());
-        _arrayAccessors.put(Integer.TYPE, new ArrayAccessInteger());
-        _arrayAccessors.put(Long.TYPE, new ArrayAccessLong());
-        _arrayAccessors.put(Float.TYPE, new ArrayAccessFloat());
-        _arrayAccessors.put(Double.TYPE, new ArrayAccessDouble());
+        arrayAccessors.put(Boolean.TYPE, new ArrayAccessBoolean());
+        arrayAccessors.put(Byte.TYPE, new ArrayAccessByte());
+        arrayAccessors.put(Character.TYPE, new ArrayAccessCharacter());
+        arrayAccessors.put(Short.TYPE, new ArrayAccessShort());
+        arrayAccessors.put(Integer.TYPE, new ArrayAccessInteger());
+        arrayAccessors.put(Long.TYPE, new ArrayAccessLong());
+        arrayAccessors.put(Float.TYPE, new ArrayAccessFloat());
+        arrayAccessors.put(Double.TYPE, new ArrayAccessDouble());
     }
 
     static ArrayAccess getArrayAccessorForPrimitiveType(Class primitiveType) {
-        return _arrayAccessors.get(primitiveType);
+        return arrayAccessors.get(primitiveType);
     }
 
     static ArrayAccess getObjectArrayAccessor() {
-        return _objectArrayFiller;
+        return objectArrayFiller;
     }
 
     private static class ArrayAccessBoolean implements ArrayAccess {
