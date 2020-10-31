@@ -5,4 +5,5 @@
     <module id="de.simplicit.vjdbc.module.vjdbc_ejb">
         <ejb>vjdbc_ejb.jar</ejb>
     </module>
+    <!--生成对应的EJB文件-->
 </application>

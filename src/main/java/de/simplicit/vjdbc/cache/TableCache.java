@@ -27,6 +27,9 @@ public class TableCache extends TimerTask {
     // Mappings for generation of the HSQL-Create-Table-Statements, some SQL
     // types won't be cached
     // 用于生成HSQL-Create-Table-Statement的映射，某些SQL类型不会被缓存
+    /**
+     * 这里static对应的是sql里面create语句的字段类型
+     */
     static {
         sqlTypeMappingForHSql.put(Types.BIGINT, "BIGINT");
         sqlTypeMappingForHSql.put(Types.BIT, "BIT");
