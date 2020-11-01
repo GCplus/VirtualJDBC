@@ -17,11 +17,11 @@ import java.util.ArrayList;
 public class VJdbcApplet extends Applet {
     private static final long serialVersionUID = 3257850974046533684L;
     
-    private JButton _addButton;
-    private JButton _changeButton;
-    private JButton _deleteButton;
-    private JTable _tableOfAddresses;
-    private AddressTableModel _modelOfAddresses = new AddressTableModel();
+    private JButton addButton;
+    private JButton changeButton;
+    private JButton deleteButton;
+    private JTable tableOfAddresses;
+    private AddressTableModel modelOfAddresses = new AddressTableModel();
 
     public void init() {
         try {
@@ -30,36 +30,30 @@ public class VJdbcApplet extends Applet {
             setLayout(new GridBagLayout());
             setBackground(Color.GRAY);
 
-            _addButton = new JButton("Add");
-            add(_addButton, new GridBagConstraints(0, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-            _changeButton = new JButton("Change");
-            add(_changeButton, new GridBagConstraints(1, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-            _deleteButton = new JButton("Delete");
-            add(_deleteButton, new GridBagConstraints(2, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            addButton = new JButton("Add");
+            add(addButton, new GridBagConstraints(0, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            changeButton = new JButton("Change");
+            add(changeButton, new GridBagConstraints(1, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            deleteButton = new JButton("Delete");
+            add(deleteButton, new GridBagConstraints(2, 0, 1, 1, 0.3, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
 
-            _addButton.addActionListener(new ActionListener() {
+            addButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addAddress();
                 }
             });
             
-            _deleteButton.addActionListener(new ActionListener() {
+            deleteButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     deleteAddresses();
                 }
             });
             
-            _tableOfAddresses = new JTable(_modelOfAddresses);
-            add(_tableOfAddresses, new GridBagConstraints(0, 1, 3, 10, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(3, 3, 3, 3), 0, 0));
+            tableOfAddresses = new JTable(modelOfAddresses);
+            add(tableOfAddresses, new GridBagConstraints(0, 1, 3, 10, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(3, 3, 3, 3), 0, 0));
 
             refreshAdresses();
-        } catch(InstantiationException e) {
-            e.printStackTrace();
-        } catch(IllegalAccessException e) {
-            e.printStackTrace();
-        } catch(ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch(HeadlessException e) {
+        } catch(InstantiationException | ClassNotFoundException | IllegalAccessException | HeadlessException e) {
             e.printStackTrace();
         }
     }
@@ -98,14 +92,14 @@ public class VJdbcApplet extends Applet {
     }
     
     private void deleteAddresses() {
-        if(_tableOfAddresses.getSelectedRowCount() > 0) {
-            int[] selrows = _tableOfAddresses.getSelectedRows();
+        if(tableOfAddresses.getSelectedRowCount() > 0) {
+            int[] selrows = tableOfAddresses.getSelectedRows();
             Connection conn = null;
             try {
                 conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement("delete from address where id = ?");
                 for(int i = 0; i < selrows.length; i++) {
-                    Object[] row = _modelOfAddresses.getSelectedItem(selrows[i]);
+                    Object[] row = modelOfAddresses.getSelectedItem(selrows[i]);
                     Integer id = (Integer)row[0];
                     stmt.setInt(1, id.intValue());
                     stmt.executeUpdate();
@@ -135,15 +129,15 @@ public class VJdbcApplet extends Applet {
     private void refreshAdresses() {
         Connection conn = null;
         try {
-            _modelOfAddresses.clear();
+            modelOfAddresses.clear();
             conn = getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from address");
             while(rs.next()) {
-                _modelOfAddresses.addAddress(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                modelOfAddresses.addAddress(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4));
             }
             stmt.close();
-            _modelOfAddresses.fireTableDataChanged();
+            modelOfAddresses.fireTableDataChanged();
         } catch(SQLException e) {
             e.printStackTrace();
         } finally {
@@ -160,76 +154,76 @@ public class VJdbcApplet extends Applet {
     private static class AddressDialog extends JDialog {
         private static final long serialVersionUID = 3258416127268042038L;
         
-        private JTextField _name;
-        private JTextField _street;
-        private JTextField _city;
-        private JButton _ok;
-        private JButton _cancel;
+        private JTextField name;
+        private JTextField street;
+        private JTextField city;
+        private JButton ok;
+        private JButton cancel;
 
-        private boolean _cancelled;
+        private boolean cancelled;
 
         AddressDialog() {
             Container cont = getContentPane();
             cont.setLayout(new GridBagLayout());
 
-            _name = new JTextField();
-            _street = new JTextField();
-            _city = new JTextField();
+            this.name = new JTextField();
+            this.street = new JTextField();
+            this.city = new JTextField();
 
-            _ok = new JButton("OK");
-            _cancel = new JButton("Cancel");
+            this.ok = new JButton("OK");
+            this.cancel = new JButton("Cancel");
 
             Insets insets = new Insets(2, 5, 2, 5);
 
             cont.add(new JLabel("Name:"),
                      new GridBagConstraints(0, 0, 1, 1, 0.2, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-            cont.add(_name,
+            cont.add(name,
                      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
             cont.add(new JLabel("Street:"),
                      new GridBagConstraints(0, 1, 1, 1, 0.2, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-            cont.add(_street,
+            cont.add(street,
                      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
             cont.add(new JLabel("City:"),
                      new GridBagConstraints(0, 2, 1, 1, 0.2, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-            cont.add(_city,
+            cont.add(city,
                      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
             JPanel buttonPanel = new JPanel();
-            buttonPanel.add(_ok);
-            buttonPanel.add(_cancel);
+            buttonPanel.add(ok);
+            buttonPanel.add(cancel);
 
             cont.add(buttonPanel,
                      new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-            _ok.addActionListener(new ActionListener() {
+            ok.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    _cancelled = false;
+                    cancelled = false;
                     AddressDialog.this.dispose();
                 }
             });
 
-            _cancel.addActionListener(new ActionListener() {
+            cancel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    _cancelled = true;
+                    cancelled = true;
                     AddressDialog.this.dispose();
                 }
             });
         }
 
         public boolean isCancelled() {
-            return _cancelled;
+            return cancelled;
         }
 
         public String getName() {
-            return _name.getText();
+            return name.getText();
         }
 
         public String getStreet() {
-            return _street.getText();
+            return street.getText();
         }
 
         public String getCity() {
-            return _city.getText();
+            return city.getText();
         }
     }
     
@@ -241,18 +235,18 @@ public class VJdbcApplet extends Applet {
         private static final int COLUMN_STREET = 2;
         private static final int COLUMN_CITY = 3;
         private static final int COLUMN_COUNT = 4;
-        private ArrayList _addresses;
+        private ArrayList addresses;
         
         public AddressTableModel() {
-            _addresses = new ArrayList();
+            this.addresses = new ArrayList();
         }
         
         public void clear() {
-            _addresses.clear();
+            addresses.clear();
         }
         
         public Object[] getSelectedItem(int index) {
-            return (Object[])_addresses.get(index);
+            return (Object[]) addresses.get(index);
         }
         
         public void addAddress(int id, String name, String street, String city) {
@@ -261,7 +255,7 @@ public class VJdbcApplet extends Applet {
             address[COLUMN_NAME] = name;
             address[COLUMN_STREET] = street;
             address[COLUMN_CITY] = city;
-            _addresses.add(address);
+            addresses.add(address);
         }
 
         public String getColumnName(int column) {
@@ -283,11 +277,11 @@ public class VJdbcApplet extends Applet {
         }
 
         public int getRowCount() {
-            return _addresses.size();
+            return addresses.size();
         }
 
         public Object getValueAt(int row, int column) {
-            Object[] address = (Object[])_addresses.get(row);
+            Object[] address = (Object[]) addresses.get(row);
             return address[column];
         }
     }

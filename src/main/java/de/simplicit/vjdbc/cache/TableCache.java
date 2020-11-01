@@ -15,10 +15,10 @@ public class TableCache extends TimerTask {
 
     private static final Map<Integer, String> sqlTypeMappingForHSql = new HashMap<Integer, String>();
 
-    private final Connection vjdbcConnection;
+    private final Connection vJdbcConnection;
     private final Connection hsqlConnection;
     private final DatabaseMetaData dbMetaData;
-    private final Statement vjdbcStatement;
+    private final Statement vJdbcStatement;
     private final Statement hsqlStatement;
     private final Map<String, CacheEntry> tableEntries = new HashMap<String, CacheEntry>();
     private final Timer cacheTimer = new Timer(true);
@@ -70,15 +70,21 @@ public class TableCache extends TimerTask {
         }
     }
 
+    /**
+     *
+     * @param conn
+     * @param cachedTables
+     * @throws SQLException
+     */
     public TableCache(Connection conn, String cachedTables) throws SQLException {
-        this.vjdbcConnection = conn;
-        this.dbMetaData = vjdbcConnection.getMetaData();
+        this.vJdbcConnection = conn;
+        this.dbMetaData = vJdbcConnection.getMetaData();
         // Get a connection to a In-Memory-Database
         // 获取到内存中数据库的连接
         this.hsqlConnection = DriverManager.getConnection("jdbc:hsqldb:.", "sa", "");
         // Statement for gathering of cached data
         // 用于收集缓存数据的声明
-        this.vjdbcStatement = this.vjdbcConnection.createStatement();
+        this.vJdbcStatement = this.vJdbcConnection.createStatement();
         // Statement for selecting the existing cache
         // 选择现有缓存的声明
         this.hsqlStatement = this.hsqlConnection.createStatement();
@@ -87,7 +93,7 @@ public class TableCache extends TimerTask {
         this.cacheTimer.scheduleAtFixedRate(this, 10000, 10000);
         // Parse the table string
         // 解析数据表的字符串
-        this.logger.info("Caching of following tables:");
+        logger.info("Caching of following tables:");
         StringTokenizer tok = new StringTokenizer(cachedTables, ",");
         while(tok.hasMoreTokens()) {
             createCacheEntry(tok.nextToken());
@@ -139,22 +145,22 @@ public class TableCache extends TimerTask {
     private void refreshCacheEntry(CacheEntry cacheEntry) throws SQLException {
         // Now read the complete table via the VJDBC-Connection
         PreparedStatement hsqlPreparedStatement = null;
-        ResultSet vjdbcResultSet = null;
+        ResultSet vJdbcResultSet = null;
 
         try {
             // Prepare the INSERT-Statement
             hsqlPreparedStatement = hsqlConnection.prepareStatement(cacheEntry.insert);
             // Now get the Table content
-            vjdbcResultSet = vjdbcStatement.executeQuery(cacheEntry.select);
+            vJdbcResultSet = vJdbcStatement.executeQuery(cacheEntry.select);
             // Read the meta data, this might throw an exception so previously
             // cached data won't be destroyed
-            ResultSetMetaData rsMetaData = vjdbcResultSet.getMetaData();
+            ResultSetMetaData rsMetaData = vJdbcResultSet.getMetaData();
             // Here we delete all rows in the cache
             hsqlStatement.executeUpdate(cacheEntry.delete);
             // And fill the HSQL-Destination with it
-            while(vjdbcResultSet.next()) {
+            while(vJdbcResultSet.next()) {
                 for(int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-                    hsqlPreparedStatement.setObject(i, vjdbcResultSet.getObject(i));
+                    hsqlPreparedStatement.setObject(i, vJdbcResultSet.getObject(i));
                 }
                 hsqlPreparedStatement.execute();
             }
@@ -171,9 +177,9 @@ public class TableCache extends TimerTask {
             cacheEntry.isFilled = false;
             throw e;
         } finally {
-            if(vjdbcResultSet != null) {
+            if(vJdbcResultSet != null) {
                 try {
-                    vjdbcResultSet.close();
+                    vJdbcResultSet.close();
                 } catch(SQLException e) {
                     e.printStackTrace();
                 }
