@@ -13,6 +13,7 @@ import java.util.Properties;
 /**
  * Interface which each CommandSink must implement to be used for
  * VJDBC client-server communication.
+ * 要用于VJDBC客户端 - 服务器通信，其中每个CommandSink必须实现接口。
  */
 public interface CommandSink {
     UIDEx connect(String database, Properties props, Properties clientInfo, CallingContext ctx) throws SQLException;

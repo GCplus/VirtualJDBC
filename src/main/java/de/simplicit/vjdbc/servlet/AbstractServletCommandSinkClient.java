@@ -25,11 +25,12 @@ public abstract class AbstractServletCommandSinkClient implements CommandSink {
             this.url = new URL(url);
             this.requestEnhancer = requestEnhancer;
         } catch(IOException e) {
-            throw SQLExceptionHelper.wrap(e);
+            e.printStackTrace();//出现IO异常时打印堆栈
         }
     }
 
     public void close() {
         // Nothing to do
+        //在关闭时什么也不做
     }
 }

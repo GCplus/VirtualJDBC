@@ -12,12 +12,16 @@ import java.io.ObjectOutput;
 public class UIDEx implements Externalizable {
     static final long serialVersionUID = 1682984916549281270L;
 
-    private static long s_cookie = 1;
+    private static long sCookie = 1;
     
-    private Long uid = s_cookie++;
+    private Long uid = sCookie++;
     private int value1 = Integer.MIN_VALUE;
     private int value2 = Integer.MIN_VALUE;
 
+    /**
+     * 以下全是构造方法
+     * 抽象一个空的构造方法
+     */
     public UIDEx() {
     }
 
@@ -40,6 +44,9 @@ public class UIDEx implements Externalizable {
         this.value1 = value1;
         this.value2 = value2;
     }
+    /**
+     * 以上全是构造方法
+     */
 
     public Long getUID() {
         return uid;
@@ -53,6 +60,9 @@ public class UIDEx implements Externalizable {
         return value2;
     }
 
+    /**
+     * 重置参数,数值1和数值2会变成int类型最小值
+     */
     public void resetValues() {
         value1 = Integer.MIN_VALUE;
         value2 = Integer.MIN_VALUE;
@@ -76,7 +86,7 @@ public class UIDEx implements Externalizable {
         out.writeInt(value2);
     }
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    public void readExternal(ObjectInput in) throws IOException {
         uid = in.readLong();
         value1 = in.readInt();
         value2 = in.readInt();

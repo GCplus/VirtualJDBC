@@ -32,7 +32,7 @@ public abstract class VirtualBase {
      * Get a registration ID
      *
      * 获取一个注册ID
-     * @return _objectUid
+     * @return objectUid
      */
     public UIDEx getObjectUID() {
         return objectUid;
