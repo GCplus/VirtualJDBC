@@ -10,6 +10,7 @@ import java.sql.SQLException;
 /**
  * Interface for all commands which shall be executed by the server
  * CommandProcessor.
+ * 所有由服务端CommandProcessor执行命令的接口
  */
 public interface Command extends Externalizable {
     Object execute(Object target, ConnectionContext ctx) throws SQLException;

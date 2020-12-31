@@ -12,12 +12,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 查询拦截器配置
+ */
 public class QueryFilterConfiguration {
     private static final Log logger = LogFactory.getLog(QueryFilterConfiguration.class);
     private final List filters = new ArrayList();
     private final Perl5Matcher matcher = new Perl5Matcher();
 
-    private static final PatternCompiler s_patternCompiler = new Perl5Compiler();
+    private static final PatternCompiler sPatternCompiler = new Perl5Compiler();
 
     private static class Filter {
 
@@ -44,7 +47,7 @@ public class QueryFilterConfiguration {
 
     private void addEntry(boolean isDenyFilter, String regexp, String type) throws ConfigurationException {
         try {
-            Pattern pattern = s_patternCompiler.compile(regexp, Perl5Compiler.CASE_INSENSITIVE_MASK);
+            Pattern pattern = sPatternCompiler.compile(regexp, Perl5Compiler.CASE_INSENSITIVE_MASK);
             filters.add(new Filter(isDenyFilter, regexp, pattern, type != null && type.equals("contains")));
         } catch (MalformedPatternException e) {
             throw new ConfigurationException("Malformed RegEx-Pattern", e);

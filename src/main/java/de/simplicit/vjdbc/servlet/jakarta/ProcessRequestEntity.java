@@ -23,7 +23,7 @@ public class ProcessRequestEntity implements RequestEntity {
     }
     
     public long getContentLength() {
-        return -1; // Don't know length in advance
+        return -1; // Don't know length in advance 事先不知道长度
     }
 
     public String getContentType() {

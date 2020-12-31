@@ -7,6 +7,9 @@ package de.simplicit.vjdbc.server.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * 连接池配置
+ */
 public class ConnectionPoolConfiguration {
     private static final Log logger = LogFactory.getLog(ConnectionPoolConfiguration.class);
 

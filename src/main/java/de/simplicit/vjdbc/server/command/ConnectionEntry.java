@@ -36,10 +36,13 @@ class ConnectionEntry implements ConnectionContext {
     private static final Log logger = LogFactory.getLog(ConnectionEntry.class);
 
     // Unique identifier for the ConnectionEntry
+    // ConnectionEntry的唯一标识符
     private final Long uid;
     // The real JDBC-Connection
+    // 真正的JDBC连接
     private final Connection connection;
     // Configuration information
+    // 配置信息
     private final ConnectionConfiguration connectionConfiguration;
     // Properties delivered from the client
     private final Properties clientInfo;

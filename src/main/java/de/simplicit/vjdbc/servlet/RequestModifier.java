@@ -17,5 +17,5 @@ public interface RequestModifier {
      * @param key Key of the Request-Property 请求属性的键
      * @param value Value of the Request-Property 请求属性的值
      */
-    public abstract void addRequestHeader(String key, String value);
+    void addRequestHeader(String key, String value);
 }

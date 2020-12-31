@@ -16,6 +16,9 @@ import java.util.Timer;
  * The DecoratedCommandSink makes it easier to handle the CommandSink. It contains a number
  * of different utility methods which wrap parameters, unwrap results and so on. Additionally
  * it supports a Listener which is called before and after execution of the command.
+ * DecoratedCommandSink使处理CommandSink更加容易。
+ * 它包含许多不同的方法，这些方法可以包装参数，拆开结果集等。
+ * 另外，它还支持在执行命令之前和之后调用的Listener。
  */
 public class DecoratedCommandSink {
     private final UIDEx connectionUid;

@@ -21,6 +21,7 @@ public class CallableStatementGetArrayCommand implements Command {
     private String parameterName;
 
     // No-Arg constructor for deserialization
+    // 用于反序列化的No-Arg构造函数
     public CallableStatementGetArrayCommand() {
     }
 
@@ -53,6 +54,7 @@ public class CallableStatementGetArrayCommand implements Command {
         return new SerializableTransport(new SerialArray(result), ctx.getCompressionMode(), ctx.getCompressionThreshold());
     }
 
+    @Override
     public String toString() {
         return "CallableStatementGetArrayCommand";
     }

@@ -13,6 +13,7 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
 /**
  * Abstract base class for clients of VJDBC in Servlet-Mode.
+ * Servlet模式下VJDBC客户端的抽象基类。
  * @author Mike
  *
  */
@@ -20,7 +21,7 @@ public abstract class AbstractServletCommandSinkClient implements CommandSink {
     protected URL url;
     protected RequestEnhancer requestEnhancer;
 
-    public AbstractServletCommandSinkClient(String url, RequestEnhancer requestEnhancer) throws SQLException {
+    public AbstractServletCommandSinkClient(String url, RequestEnhancer requestEnhancer) {
         try {
             this.url = new URL(url);
             this.requestEnhancer = requestEnhancer;

@@ -7,11 +7,12 @@ package de.simplicit.vjdbc.servlet;
 /**
  * Common identifiers which are used in the Http-Header to route the requests
  * to the corresponding handler.
+ * Http标头中用于将请求路由到相应处理程序的通用标识符。
  * @author Mike
  *
  */
 public interface ServletCommandSinkIdentifier {
-    public static final String METHOD_IDENTIFIER = "vjdbc-method";
-    public static final String CONNECT_COMMAND = "connect";
-    public static final String PROCESS_COMMAND = "process";
+    String METHOD_IDENTIFIER = "vjdbc-method";
+    String CONNECT_COMMAND = "connect";
+    String PROCESS_COMMAND = "process";
 }

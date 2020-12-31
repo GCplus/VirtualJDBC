@@ -10,6 +10,7 @@ import java.io.OutputStream;
 
 /**
  * Utility class for closing stream securely.
+ * 用于安全关闭流的工具类
  * @author Mike
  *
  */
@@ -19,7 +20,8 @@ public final class StreamCloser {
     
     /**
      * Closes an InputStream.
-     * @param is InputStream to close
+     * 关闭InputStream
+     * @param is InputStream to close 需要关闭的InputStream
      */
     public static void close(InputStream is) {
         if(is != null) {
@@ -34,7 +36,8 @@ public final class StreamCloser {
     
     /**
      * Closes an OutputStream
-     * @param os OutputStream to close
+     * 关闭OutputStream
+     * @param os OutputStream to close 需要关闭的OutputStream
      */
     public static void close(OutputStream os) {
         if(os != null) {

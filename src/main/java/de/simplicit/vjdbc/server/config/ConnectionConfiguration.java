@@ -31,6 +31,7 @@ public class ConnectionConfiguration implements Executor {
     private static final String DBCP_ID = "jdbc:apache:commons:dbcp:";
 
     // Basic properties
+    // 基础配置信息
     protected String id;
     protected String driver;
     protected String url;
@@ -38,27 +39,36 @@ public class ConnectionConfiguration implements Executor {
     protected String user;
     protected String password;
     // Trace properties
+    // 跟踪属性
     protected boolean traceCommandCount = false;
     protected boolean traceOrphanedObjects = false;
     // Row-Packet size defines the number of rows that is
     // transported in one packet
+    // 行数据包大小定义一个数据包中传输的行数
     protected int rowPacketSize = 200;
     // Encoding for strings
+    // 字符串编码
     protected String charset = "UTF-8";//原值为ISO-8859-1
     // Compression
+    // 压缩
     protected int compressionMode = Deflater.BEST_SPEED;
     protected long compressionThreshold = 1000;
     // Connection pooling
+    // 连接池
     protected boolean connectionPooling = true;
     protected ConnectionPoolConfiguration connectionPoolConfiguration = null;
     // Fetch the metadata of a resultset immediately after constructing
+    // 构造后立即获取结果集的元数据
     protected boolean prefetchResultSetMetaData = false;
     // Custom login handler
+    // 自定义登录处理
     protected String loginHandler;
     private LoginHandler loginHandlerInstance = null;
     // Named queries
+    // 命名查询
     protected NamedQueryConfiguration namedQueries;
     // Query filters
+    // 查询过滤器
     protected QueryFilterConfiguration queryFilters;
 
     // Connection pooling support

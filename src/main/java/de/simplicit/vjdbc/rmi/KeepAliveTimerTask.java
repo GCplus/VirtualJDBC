@@ -16,6 +16,8 @@ import java.util.TimerTask;
  * This timer task will periodically notify the server with a dummy command, just to
  * keep the connection alive. This will prevent the RMI-Object to be garbage-collected when
  * there aren't any RMI-Calls for a specific time (lease value).
+ * 此计时器任务将使用虚拟命令定期通知服务器，以保持连接有效。
+ * 这将防止在特定时间（约定时间）内没有任何RMI调用时对RMI对象进行垃圾收集。
  */
 public class KeepAliveTimerTask extends TimerTask implements CommandSinkListener {
     private static Command dummyCommand = new PingCommand();

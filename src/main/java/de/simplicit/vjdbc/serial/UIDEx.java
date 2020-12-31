@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
+/**
+ * UIDEx 类型是作者构造的类似于指针的理念,指向result类型数据的id
+ */
 public class UIDEx implements Externalizable {
     static final long serialVersionUID = 1682984916549281270L;
 

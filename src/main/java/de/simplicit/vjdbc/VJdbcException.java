@@ -4,6 +4,9 @@
 
 package de.simplicit.vjdbc;
 
+/**
+ * 自定义异常处理
+ */
 public class VJdbcException extends Exception {
     static final long serialVersionUID = -7552211448253764663L;
 

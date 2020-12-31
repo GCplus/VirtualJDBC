@@ -15,7 +15,8 @@ import de.simplicit.vjdbc.serial.CallingContext;
 
 /**
  * RequestEntity implementation which streams all of the parameters necessary for
- * a connect request. 
+ * a connect request.
+ * RequestEntity实现，用于流化连接请求所需的所有参数。
  * @author Mike
  */
 class ConnectRequestEntity implements RequestEntity {
@@ -32,7 +33,7 @@ class ConnectRequestEntity implements RequestEntity {
     }
     
     public long getContentLength() {
-        return -1; // Don't know the length in advance
+        return -1; // Don't know the length in advance 事先不知道长度
     }
 
     public String getContentType() {
