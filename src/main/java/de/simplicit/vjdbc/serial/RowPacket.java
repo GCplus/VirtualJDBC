@@ -17,33 +17,41 @@ import java.util.ArrayList;
 
 /**
  * A RowPacket contains the data of a part (or a whole) JDBC-ResultSet.
+ * RowPacket包含部分（或整个）JDBC-ResultSet的数据。
  */
 public class RowPacket implements Externalizable {
-    private static final int ORACLE_ROW_ID = -8;
-    private static final int DEFAULT_ARRAY_SIZE = 100;
+    private static final Log logger = LogFactory.getLog(RowPacket.class);
     static final long serialVersionUID = 6366194574502000718L;
 
-    private static final Log logger = LogFactory.getLog(RowPacket.class);
+    private static final int ORACLE_ROW_ID = -8; // oracle数据库默认row ID
+    private static final int DEFAULT_ARRAY_SIZE = 100; // oracle数据库默认行限制
+
 
     private int rowCount = 0;
     private boolean forwardOnly = false;
     private boolean lastPart = false;
 
     // Transient attributes
+    // 临时属性
     private transient FlattenedColumnValues[] flattenedColumnsValues = null;
     private transient ArrayList<Object[]> rows = null;
     private transient int[] columnTypes = null;
     private transient int offset = 0;
-    private transient int maxrows = 0;
+    private transient int maxRows = 0;
 
     public RowPacket() {
     }
 
     public RowPacket(int packetsize, boolean forwardOnly) {
-        this.maxrows = packetsize;
+        this.maxRows = packetsize;
         this.forwardOnly = forwardOnly;
     }
 
+    /**
+     * 序列化
+     * @param out ObjectOutput
+     * @throws IOException IOException
+     */
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeBoolean(forwardOnly);
         out.writeBoolean(lastPart);
@@ -53,13 +61,19 @@ public class RowPacket implements Externalizable {
         }
     }
 
+    /**
+     * 反序列化
+     * @param in ObjectInput
+     * @throws IOException IOException
+     * @throws ClassNotFoundException ClassNotFoundException
+     */
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         forwardOnly = in.readBoolean();
         lastPart = in.readBoolean();
         rowCount = in.readInt();
         if(rowCount > 0) {
             FlattenedColumnValues[] flattenedColumns = (FlattenedColumnValues[]) in.readObject();
-            rows = new ArrayList<Object[]>(rowCount);
+            rows = new ArrayList<>(rowCount);
             for(int i = 0; i < rowCount; i++) {
                 Object[] row = new Object[flattenedColumns.length];
                 for(int j = 0; j < flattenedColumns.length; j++) {
@@ -69,10 +83,16 @@ public class RowPacket implements Externalizable {
             }
         }
         else {
-            rows = new ArrayList<Object[]>();
+            rows = new ArrayList<>();
         }
     }
 
+    /**
+     * 获取对应行号的数据
+     * @param index 行号
+     * @return Object[]
+     * @throws SQLException SQLException
+     */
     public Object[] get(int index) throws SQLException {
         int adjustedIndex = index - offset;
 
@@ -85,10 +105,18 @@ public class RowPacket implements Externalizable {
         }
     }
 
+    /**
+     * 查询大小
+     * @return int
+     */
     public int size() {
         return offset + rowCount;
     }
 
+    /**
+     * 是否为最后一部分
+     * @return boolean
+     */
     public boolean isLastPart() {
         return lastPart;
     }
@@ -240,12 +268,12 @@ public class RowPacket implements Externalizable {
 
             rowCount++;
 
-            if(maxrows > 0 && rowCount == maxrows) {
+            if(maxRows > 0 && rowCount == maxRows) {
                 break;
             }
         }
 
-        lastPart = maxrows == 0 || rowCount < maxrows;
+        lastPart = maxRows == 0 || rowCount < maxRows;
 
         return lastPart;
     }
@@ -261,7 +289,7 @@ public class RowPacket implements Externalizable {
                 logger.debug("Column-Type " + i + ": " + metaData.getColumnType(i));
             }
 
-            Class componentType = null;
+            Class componentType;
 
             switch (columnType) {
             case Types.BIT:
@@ -306,7 +334,7 @@ public class RowPacket implements Externalizable {
                 break;
             }
 
-            flattenedColumnsValues[i - 1] = new FlattenedColumnValues(componentType, maxrows == 0 ? DEFAULT_ARRAY_SIZE : maxrows);
+            flattenedColumnsValues[i - 1] = new FlattenedColumnValues(componentType, maxRows == 0 ? DEFAULT_ARRAY_SIZE : maxRows);
         }
     }
 

@@ -19,6 +19,25 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
+/**
+ * 引用了ResultSet和Externalizable接口
+ *
+ * Serializable接口
+ *    |-优点：内建支持
+ *    |
+ *    |-优点：易于实现
+ *    |
+ *    |-缺点：占用空间过大
+ *    |
+ *    |-缺点：由于额外的开销导致速度变比较慢
+ *
+ * Externalizable接口
+ *    |- 优点：开销较少（程序员决定存储什么）
+ *    |
+ *    |——优点：可能的速度提升
+ *    |
+ *    |-缺点：虚拟机不提供任何帮助，也就是说所有的工作都落到了开发人员的肩上。
+ */
 public class StreamingResultSet implements ResultSet, Externalizable {
     static final long serialVersionUID = 8291019975153433161L;
 

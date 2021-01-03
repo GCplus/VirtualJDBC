@@ -14,6 +14,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * VirtualStatement继承了VirtualBase基类并引入了Statement的静态sql运行支持
+ */
 public class VirtualStatement extends VirtualBase implements Statement {
     protected Connection connection;
     protected List batchCollector = new ArrayList();

@@ -17,6 +17,9 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
+/**
+ *
+ */
 public class VirtualCallableStatement extends VirtualPreparedStatement implements CallableStatement {
     VirtualCallableStatement(UIDEx reg, Connection connection, String sql, DecoratedCommandSink sink, int resultSetType) {
         super(reg, connection, sql, sink, resultSetType);

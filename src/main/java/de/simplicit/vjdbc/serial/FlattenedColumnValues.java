@@ -10,23 +10,28 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Array;
 
+/**
+ * 继承外部序列化，对指定数据进行序列化和反序列化
+ */
 class FlattenedColumnValues implements Externalizable {
     private static final long serialVersionUID = 3691039872299578672L;
     
     private Object arrayOfValues;
+
     private boolean[] nullFlags;
     
     private transient ArrayAccess arrayAccessor;
     
     /**
      * Default constructor needed for Serialisation.
-     *
+     * 序列化所需的默认构造函数。
      */
     public FlattenedColumnValues() {
     }
     
     FlattenedColumnValues(Class clazz, int size) {
         // Any of these types ? boolean, byte, char, short, int, long, float, and double
+        // 这些类型中的任何一种？ 布尔值，字节，字符，短整数，整数，长整数，浮点数和双精度
         if(clazz.isPrimitive()) {
             arrayOfValues = Array.newInstance(clazz, size);
             nullFlags = new boolean[size];
@@ -38,7 +43,13 @@ class FlattenedColumnValues implements Externalizable {
             arrayAccessor = ArrayAccessors.getObjectArrayAccessor();
         }
     }
-    
+
+    /**
+     * 反序列化
+     * @param in ObjectInput
+     * @throws IOException IOException
+     * @throws ClassNotFoundException ClassNotFoundException
+     */
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         arrayOfValues = in.readObject();
         nullFlags = (boolean[])in.readObject();
@@ -51,6 +62,11 @@ class FlattenedColumnValues implements Externalizable {
         }
     }
 
+    /**
+     * 序列化
+     * @param out ObjectOutput
+     * @throws IOException IOException
+     */
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(arrayOfValues);
         out.writeObject(nullFlags);
@@ -106,10 +122,11 @@ class FlattenedColumnValues implements Externalizable {
     Object getValue(int index) {
         return arrayAccessor.getValue(arrayOfValues, index, nullFlags);
     }
-        
+
+    // This algorithm is actually copied from the ArrayList implementation. Seems to
+    // be a good strategy to grow a statically sized array.
+    // 该算法实际上是从ArrayList实现中复制的。 似乎是控制静态数组增长大小的的好策略。
     void ensureCapacity(int minCapacity) {
-        // This algorithm is actually copied from the ArrayList implementation. Seems to
-        // be a good strategy to grow a statically sized array.
     	int oldCapacity = Array.getLength(arrayOfValues);
     	if (minCapacity > oldCapacity) {
     	    int newCapacity = (oldCapacity * 3)/2 + 1;

@@ -42,7 +42,7 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
             reduceParam();
 
             SerializableTransport st = (SerializableTransport) sink.process(objectUid,
-                    new PreparedStatementQueryCommand(paramList, _resultSetType), true);
+                    new PreparedStatementQueryCommand(paramList, resultSetType), true);
             result = (StreamingResultSet) st.getTransportee();
             result.setStatement(this);
             result.setCommandSink(sink);
@@ -151,15 +151,15 @@ public class VirtualPreparedStatement extends VirtualStatement implements Prepar
         reduceParam();
         PreparedStatementParameter[] paramListClone = new PreparedStatementParameter[paramList.length];
         System.arraycopy(paramList, 0, paramListClone, 0, paramList.length);
-        _batchCollector.add(paramListClone);
+        batchCollector.add(paramListClone);
         clearParameters();
     }
 
     public int[] executeBatch() throws SQLException {
         try {
-            return (int[]) sink.process(objectUid, new PreparedStatementExecuteBatchCommand(_batchCollector));
+            return (int[]) sink.process(objectUid, new PreparedStatementExecuteBatchCommand(batchCollector));
         } finally {
-            _batchCollector.clear();
+            batchCollector.clear();
         }
     }
 
