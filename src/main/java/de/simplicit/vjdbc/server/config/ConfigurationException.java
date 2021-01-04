@@ -4,6 +4,9 @@
 
 package de.simplicit.vjdbc.server.config;
 
+/**
+ * 自定义配置错误
+ */
 public class ConfigurationException extends Exception {
     private static final long serialVersionUID = 4121131450591556150L;
 

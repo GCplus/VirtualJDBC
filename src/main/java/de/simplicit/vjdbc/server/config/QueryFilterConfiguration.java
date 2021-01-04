@@ -18,10 +18,13 @@ import java.util.List;
 public class QueryFilterConfiguration {
     private static final Log logger = LogFactory.getLog(QueryFilterConfiguration.class);
     private final List filters = new ArrayList();
-    private final Perl5Matcher matcher = new Perl5Matcher();
+    private final Perl5Matcher matcher = new Perl5Matcher();//正则表达式匹配器
 
-    private static final PatternCompiler sPatternCompiler = new Perl5Compiler();
+    private static final PatternCompiler sPatternCompiler = new Perl5Compiler();//正则表达式编译器
 
+    /**
+     * 内部类拦截
+     */
     private static class Filter {
 
         boolean isDenyFilter;
@@ -37,14 +40,33 @@ public class QueryFilterConfiguration {
         }
     }
 
+    /**
+     * 添加拒绝的实体
+     * @param regexp
+     * @param type
+     * @throws ConfigurationException
+     */
     public void addDenyEntry(String regexp, String type) throws ConfigurationException {
         addEntry(true, regexp, type);
     }
 
+    /**
+     * 添加允许的实体
+     * @param regexp
+     * @param type
+     * @throws ConfigurationException
+     */
     public void addAllowEntry(String regexp, String type) throws ConfigurationException {
         addEntry(false, regexp, type);
     }
 
+    /**
+     * 添加正则表达式的行
+     * @param isDenyFilter 是否拦截
+     * @param regexp String，正则表达式
+     * @param type String
+     * @throws ConfigurationException ConfigurationException
+     */
     private void addEntry(boolean isDenyFilter, String regexp, String type) throws ConfigurationException {
         try {
             Pattern pattern = sPatternCompiler.compile(regexp, Perl5Compiler.CASE_INSENSITIVE_MASK);
@@ -54,6 +76,11 @@ public class QueryFilterConfiguration {
         }
     }
 
+    /**
+     * 按照正则表达式进行匹配,并返回是否匹配成功，此函数只匹配包含状态和完全匹配状态
+     * @param sql SQL语句
+     * @throws SQLException SQLException
+     */
     public void checkAgainstFilters(String sql) throws SQLException {
         if(!filters.isEmpty()) {
             for (Object o : filters) {

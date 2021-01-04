@@ -72,10 +72,12 @@ public class ConnectionConfiguration implements Executor {
     protected QueryFilterConfiguration queryFilters;
 
     // Connection pooling support
+    // 连接池支持
     private boolean driverInitialized = false;
     private Boolean connectionPoolInitialized = Boolean.FALSE;
     private GenericObjectPool connectionPool = null;
     // Thread pooling support
+    // 线程池支持
     private final int maxThreadPoolSize = 8;
     private final PooledExecutor pooledExecutor = new PooledExecutor(maxThreadPoolSize);
 
