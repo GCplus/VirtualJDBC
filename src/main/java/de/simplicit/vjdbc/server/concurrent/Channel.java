@@ -15,7 +15,8 @@
 package de.simplicit.vjdbc.server.concurrent;
 
 /** 
- * Main interface for buffers, queues, pipes, conduits, etc.
+ * Main interface for buffers, queues, pipes, conduits, etc. <p>
+ * 缓冲区、队列、管道、管道等的主接口。
  * <p>
  * A Channel represents anything that you can put items
  * into and take them out of. As with the Sync 
@@ -23,13 +24,18 @@ package de.simplicit.vjdbc.server.concurrent;
  * blocking (put(x), take),
  * and timeouts (offer(x, msecs), poll(msecs)) policies
  * are provided. Using a
- * zero timeout for offer and poll results in a pure balking policy.
+ * zero timeout for offer and poll results in a pure balking policy. <p>
+ * 通道表示可以放入并带出任何东西。与同步接口一样，
+ * 提供了blocking (put(x), take),和timeouts (offer(x, msecs), poll(msecs))策略。
+ * 对offer和poll使用零超时会导致纯阻塞策略。
  * <p>
  * To aid in efforts to use Channels in a more typesafe manner,
  * this interface extends Puttable and Takable. You can restrict
  * arguments of instance variables to this type as a way of
  * guaranteeing that producers never try to take, or consumers put.
- * for example:
+ * for example: <p>
+ * 为了帮助大家以更安全的方式使用通道Channel的方法，这个接口扩展了Puttable和Takable。
+ * 您可以将实例变量的参数限制为这种类型，以保证生产者从不尝试take或消费者从不尝试put，例子：
  * <pre>
  * class Producer implements Runnable {
  *   final Puttable chan;
@@ -72,14 +78,15 @@ package de.simplicit.vjdbc.server.concurrent;
  * a given put will block. However,
  * Channels that are designed to 
  * have an element capacity (and so always block when full)
- * should implement the 
- * BoundedChannel 
- * subinterface.
+ * should implement the BoundedChannel subinterface. <p>
+ * 给定的通道实现可能具有或不具有容量限制或其他插入数据的规则，因此通常无法确定给定的put是否会阻塞。
+ * 然而，被设计为具有元素容量的通道（因此在装满时始终会阻塞）应该实现BoundedChannel子接口。
  * <p>
  * Channels may hold any kind of item. However,
  * insertion of null is not in general supported. Implementations
  * may (all currently do) throw IllegalArgumentExceptions upon attempts to
- * insert null. 
+ * insert null. <p>
+ * 通道可以容纳任何类型的对象。但是，一般不支持插入null。当前实现（所有当前执行）在尝试插入null时可能会引发非法存在异常(IllegalArgumentException)
  * <p>
  * By design, the Channel interface does not support any methods to determine
  * the current number of elements being held in the channel.
@@ -223,7 +230,7 @@ package de.simplicit.vjdbc.server.concurrent;
  *    
  * </pre>
  * <p>[<a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html"> Introduction to this package. </a>]
- * @see Sync 
+ * @see Sync
  * @see BoundedChannel 
 **/
 
