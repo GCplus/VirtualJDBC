@@ -15,7 +15,10 @@
 
 package de.simplicit.vjdbc.server.concurrent;
 
-/** A standard linked list node used in various queue classes **/
+/**
+ * A standard linked list node used in various queue classes
+ * 在各种队列类中使用的标准链表节点
+ **/
 public class LinkedNode { 
   public Object value;
   public LinkedNode next;
