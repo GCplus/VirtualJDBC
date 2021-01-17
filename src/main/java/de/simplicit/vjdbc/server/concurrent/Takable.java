@@ -19,9 +19,13 @@ package de.simplicit.vjdbc.server.concurrent;
  * in a consumer object can be declared as only a Takable
  * rather than a Channel, in which case a Java compiler
  * will disallow put operations.
+ * <p>此接口的存在是为了对通道启用更严格的类型检查。
+ * 使用者对象中的方法参数或实例变量可以声明为仅可执行，而不是通道，在这种情况下，Java 编译器将不允许put操作。
  * <p>
  * Full method descriptions appear in the Channel interface.
+ * <p>完整方法描述将显示在通道接口中
  * <p>[<a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html"> Introduction to this package. </a>]
+ * <p>[<a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html"> 此包简介 </a>]
  * @see Channel
  * @see Puttable
 **/
@@ -32,6 +36,7 @@ public interface Takable {
    * Return and remove an item from channel, 
    * possibly waiting indefinitely until
    * such an item exists.
+   * <p>从通道返回并删除项，可能无限期等待直到该项存在
    * @return  some item from the channel. Different implementations
    *  may guarantee various properties (such as FIFO) about that item
    * @exception InterruptedException if the current thread has
