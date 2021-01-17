@@ -39,11 +39,13 @@ public class RmiConfiguration {
     }
 
     // Support method for old configuration format
+    // 旧配置格式的支持方法
     public int getPort() {
         return registryPort;
     }
 
     // Support method for old configuration format
+    // 旧配置格式的支持方法
     public void setPort(int port) {
         registryPort = port;
     }

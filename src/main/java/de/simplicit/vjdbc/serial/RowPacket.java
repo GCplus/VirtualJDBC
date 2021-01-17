@@ -237,6 +237,7 @@ public class RowPacket implements Externalizable {
                     // what oracle does instead of SQLXML in their 1.6 driver,
                     // don't ask me why, commented out so we don't need
                     // an oracle driver to compile this class
+                    //oracle在其1.6驱动程序中代替SQLXML做什么，不要问我为什么，注释掉了，所以我们不需要oracle驱动程序来编译此类
                     //case 2007:
                     //flattenedColumnsValues[internalIndex].setObject(rowCount, new XMLType(((OracleResultSet)rs).getOPAQUE(i)));
                 case Types.SQLXML:

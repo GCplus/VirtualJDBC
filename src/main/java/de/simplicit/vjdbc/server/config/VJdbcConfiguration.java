@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 /**
  * Root configuration class. Can be initialized with different input objects
  * or be built up programmatically.
+ * <p>根配置类,可以使用不同的输入对象进行初始化或以编程方式进行构建。
  */
 public class VJdbcConfiguration {
     private static final Log logger = LogFactory.getLog(VJdbcConfiguration.class);
@@ -33,9 +34,11 @@ public class VJdbcConfiguration {
     /**
      * overrides the use of the StreamingResultSet to allow other types of
      * result set network transport.
+     * <p>覆盖对StreamingResultSet的使用，以允许其他类型的结果集网络传输。
      *
      * Don't call this method unless you are defining your own network
      * transport which has it own mechanism for transporting result sets
+     * <p>除非您定义自己的网络传输，该方法具有自己的传输结果集的机制，否则请勿调用此方法
      */
     public static void setUseCustomResultSetHandling() {
         useStreamingResultSet = false;
@@ -48,6 +51,7 @@ public class VJdbcConfiguration {
 
     /**
      * Initialization with pre-built configuration object.
+     * <p>使用预先构建的配置对象进行初始化
      * @param customConfig 配置
      */
     public static void init(VJdbcConfiguration customConfig) {
@@ -60,7 +64,8 @@ public class VJdbcConfiguration {
 
     /**
      * Initialization with resource.
-     * @param configResource Resource to be loaded by the ClassLoader
+     * <p>使用资源初始化
+     * @param configResource Resource to be loaded by the ClassLoader <p>由ClassLoader加载的资源
      * @throws ConfigurationException 配置异常
      */
     public static void init(String configResource) throws ConfigurationException {
@@ -69,7 +74,8 @@ public class VJdbcConfiguration {
 
     /**
      * Initialization with resource.
-     * @param configResource Resource to be loaded by the ClassLoader
+     * <p>使用资源初始化
+     * @param configResource Resource to be loaded by the ClassLoader <p>由ClassLoader加载的资源
      * @throws ConfigurationException 配置异常
      */
     public static void init(String configResource, Properties configVariables) throws ConfigurationException {
@@ -91,6 +97,7 @@ public class VJdbcConfiguration {
 
     /**
      * Initialization with pre-opened InputStream.
+     * <p>使用预先打开的InputStream进行初始化
      * @param configResourceInputStream InputStream
      * @throws ConfigurationException 配置异常
      */
@@ -113,9 +120,10 @@ public class VJdbcConfiguration {
 
     /**
      * Accessor method to the configuration singleton.
-     * @return Configuration object
+     * <p>配置单例的访问器方法
+     * @return Configuration object <p>将配置封装成的对象
      * @throws RuntimeException Thrown when accessing without being initialized
-     * previously
+     * previously <p>在未先初始化的状态下访问时抛出
      */
     public static VJdbcConfiguration singleton() {
         if(singleton == null) {
@@ -126,6 +134,7 @@ public class VJdbcConfiguration {
 
     /**
      * Constructor. Can be used for programmatical building the Configuration object.
+     * <p>构造函数。可以用于以编程方式构建Configuration对象
      */
     public VJdbcConfiguration() {
     }
@@ -140,7 +149,8 @@ public class VJdbcConfiguration {
 
     /**
      * Returns the RMI-Configuration.
-     * @return RmiConfiguration object or null
+     * <p>返回RMI配置
+     * @return RmiConfiguration object or null <p>RMI配置对象或者null
      */
     public RmiConfiguration getRmiConfiguration() {
         return rmiConfiguration;
@@ -148,7 +158,8 @@ public class VJdbcConfiguration {
 
     /**
      * Sets the RMI-Configuration object.
-     * @param rmiConfiguration RmiConfiguration object to be used.
+     * <p>设置RMI配置对象
+     * @param rmiConfiguration RmiConfiguration object to be used. <p>要使用的RmiConfiguration对象
      */
     public void setRmiConfiguration(RmiConfiguration rmiConfiguration) {
         this.rmiConfiguration = rmiConfiguration;
@@ -156,8 +167,9 @@ public class VJdbcConfiguration {
 
     /**
      * Returns a ConnectionConfiguration for a specific identifier.
-     * @param name Identifier of the ConnectionConfiguration
-     * @return ConnectionConfiguration or null
+     * <p>返回特定标识符的ConnectionConfiguration
+     * @param name Identifier of the ConnectionConfiguration <p>ConnectionConfiguration的标识符
+     * @return ConnectionConfiguration or null <p>连接配置或者null
      */
     public ConnectionConfiguration getConnection(String name) {
         for (Object connection : connections) {
@@ -171,8 +183,9 @@ public class VJdbcConfiguration {
 
     /**
      * Adds a ConnectionConfiguration.
+     * <p>添加连接配置
      * @param connectionConfiguration 连接配置
-     * @throws ConfigurationException Thrown when the connection identifier already exists
+     * @throws ConfigurationException Thrown when the connection identifier already exists <p>当连接标识符已经存在时抛出
      */
     public void addConnection(ConnectionConfiguration connectionConfiguration) throws ConfigurationException {
         if(getConnection(connectionConfiguration.getId()) == null) {

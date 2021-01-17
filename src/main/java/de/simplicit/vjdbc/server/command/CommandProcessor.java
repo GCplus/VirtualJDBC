@@ -34,6 +34,7 @@ import de.simplicit.vjdbc.util.SQLExceptionHelper;
 /**
  * The CommandProcessor is a singleton class which dispatches calls from the
  * client to the responsible connection object.
+ * <p>CommandProcessor是一个单例类，可将调用从客户端调度到负责的连接对象。
  */
 public class CommandProcessor {
     private static final Log logger = LogFactory.getLog(CommandProcessor.class);

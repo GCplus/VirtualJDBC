@@ -10,6 +10,7 @@ import java.io.*;
  * This class encapsulates the context in which a remote command was called.
  * It can be used to find the location of objects that weren't disposed
  * correctly.
+ * <p>此类封装了调用远程命令的上下文，可用于查找未正确放置的对象的位置
  */
 public class CallingContext implements Externalizable {
     private static final long serialVersionUID = 3906934495134101813L;

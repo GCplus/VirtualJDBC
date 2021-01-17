@@ -271,6 +271,7 @@ public class ConnectionConfiguration implements Executor {
 
         // When connection pooling is used, the user/password combination must be
         // provided in the configuration as otherwise user-accounts are mixed up
+        // 使用连接池时，必须在配置中提供用户/密码组合，否则用户帐户将被混淆
         if (dataSourceProvider == null) {
             if (connectionPooling && user == null) {
                 String msg = "Connection-Entry " + id + ": connection pooling can only be used when a dedicated user is specified for the connection";
@@ -295,6 +296,8 @@ public class ConnectionConfiguration implements Executor {
         // We must differentiate between the DataSource-API and the older
         // DriverManager-API. When the DataSource-Provider is provided, the
         // driver and URL configurations will be ignored
+        // 我们必须区分DataSource-API和较旧的DriverManager-API
+        // 提供DataSource-Provider时，驱动程序和URL配置将被忽略
         if (dataSourceProvider != null) {
             logger.info("  DataSource-Provider ........ " + dataSourceProvider);
         } else {
@@ -374,6 +377,7 @@ public class ConnectionConfiguration implements Executor {
 
     protected Connection createConnectionViaDriverManager(Properties props) throws SQLException {
         // Try to load the driver
+        // 尝试加载驱动程序
         if (!driverInitialized && driver != null) {
             try {
                 logger.debug("Loading driver " + driver);
@@ -389,6 +393,7 @@ public class ConnectionConfiguration implements Executor {
 
         // When database login is provided use them for the login instead of the
         // ones provided by the client
+        // 提供数据库登录名后，请使用它们代替客户端提供的登录名
         if (user != null) {
             logger.debug("Using " + user + " for database-login");
             props.put("user", user);
@@ -410,6 +415,7 @@ public class ConnectionConfiguration implements Executor {
         }
 
         // Connection pooling with DBCP
+        // 连接DBCP连接池
         if (connectionPooling && connectionPoolInitialized != null) {
             String dbcpId = DBCP_ID + id;
 
@@ -418,8 +424,10 @@ public class ConnectionConfiguration implements Executor {
             } else {
                 try {
                     // Try to load the DBCP-Driver
+                    // 尝试加载DBCP驱动程序
                     Class.forName("org.apache.commons.dbcp.PoolingDriver");
                     // Populate configuration object
+                    // 填充配置对象
                     if (connectionPoolConfiguration != null) {
                         GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
                         poolConfig.maxActive = connectionPoolConfiguration.getMaxActive();
@@ -437,6 +445,7 @@ public class ConnectionConfiguration implements Executor {
                     new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
                     PoolingDriver driver = (PoolingDriver) DriverManager.getDriver(DBCP_ID);
                     // Register pool with connection id
+                    // 用连接ID注册池
                     driver.registerPool(id, connectionPool);
                     connectionPoolInitialized = Boolean.TRUE;
                     jdbcurl = dbcpId;
@@ -464,11 +473,7 @@ public class ConnectionConfiguration implements Executor {
                     String msg = "Login-Handler class not found";
                     logger.error(msg, e);
                     throw new VJdbcException(msg, e);
-                } catch (InstantiationException e) {
-                    String msg = "Error creating instance of Login-Handler class";
-                    logger.error(msg, e);
-                    throw new VJdbcException(msg, e);
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     String msg = "Error creating instance of Login-Handler class";
                     logger.error(msg, e);
                     throw new VJdbcException(msg, e);
