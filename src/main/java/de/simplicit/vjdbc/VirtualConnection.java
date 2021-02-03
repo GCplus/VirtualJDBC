@@ -113,6 +113,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
                 new Object[]{autoCommit ? Boolean.TRUE : Boolean.FALSE},
                 ParameterTypeCombinations.BOL));
         // Remember the auto-commit value to prevent unnecessary remote calls
+        // 记住自动提交值，以防止不必要的远程调用
         isAutoCommit = autoCommit;
     }
 
@@ -198,6 +199,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
         } else {
             SQLWarning warnings = (SQLWarning)sink.process(objectUid, CommandPool.getReflectiveCommand("getWarnings"));
             // Remember if any warnings were reported
+            // 记住是否报告了任何警告
             _anyWarnings = warnings != null;
             return warnings;
         }
@@ -207,6 +209,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
 
     public void clearWarnings() throws SQLException {
         // Ignore the call if the previous getWarnings()-Call returned null
+        // 如果前面的getWarnings()调用返回null，则忽略该调用
         /*
         if(_anyWarnings) {
             sink.process(objectUid, CommandPool.getReflectiveCommand("clearWarnings"));
@@ -380,7 +383,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
         public void run() {
             try {
                 Object[] args = new Object[1];
-                args[0] = 0; // doesn't matter for this call
+                args[0] = 0; // doesn't matter for this call 这个调用不要紧
                 sink.processWithBooleanResult(objectUid, CommandPool.getReflectiveCommand(JdbcInterfaceType.CONNECTION, "isValid", args, 2));
                 finished = true;
             } catch (SQLException sqle) {
@@ -397,6 +400,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
         }
 
         // Schedule the keep alive timer task
+        // 调度keep alive计时器任务
         ValidRunnable task = new ValidRunnable();
         Thread t = new Thread(task);
         long end = System.currentTimeMillis() + timeout;
@@ -516,6 +520,7 @@ public class VirtualConnection extends VirtualBase implements Connection {
         throws SQLException {
         // unsupported due to complexities of providing the executor to the
         // engine driver on the other side of the connection
+        // 由于将执行程序提供给连接另一侧的引擎驱动程序很复杂，因此不受支持
         throw new UnsupportedOperationException("setNetworkTimeout");
     }
 

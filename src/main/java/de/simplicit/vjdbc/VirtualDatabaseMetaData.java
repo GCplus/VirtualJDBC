@@ -10,7 +10,6 @@ import de.simplicit.vjdbc.serial.StreamingResultSet;
 import de.simplicit.vjdbc.serial.UIDEx;
 import de.simplicit.vjdbc.util.SQLExceptionHelper;
 
-import javax.validation.constraints.NotNull;
 import java.sql.*;
 
 public class VirtualDatabaseMetaData extends VirtualBase implements DatabaseMetaData {

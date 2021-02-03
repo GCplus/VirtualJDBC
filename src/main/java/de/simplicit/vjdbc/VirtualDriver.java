@@ -91,15 +91,18 @@ public final class VirtualDriver implements Driver {
                 String[] urlparts;
 
                 // EJB-Connection
+                // EJB-连接
                 if (realUrl.startsWith(EJB_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(EJB_IDENTIFIER.length()));
                     logger.info("VJdbc in EJB-Mode, using object " + urlparts[0]);
                     sink = createEjbCommandSink(urlparts[0]);
                     // RMI-Connection
+                    // RMI-连接
                 } else if (realUrl.startsWith(RMI_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(RMI_IDENTIFIER.length()));
                     logger.info("VJdbc in RMI-Mode, using object " + urlparts[0]);
                     // Examine SSL property
+                    // 检查SSL属性
                     boolean useSSL;
                     String propSSL = props.getProperty(VJdbcProperties.RMI_SSL);
                     useSSL = (propSSL != null && propSSL.equalsIgnoreCase("true"));
@@ -108,6 +111,7 @@ public final class VirtualDriver implements Driver {
                     }
                     sink = createRmiCommandSink(urlparts[0], useSSL);
                     // Servlet-Connection
+                    // Servlet-连接
                 } else if (realUrl.startsWith(SERVLET_IDENTIFIER)) {
                     urlparts = split(realUrl.substring(SERVLET_IDENTIFIER.length()));
                     logger.info("VJdbc in Servlet-Mode, using URL " + urlparts[0]);
@@ -123,6 +127,7 @@ public final class VirtualDriver implements Driver {
                 }
 
                 // Connect with the sink
+                // 与接收器连接
                 UIDEx reg = sink.connect(
                         urlparts[1],
                         props,
@@ -132,14 +137,18 @@ public final class VirtualDriver implements Driver {
                 CallingContextFactory ctxFactory;
                 // The value 1 signals that every remote call shall provide a calling context. This should only
                 // be used for debugging purposes as sending of these objects is quite expensive.
+                // 值1表示每个远程呼叫都应提供一个呼叫上下文。
+                // 这仅应用于调试目的，因为发送这些对象非常昂贵。
                 if (reg.getValue1() == 1) {
                     ctxFactory = new StandardCallingContextFactory();
                 } else {
                     ctxFactory = new NullCallingContextFactory();
                 }
                 // Decorate the sink
+                // 装饰接收器
                 DecoratedCommandSink decosink = new DecoratedCommandSink(reg, sink, ctxFactory);
                 // return the new connection
+                // 返回一个新连接
                 result = new VirtualConnection(reg, decosink, props, cacheEnabled);
             } catch (Exception e) {
                 logger.error(e);
@@ -204,6 +213,7 @@ public final class VirtualDriver implements Driver {
         }
 
         // Decide here if we should use Jakarta-HTTP-Client
+        // 这里决定我们是否应该使用Jakarta-HTTP-Client
         String useJakartaHttpClient = props.getProperty(VJdbcProperties.SERVLET_USE_JAKARTA_HTTP_CLIENT);
         if (useJakartaHttpClient != null && useJakartaHttpClient.equals("true")) {
             return new ServletCommandSinkJakartaHttpClient(url, requestEnhancer);
@@ -213,6 +223,7 @@ public final class VirtualDriver implements Driver {
     }
 
     // Helper method (can't use the 1.4-Method because support for 1.3 is desired)
+    // 辅助方法(不能使用1.4方法，因为需要支持1.3)
     private String[] split(String url) {
         char[] splitChars = {',', ';', '#', '$'};
 

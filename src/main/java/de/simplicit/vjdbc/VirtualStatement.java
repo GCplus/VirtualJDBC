@@ -30,11 +30,14 @@ public class VirtualStatement extends VirtualBase implements Statement {
     public VirtualStatement(UIDEx reg, Connection connection, DecoratedCommandSink theSink, int resultSetType) {
         super(reg, theSink);
         // Remember the connection
+        // 记住连接
         this.connection = connection;
         // Remember ResultSetType
+        // 记住ResultSetType
         this.resultSetType = resultSetType;
         // Get the optional additional information which was delivered from the server
         // upon creation of the Statement object.
+        // 获取创建Statement对象时从服务器提供的可选附加信息。
         if (reg.getValue1() != Integer.MIN_VALUE) {
             this.queryTimeout = reg.getValue1();
         }
@@ -43,6 +46,7 @@ public class VirtualStatement extends VirtualBase implements Statement {
         }
         // We no longer need the additional values for information, so reset
         // them so they are no longer serialized
+        // 我们不再需要其他值来获取信息，因此请重置它们，以便不再进行序列化
         reg.resetValues();
     }
 
@@ -141,6 +145,7 @@ public class VirtualStatement extends VirtualBase implements Statement {
 
     public boolean execute(String sql) throws SQLException {
         // Reset the current ResultSet before executing this command
+        // 执行此命令之前，请重置当前的ResultSet
         currentResultSet = null;
 
         return sink.processWithBooleanResult(objectUid, new StatementExecuteCommand(sql));

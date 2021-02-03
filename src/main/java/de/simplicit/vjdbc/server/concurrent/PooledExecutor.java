@@ -676,6 +676,9 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * interruptions, each thread will terminate after processing its
    * current task. Threads will terminate sooner if the executed tasks
    * themselves respond to interrupts.
+   * <p>中断线程池中的所有线程，导致它们全部终止。
+   * 假设正在执行的任务没有禁用(清除)中断，每个线程将在处理其当前任务后终止。
+   * 如果执行的任务本身响应中断，那么线程将更快终止。
    **/
   public synchronized void interruptAll() {
     for (Object o : threads.values()) {
@@ -688,6 +691,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Interrupt all threads and disable construction of new
    * threads. Any tasks entered after this point will be discarded. A
    * shut down pool cannot be restarted.
+   * <p>中断所有线程并禁用新线程的构建。在此之后输入的所有任务将被丢弃。已关闭的池无法重新启动。
    */
   public void shutdownNow() {
     shutdownNow(new DiscardWhenBlocked());
@@ -698,18 +702,21 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * threads. Any tasks entered after this point will be handled by
    * the given BlockedExecutionHandler.  A shut down pool cannot be
    * restarted.
+   * <p>中断所有线程并禁用新线程的构建。
+   * 在此之后输入的所有任务将由给定的BlockedExecutionHandler处理。已关闭的池无法重新启动。
    */
   public synchronized void shutdownNow(BlockedExecutionHandler handler) {
     setBlockedExecutionHandler(handler);
-    shutdown = true; // don't allow new tasks
-    minimumPoolSize = maximumPoolSize = 0; // don't make new threads
-    interruptAll(); // interrupt all existing threads
+    shutdown = true; // don't allow new tasks  不允许新任务
+    minimumPoolSize = maximumPoolSize = 0; // don't make new threads 不要建立新线程
+    interruptAll(); // interrupt all existing threads 中断所有现有线程
   }
 
   /**
    * Terminate threads after processing all elements currently in
    * queue. Any tasks entered after this point will be discarded. A
    * shut down pool cannot be restarted.
+   * <p>处理完当前队列中的所有任务后终止线程。在此之后输入的任何任务都将被丢弃。已关闭的池不能重新启动。
    **/
   public void shutdownAfterProcessingCurrentlyQueuedTasks() {
     shutdownAfterProcessingCurrentlyQueuedTasks(new DiscardWhenBlocked());
@@ -720,17 +727,20 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * queue. Any tasks entered after this point will be handled by the
    * given BlockedExecutionHandler.  A shut down pool cannot be
    * restarted.
+   * <p>处理完当前队列中的所有元素后终止线程。
+   * 在此点之后输入的任何任务都将由给定的BlockedExecutionHandler处理。已关闭的池不能重新启动。
    **/
   public synchronized void shutdownAfterProcessingCurrentlyQueuedTasks(BlockedExecutionHandler handler) {
     setBlockedExecutionHandler(handler);
     shutdown = true;
-    if (poolSize == 0) // disable new thread construction when idle
+    if (poolSize == 0) // disable new thread construction when idle 在空闲时不再创建新线程
       minimumPoolSize = maximumPoolSize = 0;
   }
 
   /** 
    * Return true if a shutDown method has succeeded in terminating all
    * threads.
+   * <p>如果shutDown方法成功地终止了所有线程，则返回true。
    */
   public synchronized boolean isTerminatedAfterShutdown() {
     return shutdown && poolSize == 0;
@@ -741,11 +751,17 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * has expired. This method may only be called <em>after</em>
    * invoking shutdownNow or
    * shutdownAfterProcessingCurrentlyQueuedTasks.
+   * <p>等待关闭池完全终止，或直到超时已过期。
+   * 这个方法只能在调用shutdownNow或shutdownafterprocessingcurrentqueuedtasks<em>后</em>调用。
    *
    * @param maxWaitTime  the maximum time in milliseconds to wait
+   *                     <p>等待的最大时间(以毫秒为单位)
    * @return true if the pool has terminated within the max wait period
+   * <p>如果池在最大等待时间内终止，则为true
    * @exception IllegalStateException if shutdown has not been requested
+   * <p>如果没有请求关闭
    * @exception InterruptedException if the current thread has been interrupted in the course of waiting
+   * <p>如果当前线程在等待过程中被中断
    */
   public synchronized boolean awaitTerminationAfterShutdown(long maxWaitTime) throws InterruptedException {
     if (!shutdown)
@@ -770,9 +786,12 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Wait for a shutdown pool to fully terminate.  This method may
    * only be called <em>after</em> invoking shutdownNow or
    * shutdownAfterProcessingCurrentlyQueuedTasks.
+   * <p>等待关闭池完全终止。这个方法只能在调用shutdownNow或shutdownafterprocessingcurrentqueuedtasks<em>后</em>调用。
    *
    * @exception IllegalStateException if shutdown has not been requested
+   * <p>如果没有请求关闭
    * @exception InterruptedException if the current thread has been interrupted in the course of waiting
+   * <p>如果当前线程在等待过程中被中断
    */
   public synchronized void awaitTerminationAfterShutdown() throws InterruptedException {
     if (!shutdown)
@@ -791,6 +810,11 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * are any pending tasks that were not processed.  You can then, for
    * example execute all unprocessed commands via code along the lines
    * of:
+   * <p>从池队列中删除所有未处理的任务，并将其返回到java.util.List中。
+   * 仅当池中没有任何活动客户端时，才应使用此方法。
+   * 否则，您可能会遇到该方法将在客户端放入任务时循环拉出任务的情况。
+   * 关闭池（通过shutdownNow）以确定是否有未处理的待处理任务后，此方法很有用。
+   * 然后，您可以例如通过以下代码通过代码执行所有未处理的命令：
    *
    * <pre>
    *   List tasks = pool.drain();
@@ -810,7 +834,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
           tasks.addElement(x);
       }
       catch (InterruptedException ex) {
-        wasInterrupted = true; // postpone re-interrupt until drained
+        wasInterrupted = true; // postpone re-interrupt until drained 推迟再次中断直到耗尽
       }
     }
     if (wasInterrupted) Thread.currentThread().interrupt();
@@ -819,19 +843,21 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   
   /** 
    * Cleanup method called upon termination of worker thread.
+   * <p>在工作线程终止时调用的清除方法。
    **/
   protected synchronized void workerDone(Worker w) {
     threads.remove(w);
     if (--poolSize == 0 && shutdown) {
-      maximumPoolSize = minimumPoolSize = 0; // disable new threads
-      notifyAll(); // notify awaitTerminationAfterShutdown
+      maximumPoolSize = minimumPoolSize = 0; // disable new threads 不再创建新线程
+      notifyAll(); // notify awaitTerminationAfterShutdown 通知awaitTerminationAfterShutdown
     }
 
     // Create a replacement if needed
+    // 如果需要，创建一个替代品
     if (poolSize == 0 || poolSize < minimumPoolSize) {
       try {
          Runnable r = (Runnable)(handOff.poll(0));
-         if (r != null && !shutdown) // just consume task if shut down
+         if (r != null && !shutdown) // just consume task if shut down 如果关闭则只消耗任务
            addThread(r);
       } catch(InterruptedException ie) {
       ie.printStackTrace();
@@ -841,11 +867,12 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
 
   /** 
    * Get a task from the handoff queue, or null if shutting down.
+   * <p>从切换队列中获取任务，如果关闭则为null。
    **/
   protected Runnable getTask() throws InterruptedException {
     long waitTime;
     synchronized(this) {
-      if (poolSize > maximumPoolSize) // Cause to die if too many threads
+      if (poolSize > maximumPoolSize) // Cause to die if too many threads 如果线程太多会导致死亡
         return null;
       waitTime = (shutdown)? 0 : keepAliveTime;
     }
@@ -858,6 +885,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
 
   /**
    * Class defining the basic run loop for pooled threads.
+   * <p>定义池线程的基本运行循环的类
    **/
   protected class Worker implements Runnable {
     protected Runnable firstTask;
@@ -867,7 +895,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
     public void run() {
       try {
         Runnable task = firstTask;
-        firstTask = null; // enable GC
+        firstTask = null; // enable GC 允许垃圾回收
 
         if (task != null) {
           task.run();
@@ -881,7 +909,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
       }
       catch (InterruptedException ex) {
         ex.printStackTrace();
-      } // fall through
+      } // fall through 失败
       finally {
         workerDone(this);
       }
@@ -894,16 +922,23 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * subclasses, and/or create subclasses of these. If so, you will
    * also want to add or modify the corresponding methods that set the
    * current blockedExectionHandler_.
+   * <p>类用于在execute()阻塞时采取的操作。使用策略模式来表示不同的操作。
+   * 你可以在子类中添加更多，或者创建它们的子类。
+   * 如果需要，还可以添加或修改相应的方法来设置当前的blockedExectionHandler_。
    **/
   public interface BlockedExecutionHandler {
     /** 
      * Return true if successfully handled so, execute should
      * terminate; else return false if execute loop should be retried.
+     * <p>如果成功处理，则返回true，execute应该终止;否则，如果需要重试执行循环，则返回false。
      **/
     boolean blockedAction(Runnable command) throws InterruptedException;
   }
 
-  /** Class defining Run action. **/
+  /**
+   * Class defining Run action.
+   * <p>定义运行动作的类。
+   **/
   protected static class RunWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       command.run();
@@ -915,12 +950,16 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Set the policy for blocked execution to be that the current
    * thread executes the command if there are no available threads in
    * the pool.
+   * <p>将阻塞执行的策略设置为，如果池中没有可用的线程，则当前线程执行该命令。
    **/
   public void runWhenBlocked() {
     setBlockedExecutionHandler(new RunWhenBlocked());
   }
 
-  /** Class defining Wait action. **/
+  /**
+   * Class defining Wait action.
+   * <p><p>定义等待动作的类。
+   **/
   protected class WaitWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) throws InterruptedException{
       synchronized(PooledExecutor.this) {
@@ -936,12 +975,16 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Set the policy for blocked execution to be to wait until a thread
    * is available, unless the pool has been shut down, in which case
    * the action is discarded.
+   * <p>将阻塞执行的策略设置为等待线程可用，除非已关闭该池（在这种情况下将放弃该操作）
    **/
   public void waitWhenBlocked() {
     setBlockedExecutionHandler(new WaitWhenBlocked());
   }
 
-  /** Class defining Discard action. **/
+  /**
+   * Class defining Discard action.
+   * <p>定义丢弃动作的类
+   **/
   protected static class DiscardWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       return true;
@@ -951,13 +994,17 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   /** 
    * Set the policy for blocked execution to be to return without
    * executing the request.
+   * <p>将阻止执行的策略设置为不执行请求就返回
    **/
   public void discardWhenBlocked() {
     setBlockedExecutionHandler(new DiscardWhenBlocked());
   }
 
 
-  /** Class defining Abort action. **/
+  /**
+   * Class defining Abort action.
+   * <p>定义中止动作的类
+   **/
   protected static class AbortWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) {
       throw new RuntimeException("Pool is blocked");
@@ -967,6 +1014,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   /** 
    * Set the policy for blocked execution to be to
    * throw a RuntimeException.
+   * <p>将阻塞执行的策略设置为抛出RuntimeException
    **/
   public void abortWhenBlocked() {
     setBlockedExecutionHandler(new AbortWhenBlocked());
@@ -978,6 +1026,10 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * one old unhandled task is discarded.  If the new task can then be
    * handed off, it is.  Otherwise, the new task is run in the current
    * thread (i.e., RunWhenBlocked is used as a backup policy.)
+   * <p>定义DiscardOldest动作的类。
+   * 在此策略下，最多丢弃一个旧的未处理任务。
+   * 如果新任务可以执行，那就可以了。
+   * 否则，新任务将在当前线程中运行（即，RunWhenBlocked用作备份策略。）
    **/
   protected class DiscardOldestWhenBlocked implements BlockedExecutionHandler {
     public boolean blockedAction(Runnable command) throws InterruptedException{
@@ -991,6 +1043,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   /** 
    * Set the policy for blocked execution to be to discard the oldest
    * unhandled request
+   * <p>将阻止执行的策略设置为丢弃最早的未处理请求
    **/
   public void discardOldestWhenBlocked() {
     setBlockedExecutionHandler(new DiscardOldestWhenBlocked());
@@ -1000,6 +1053,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Arrange for the given command to be executed by a thread in this
    * pool.  The method normally returns when the command has been
    * handed off for (possibly later) execution.
+   * <p>安排此池中的线程执行给定的命令。该方法通常在命令已分发以执行（可能稍后）时返回。
    **/
   public void execute(Runnable command) throws InterruptedException {
     for (;;) {
@@ -1008,17 +1062,20 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
           int size = poolSize;
 
           // Ensure minimum number of threads
+          // 确保线程数最少
           if (size < minimumPoolSize) {
             addThread(command);
             return;
           }
           
           // Try to give to existing thread
+          // 尝试赋予现有线程
           if (handOff.offer(command, 0)) {
             return;
           }
           
           // If cannot handoff and still under maximum, create new thread
+          // 如果不能切换并且仍然低于最大值，则创建新线程
           if (size < maximumPoolSize) {
             addThread(command);
             return;
@@ -1027,6 +1084,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
       }
 
       // Cannot hand off and cannot create -- ask for help
+      // 无法hand off也无法创建-寻求帮助
       if (getBlockedExecutionHandler().blockedAction(command)) {
         return;
       }

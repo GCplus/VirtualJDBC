@@ -274,30 +274,37 @@ public interface Channel extends Puttable, Takable {
    * it can be accepted. Channels implementing the BoundedChannel
    * subinterface are generally guaranteed to block on puts upon
    * reaching capacity, but other implementations may or may not block.
-   * @param item the element to be inserted. Should be non-null.
+   * <p>将item放置在通道中，可能无限期等待直到它可以被接受。
+   * 实现BoundedChannel子接口的通道通常保证在达到容量时阻塞，但其他实现可能阻塞，也可能不阻塞。
+   * @param item the element to be inserted. Should be non-null. <p>要插入的元素不应该为空。
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case the element is guaranteed not
    * to be inserted. Otherwise, on normal return, the element is guaranteed
    * to have been inserted.
+   * <p>如果当前线程在检测到中断时中断，则保证不会插入该元素。否则，在正常返回时，保证已插入元素。
   **/
   public void put(Object item) throws InterruptedException;
 
   /** 
    * Place item in channel only if it can be accepted within
    * msecs milliseconds. The time bound is interpreted in
-   * a coarse-grained, best-effort fashion. 
-   * @param item the element to be inserted. Should be non-null.
+   * a coarse-grained, best-effort fashion.
+   * <p>只有当item可以在毫秒内被接受时，才将其放置在通道中。时间限制是用粗粒度的、尽力而为的方式解释的。
+   * @param item the element to be inserted. Should be non-null. <p>要插入的元素不应该为空。
    * @param msecs the number of milliseconds to wait. If less than
    * or equal to zero, the method does not perform any timed waits,
    * but might still require
    * access to a synchronization lock, which can impose unbounded
    * delay if there is a lot of contention for the channel.
-   * @return true if accepted, else false
+   * <p>等待的毫秒数。如果小于或等于0，该方法不执行任何定时等待，但可能仍然需要访问同步锁，
+   * 如果有很多通道争用，这可能会造成无限的延迟。
+   * @return true if accepted, else false <p>如果被接受则为true，否则为false
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case the element is guaranteed not
    * to be inserted (i.e., is equivalent to a false return).
+   * <p>如果当前线程在检测到中断的点被中断，在这种情况下，元素保证不会被插入(即等同于返回false)。
   **/
   public boolean offer(Object item, long msecs) throws InterruptedException;
 
@@ -305,11 +312,14 @@ public interface Channel extends Puttable, Takable {
    * Return and remove an item from channel, 
    * possibly waiting indefinitely until
    * such an item exists.
+   * <p>返回并从频道中删除一个item，可能无限期地等待直到该项目存在。
    * @return  some item from the channel. Different implementations
    *  may guarantee various properties (such as FIFO) about that item
+   *  <p>来自通道的一些item。不同的实现可能会保证该项的各种属性(比如FIFO)
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case state of the channel is unchanged.
+   * <p>如果当前线程在检测到中断时被中断，在这种情况下通道的状态不会改变。
    *
   **/
   public Object take() throws InterruptedException;
@@ -319,16 +329,20 @@ public interface Channel extends Puttable, Takable {
    * Return and remove an item from channel only if one is available within
    * msecs milliseconds. The time bound is interpreted in a coarse
    * grained, best-effort fashion.
+   * <p>只有当一个项目在毫秒内可用时，才从通道中返回并删除。时间范围以粗粒度，尽力而为的方式进行解释。
    * @param msecs the number of milliseconds to wait. If less than
    *  or equal to zero, the operation does not perform any timed waits,
    * but might still require
    * access to a synchronization lock, which can impose unbounded
    * delay if there is a lot of contention for the channel.
-   * @return some item, or null if the channel is empty.
+   * <p>等待的毫秒数。如果小于或等于0，该方法不执行任何定时等待，但可能仍然需要访问同步锁，
+   * 如果有很多通道争用，这可能会造成无限的延迟。
+   * @return some item, or null if the channel is empty. <p>某些项目；如果通道为空，则返回null。
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case state of the channel is unchanged
    * (i.e., equivalent to a null return).
+   * <p>如果当前线程在检测到中断的点被中断，在这种情况下，元素保证不会被插入(即等同于返回false)。
   **/
 
   public Object poll(long msecs) throws InterruptedException;
@@ -336,6 +350,7 @@ public interface Channel extends Puttable, Takable {
   /**
    * Return, but do not remove object at head of Channel,
    * or null if it is empty.
+   * 返回，但不要移除通道头部的对象，如果为空则为null。
    **/
 
   public Object peek();

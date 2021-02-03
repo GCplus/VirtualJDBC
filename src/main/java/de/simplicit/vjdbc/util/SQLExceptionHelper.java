@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 /**
  * SQLExceptionHelper wraps driver-specific exceptions in a generic SQLException.
+ * <p>SQLExceptionHelper在通用SQLException中包装特定于驱动程序的异常。
  */
 public class SQLExceptionHelper {
 
@@ -29,6 +30,7 @@ public class SQLExceptionHelper {
         if (isSQLExceptionGeneric(ex)) {
             // yes a bit misleading but since this exception is already OK
             // for transport, its much simplier just to return it
+            // 是的，有点误导，但是由于此异常已经可以传输，所以返回它要简单得多
             return ex;
         }
         else {
@@ -90,6 +92,8 @@ public class SQLExceptionHelper {
         // that those that change stack traces deserve a special place in hell
         // If your code can be hacked by stack trace info, it deserves to
         // be hacked and will be cracked anyway
+        // 回顾:在这里做一些邪恶的黑客，但只是因为我相信那些更改堆栈跟踪应该在地狱里得到一个特殊的位置
+        //如果你的代码可以被堆栈跟踪信息入侵，它值得被入侵，无论如何都会被破解
         wrapped.setStackTrace(wrapped.getStackTrace());
 
         return wrapped;

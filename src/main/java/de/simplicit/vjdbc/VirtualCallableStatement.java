@@ -598,6 +598,8 @@ public class VirtualCallableStatement extends VirtualPreparedStatement implement
     private void checkTransporteeForStreamingResultSet(Object transportee) {
         // The transportee might be a StreamingResultSet (i.e. Oracle can return database cursors). Thus
         // we must check the transportee and set some references correspondingly when it is a ResultSet.
+        // transportee可能是一个StreamingResultSet(即Oracle可以返回数据库游标)。
+        // 因此，当transportee是一个结果集时，我们必须检查它并相应地设置一些引用。
         if(transportee instanceof StreamingResultSet) {
             StreamingResultSet srs = (StreamingResultSet)transportee;
             srs.setStatement(this);
