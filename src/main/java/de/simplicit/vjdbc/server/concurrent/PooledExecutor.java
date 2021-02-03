@@ -526,6 +526,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   /** 
    * Create a new pool that uses the supplied Channel for queuing, and
    * with all default parameter settings except for maximum pool size.
+   * <p>创建一个使用提供的通道进行排队的新池，并使用除最大池大小外的所有默认参数设置。
    **/
 
   public PooledExecutor(Channel channel, int maxPoolSize) {
@@ -539,6 +540,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Return the maximum number of threads to simultaneously execute
    * New unqueued requests will be handled according to the current
    * blocking policy once this limit is exceeded.
+   * <p>一旦超过此限制，将根据当前的阻塞策略处理新的未排队请求，并返回同时执行的最大线程数。
    **/
   public synchronized int getMaximumPoolSize() { 
     return maximumPoolSize;
@@ -548,11 +550,13 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Set the maximum number of threads to use. Decreasing the pool
    * size will not immediately kill existing threads, but they may
    * later die when idle.
+   * <p>设置要使用的最大线程数。减少池大小不会立即杀死现有的线程，但它们可能会在空闲时死亡。
    * @exception IllegalArgumentException if less or equal to zero.
    * (It is
    * not considered an error to set the maximum to be less than than
    * the minimum. However, in this case there are no guarantees
    * about behavior.)
+   * <p>如果小于或等于零（将最大值设置为小于最小值并不认为是错误。但是，在这种情况下，不能保证行为）
    **/
   public synchronized void setMaximumPoolSize(int newMaximum) { 
     if (newMaximum <= 0) throw new IllegalArgumentException();
@@ -564,17 +568,21 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * (Default value is 1).  If fewer than the mininum number are
    * running upon reception of a new request, a new thread is started
    * to handle this request.
+   * <p>返回要同时执行的最少线程数(默认值是1)。
+   * 如果接收到一个新请求时，运行的最小数量小于这个数，则会启动一个新的线程来处理这个请求。
    **/
   public synchronized int getMinimumPoolSize() { 
     return minimumPoolSize;
   }
 
   /** 
-   * Set the minimum number of threads to use. 
+   * Set the minimum number of threads to use.
+   * <p>设置要使用的最小线程数。
    * @exception IllegalArgumentException if less than zero. (It is not
    * considered an error to set the minimum to be greater than the
    * maximum. However, in this case there are no guarantees about
    * behavior.)
+   * <p>如果小于零（将最小值设置为大于最大值并不认为是错误的。但是，在这种情况下，无法保证行为）
    **/
   public synchronized void setMinimumPoolSize(int newMinimum) { 
     if (newMinimum < 0) throw new IllegalArgumentException();
@@ -585,6 +593,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Return the current number of active threads in the pool.  This
    * number is just a snaphot, and may change immediately upon
    * returning
+   * <p>返回池中的当前活动线程数。这个数字只是一个快照，返回时可能会立即更改
    **/
   public synchronized int getPoolSize() { 
     return poolSize;
@@ -594,6 +603,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Return the number of milliseconds to keep threads alive waiting
    * for new commands. A negative value means to wait forever. A zero
    * value means not to wait at all.
+   * <p>返回保持线程处于活动状态等待新命令的毫秒数。负值意味着永远等待。零值意味着根本不需要等待。
    **/
   public synchronized long getKeepAliveTime() { 
     return keepAliveTime;
@@ -603,17 +613,24 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Set the number of milliseconds to keep threads alive waiting for
    * new commands. A negative value means to wait forever. A zero
    * value means not to wait at all.
+   * <p>设置线程等待新命令时的毫秒数。负值意味着永远等待。零值意味着根本不需要等待。
    **/
   public synchronized void setKeepAliveTime(long msecs) { 
     keepAliveTime = msecs;
   }
 
-  /** Get the handler for blocked execution **/
+  /**
+   *  Get the handler for blocked execution
+   *  <p>获取阻塞执行的处理程序
+   **/
   public synchronized BlockedExecutionHandler getBlockedExecutionHandler() {
     return blockedExecutionHandler;
   }
 
-  /** Set the handler for blocked execution **/
+  /**
+   * Set the handler for blocked execution
+   * <p>设置处理程序以阻止执行
+   **/
   public synchronized void setBlockedExecutionHandler(BlockedExecutionHandler h) {
     blockedExecutionHandler = h;
   }
@@ -621,6 +638,7 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
   /**
    * Create and start a thread to handle a new command.  Call only
    * when holding lock.
+   * <p>创建并启动一个线程来处理一个新命令。只有在保持锁定时才调用。
    **/
   protected void addThread(Runnable command) {
     Worker worker = new Worker(command);
@@ -634,6 +652,8 @@ public class PooledExecutor extends ThreadFactoryUser implements Executor {
    * Create and start up to numberOfThreads threads in the pool.
    * Return the number created. This may be less than the number
    * requested if creating more would exceed maximum pool size bound.
+   * <p>在池中创建并启动numberOfThreads线程。返回创建的数字。
+   * 如果创建超过最大池大小限制的线程数目，那么这个创建数可能小于请求的数目。
    **/
   public int createThreads(int numberOfThreads) {
     int ncreated = 0;
