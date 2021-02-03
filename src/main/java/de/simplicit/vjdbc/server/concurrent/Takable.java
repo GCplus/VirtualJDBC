@@ -39,9 +39,11 @@ public interface Takable {
    * <p>从通道返回并删除项，可能无限期等待直到该项存在
    * @return  some item from the channel. Different implementations
    *  may guarantee various properties (such as FIFO) about that item
+   *  <p>通道中的某些东西，不同的实现可能会保证该项目的各种属性（例如FIFO）
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case state of the channel is unchanged.
+   * <p>如果当前线程已在检测到中断的点处中断，则通道的状态不变。
    *
   **/
   public Object take() throws InterruptedException;
@@ -50,17 +52,20 @@ public interface Takable {
   /** 
    * Return and remove an item from channel only if one is available within
    * msecs milliseconds. The time bound is interpreted in a coarse
-   * grained, best-effort fashion.
+   * grained, best-effort fashion. <p>
+   * 仅当某个项目在毫秒内可用时，才从通道中退回并删除该项目。时间范围以粗粒度，尽力而为的方式进行解释。
    * @param msecs the number of milliseconds to wait. If less than
    *  or equal to zero, the operation does not perform any timed waits,
    * but might still require
    * access to a synchronization lock, which can impose unbounded
-   * delay if there is a lot of contention for the channel.
-   * @return some item, or null if the channel is empty.
+   * delay if there is a lot of contention for the channel. <p>
+   * 等待的毫秒数。如果小于或等于0，则操作不执行任何定时等待，但可能仍然需要访问同步锁，如果有大量通道争用，这可能会造成无限延迟。
+   * @return some item, or null if the channel is empty. <p>某些项，如果通道为空，则为空
    * @exception InterruptedException if the current thread has
    * been interrupted at a point at which interruption
    * is detected, in which case state of the channel is unchanged
-   * (i.e., equivalent to a false return).
+   * (i.e., equivalent to a false return). <p>
+   * 如果当前线程已在检测到中断的位置被中断，则在这种情况下通道的状态保持不变（即等同于错误的返回）。
   **/
 
   public Object poll(long msecs) throws InterruptedException;
