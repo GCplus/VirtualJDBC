@@ -48,6 +48,7 @@ public class CallableStatementGetCharacterStreamCommand implements Command {
         }
         try {
             // read reader and return as a char[]
+            // 读取reader并作为char[]返回
             return new SerializableTransport(StreamSerializer.toCharArray(result), ctx.getCompressionMode(), ctx.getCompressionThreshold());
         } catch (IOException ioe) {
             throw new SQLException(ioe);

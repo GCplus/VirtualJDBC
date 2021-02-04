@@ -124,6 +124,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
 
         // Fetch the meta data immediately if required. Succeeding getMetaData() calls
         // on the ResultSet won't require an additional remote call
+        // 如果需要，立即获取元数据。后续对ResultSet的getMetaData()调用不需要额外的远程调用
         if(prefetchMetaData) {
             logger.debug("Fetching MetaData of ResultSet");
             metaData = new SerialResultSetMetaData(metaData);
@@ -141,8 +142,10 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         }
 
         // Create first ResultSet-Part
+        // 创建第一个ResultSet-Part
         rows = new RowPacket(rowPacketSize, forwardOnly);
         // Populate it
+        // 填充它
         rows.populate(rs);
 
         lastPartReached = rows.isLastPart();
@@ -186,6 +189,8 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             // The server-side created StreamingResultSet is garbage-collected after it was send over the wire. Thus
             // we have to check here if it is such a server object because in this case we don't have to try the remote
             // call which indeed causes a NPE.
+            // 服务器端创建的StreamingResultSet在通过网络发送后将被垃圾收集。
+            // 因此，我们必须在这里检查它是否是这样的服务器对象，因为在这种情况下，我们不必尝试远程调用，这确实会导致NPE。
             if(commandSink != null) {
                 commandSink.process(remainingResultSet, new DestroyCommand(remainingResultSet, JdbcInterfaceType.RESULTSETHOLDER));
             }
@@ -917,6 +922,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             }
 
             // Set scale if necessary
+            // 如有需要，设置刻度
             if(result != null) {
                 if(scale >= 0) {
                     result = result.setScale(scale);
@@ -953,6 +959,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
 
     public void afterLast() {
         // Request all remaining Row-Packets
+        // 请求所有剩余的行数据包
 //        while(requestNextRowPacket()) ;
         cursor = rows.size();
         actualRow = null;
@@ -971,6 +978,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
     public boolean last() {
         try {
             // Request all remaining Row-Packets
+            // 请求所有剩余的行数据包
 //            while(requestNextRowPacket()) ;
             cursor = rows.size() - 1;
             actualRow = rows.get(cursor);
@@ -1392,6 +1400,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
         int result = -1;
         String nameLowercase = name.toLowerCase();
         // first search in the columns names (hit is very likely)
+        // 首先在列名中搜索(很可能击中)
         for(int i = 0; i < columnNames.length; ++i) {
             if(columnNames[i].equals(nameLowercase)) {
                 result = i;
@@ -1399,6 +1408,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             }
         }
         // not found ? then search in the labels
+        // 没有找到?然后在标签中搜索
         if(result < 0) {
                 for(int i = 0; i < columnLabels.length; ++i) {
                     if(columnLabels[i].equals(nameLowercase)) {
@@ -1454,6 +1464,7 @@ public class StreamingResultSet implements ResultSet, Externalizable {
             } else {
                 // If new row is not in the range of the actually available
                 // rows then try to load the next row packets successively
+                // 如果新行不在实际可用行的范围内，则尝试依次加载下一行数据包
                 while(requestNextRowPacket()) {
                     if(row < rows.size()) {
                         cursor = row;

@@ -49,7 +49,8 @@ public class DestroyCommand implements Command {
     	/*
     	 * if we are trying to close a Connection, we also need to close all the other associated
     	 * JDBC objects, such as ResultSet, Statements, etc.
-    	 */
+         * <p> 如果尝试关闭Connection，则还需要关闭所有其他关联的JDBC对象，例如ResultSet，Statements等
+         */
     	if(target instanceof Connection) {
     		if(logger.isDebugEnabled()) {
     			logger.debug("******************************************************");
@@ -60,16 +61,17 @@ public class DestroyCommand implements Command {
     		ctx.closeAllRelatedJdbcObjects();
     	}
     	// now we are ready to go on and close this connection
-    	
+    	// 现在我们准备继续并关闭此连接
         Object removed = ctx.removeJDBCObject(uid);
 
         // Check for identity
+        // 检查身份
         if(removed == target) {
             if(logger.isDebugEnabled()) {
                 logger.debug("Removed " + target.getClass().getName() + " with UID " + uid);
             }
             try {
-                Class targetClass = JdbcInterfaceType._interfaces[interfaceType];
+                Class targetClass = JdbcInterfaceType.interfaces[interfaceType];
                 Method mth = targetClass.getDeclaredMethod("close", new Class[0]);
                 mth.invoke(target, (Object[])null);
                 if(logger.isDebugEnabled()) {
@@ -77,6 +79,7 @@ public class DestroyCommand implements Command {
                 }
             } catch(NoSuchMethodException e) {
                 // Object doesn't support close()
+                // 对象不支持close()
             	if(logger.isDebugEnabled()) {
             		logger.debug("close() not supported");
             	}

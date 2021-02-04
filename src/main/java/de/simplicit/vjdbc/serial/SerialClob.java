@@ -91,6 +91,7 @@ public class SerialClob implements Clob, Externalizable {
         // very slow but gets around problems with the pos being represented
         // as long instead of an int in most java.io and other byte copying
         // APIs
+        // 速度非常慢，但是可以解决pos问题，因为在大多数java.io和其他字节复制API中，pos被表示为long而不是int
         CharArrayWriter writer = new CharArrayWriter(length);
         for (long i = 0; i < length; ++i) {
             writer.write(data[(int)(pos + i)]);
@@ -146,6 +147,7 @@ public class SerialClob implements Clob, Externalizable {
         // very slow but gets around problems with the pos being represented
         // as long instead of an int in most java.io and other byte copying
         // APIs
+        // 速度非常慢，但是可以解决pos问题，因为在大多数java.io和其他字节复制API中，pos被表示为long而不是int
         CharArrayWriter writer = new CharArrayWriter((int)length);
         for (long i = 0; i < length; ++i) {
             writer.write(data[(int)(pos + i)]);

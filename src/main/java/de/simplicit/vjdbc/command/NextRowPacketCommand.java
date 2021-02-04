@@ -26,6 +26,7 @@ public class NextRowPacketCommand implements Command {
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         ResultSetHolder rsh = (ResultSetHolder) target;
         // Return next serialized RowPacket
+        // 返回下一个序列化的RowPacket
         return rsh.nextRowPacket();
     }
 

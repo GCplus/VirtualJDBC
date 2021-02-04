@@ -39,6 +39,8 @@ public class ByteStreamParameter implements PreparedStatementParameter {
             value = bos.toByteArray();
             // Adjust length to the amount of read bytes if the user provided
             // -1 as the length parameter
+            // 如果用户提供，则将长度调整为读取的字节数
+            // -1作为长度参数
             if(length < 0) {
                 this.length = value.length;
             }
@@ -80,6 +82,7 @@ public class ByteStreamParameter implements PreparedStatementParameter {
             case TYPE_UNICODE:
                 // its ok to downcast here as there is no setUnicodeStream()
                 // variant with a long length value
+                // 这里可以进行向下转换，因为没有带有长度值的setUnicodeStream()变量
                 pstmt.setUnicodeStream(index, bais, (int)length);
                 break;
 

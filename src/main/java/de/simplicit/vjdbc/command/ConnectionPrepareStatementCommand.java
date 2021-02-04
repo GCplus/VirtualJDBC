@@ -54,8 +54,10 @@ public class ConnectionPrepareStatementCommand implements Command {
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         // Resolve and check the query
+        // 解决并检查查询
         String sql = ctx.resolveOrCheckQuery(this.sql);
         // Now choose the correct call
+        // 现在选择正确的调用
         if(resultSetType != null && resultSetConcurrency != null) {
             if(resultSetHoldability != null) {
                 return ((Connection) target).prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);

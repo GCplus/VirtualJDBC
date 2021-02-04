@@ -40,6 +40,7 @@ public class DecoratedCommandSink {
             this.timer = new Timer(true);
 
             // Schedule the keep alive timer task
+            // 调度keep alive timer任务
             KeepAliveTimerTask task = new KeepAliveTimerTask(this);
             timer.scheduleAtFixedRate(task, pingPeriod, pingPeriod);
         }
@@ -52,11 +53,13 @@ public class DecoratedCommandSink {
 
     public void close() {
         // Stop the keep-alive timer
+        // 停止keep alive timer任务
         if (timer != null) {
             timer.cancel();
             timer = null;
         }
         // Close down the sink
+        // 关闭连接器
         targetSink.close();
     }
 

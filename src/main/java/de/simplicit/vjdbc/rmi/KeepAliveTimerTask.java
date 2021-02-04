@@ -32,6 +32,7 @@ public class KeepAliveTimerTask extends TimerTask implements CommandSinkListener
     public void preExecution(Command cmd) {
         // Next ping can be ignored when there are commands processed
         // to the sink
+        // 当有对接收器处理的命令时，下一个ping可以被忽略
         ignoreNextPing = true;
     }
 
@@ -47,6 +48,7 @@ public class KeepAliveTimerTask extends TimerTask implements CommandSinkListener
             }
         } catch(SQLException e) {
             // Ignore it, sink is already closed
+            // 忽略它，接收器已经关闭了
         }
     }
 }

@@ -92,6 +92,7 @@ public class SerialBlob implements Blob, Externalizable {
         // very slow but gets around problems with the pos being represented
         // as long instead of an int in most java.io and other byte copying
         // APIs
+        // 速度非常慢，但是可以解决pos问题，因为在大多数java.io和其他字节复制API中，pos被表示为long而不是int
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (long i = 0; i < length; ++i) {
             baos.write(data[(int)(pos + i)]);
@@ -136,6 +137,7 @@ public class SerialBlob implements Blob, Externalizable {
         // very slow but gets around problems with the pos being represented
         // as long instead of an int in most java.io and other byte copying
         // APIs
+        // 速度非常慢，但是可以解决pos问题，因为在大多数java.io和其他字节复制API中，pos被表示为long而不是int
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (long i = 0; i < length; ++i) {
             baos.write(data[(int)(i + pos)]);

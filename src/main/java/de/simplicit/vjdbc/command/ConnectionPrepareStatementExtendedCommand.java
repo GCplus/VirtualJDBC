@@ -52,8 +52,10 @@ public class ConnectionPrepareStatementExtendedCommand implements Command {
 
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         // Resolve and check the query
+        // 解决并检查查询
         String sql = ctx.resolveOrCheckQuery(this.sql);
         // Now make the descision what call to execute
+        // 现在决定执行什么调用
         if(columnIndexes != null) {
             return ((Connection)target).prepareStatement(sql, columnIndexes);
         }

@@ -104,11 +104,13 @@ public class CallableStatementGetObjectCommand implements Command {
         }
 
         // ResultSets are handled by the caller
+        // 结果集由调用方处理
         if(result instanceof ResultSet) {
             return result;
         }
 
         // Any other type must be Serializable to be transported
+        // 任何其他类型必须可序列化才能传输
         if(result == null || result instanceof Serializable) {
             return new SerializableTransport(result, ctx.getCompressionMode(), ctx.getCompressionThreshold());
         }

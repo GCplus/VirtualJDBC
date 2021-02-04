@@ -110,10 +110,12 @@ public class TableCache extends TimerTask {
 
         if(cachingPossible) {
             // Check if all tables can be cached
+            // 检查是否可以缓存所有表
             if(tableEntries.keySet().containsAll(tables)) {
                 // Now iterate through all table names and check if they are allowed to
                 // be cached. Caching of a statement is not possible if there is one
                 // table which isn't in the list of cached tables.
+                // 现在遍历所有表名，并检查是否允许对其进行缓存。如果缓存表列表中没有一个表，则无法缓存语句。
                 for (String tableName : tables) {
                     CacheEntry ce = tableEntries.get(tableName);
 
@@ -144,20 +146,26 @@ public class TableCache extends TimerTask {
 
     private void refreshCacheEntry(CacheEntry cacheEntry) throws SQLException {
         // Now read the complete table via the VJDBC-Connection
+        // 现在通过VJDBC-Connection读取整个表
         PreparedStatement hsqlPreparedStatement = null;
         ResultSet vJdbcResultSet = null;
 
         try {
             // Prepare the INSERT-Statement
+            // 准备INSERT声明
             hsqlPreparedStatement = hsqlConnection.prepareStatement(cacheEntry.insert);
             // Now get the Table content
+            // 现在获取表内容
             vJdbcResultSet = vJdbcStatement.executeQuery(cacheEntry.select);
             // Read the meta data, this might throw an exception so previously
             // cached data won't be destroyed
+            // 读取元数据，这可能会引发异常，因此先前缓存的数据不会被破坏
             ResultSetMetaData rsMetaData = vJdbcResultSet.getMetaData();
             // Here we delete all rows in the cache
+            // 在这里，我们删除缓存中的所有行
             hsqlStatement.executeUpdate(cacheEntry.delete);
             // And fill the HSQL-Destination with it
+            // 并在其中填充HSQL-Destination
             while(vJdbcResultSet.next()) {
                 for(int i = 1; i <= rsMetaData.getColumnCount(); i++) {
                     hsqlPreparedStatement.setObject(i, vJdbcResultSet.getObject(i));
@@ -166,12 +174,15 @@ public class TableCache extends TimerTask {
             }
 
             // Commit the whole changes
+            // 提交全部更改
             hsqlConnection.commit();
             // Reset the refresh timer
+            // 重置刷新计时器
             cacheEntry.lastTimeRefreshed = System.currentTimeMillis();
             cacheEntry.isFilled = true;
         } catch(SQLException e) {
             // Remove the entry when an exception occurs
+            // 发生异常时删除条目
             logger.warn("Error while refreshing table " + cacheEntry.name + ", dropping it");
             hsqlStatement.executeUpdate(cacheEntry.drop);
             cacheEntry.isFilled = false;
@@ -210,20 +221,24 @@ public class TableCache extends TimerTask {
         }
 
         // Get the column metadata of the correspondig table
+        // 获取对应表的列元数据
         ResultSet rs = dbMetaData.getColumns(null, null, table.toUpperCase(), "%");
         // Create different StringBuffers for the future SQL-Statements
+        // 为将来的SQL语句创建不同的StringBuffers
         StringBuilder sbCreate = new StringBuilder("CREATE TABLE " + table + " (");
         StringBuilder sbInsert = new StringBuilder("INSERT INTO " + table + " (");
         StringBuilder sbInsert2 = new StringBuilder(" VALUES (");
         StringBuilder sbSelect = new StringBuilder("SELECT ");
 
         // Analyze all columns
+        // 分析所有列
         while(rs.next()) {
             String columnName = rs.getString("COLUMN_NAME");
             int origDataType = rs.getInt("DATA_TYPE");
             String dataType = sqlTypeMappingForHSql.get(origDataType);
 
             // There might be an unknown data type
+            // 可能存在未知的数据类型
             if(dataType != null) {
                 int columnSize = rs.getInt("COLUMN_SIZE");
                 int decimalDigits = rs.getInt("DECIMAL_DIGITS");
@@ -238,6 +253,7 @@ public class TableCache extends TimerTask {
         }
 
         // Adjust and terminate all the StringBuffers
+        // 调整并终止所有StringBuffer
         sbCreate.setLength(sbCreate.length() - 2);
         sbCreate.append(")");
 
@@ -251,21 +267,27 @@ public class TableCache extends TimerTask {
         sbSelect.append(" FROM ").append(table).append(" t");
 
         // Now get all the SQL-Strings
+        // 现在获取所有的SQL字符串
         String create = sbCreate.toString();
         String insert = sbInsert.toString();
         String select = sbSelect.toString();
         // Execute the creation query
+        // 执行创建查询
         hsqlStatement.executeQuery(create);
         // If we got here the creation was successful and the new cache entry can be created
+        // 如果到达这里，则创建成功，并且可以创建新的缓存条目
         tableEntries.put(table.toLowerCase(), new CacheEntry(table, refreshInterval, create, insert, select));
     }
 
     public void run() {
         // Iterate through all table entries
+        // 遍历所有表条目
         for (CacheEntry tableEntry : tableEntries.values()) {
             // Refreshing necessary ?
+            // 刷新是否必要？
             if (tableEntry.refreshInterval > 0) {
                 // Now measure if the cache should be refreshed
+                // 现在测量是否应该刷新缓存
                 if ((System.currentTimeMillis() - tableEntry.lastTimeRefreshed) > tableEntry.refreshInterval) {
                     try {
                         logger.debug("Refreshing cache for table " + tableEntry.name);

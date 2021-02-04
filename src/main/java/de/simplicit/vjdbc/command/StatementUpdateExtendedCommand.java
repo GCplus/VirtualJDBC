@@ -53,6 +53,7 @@ public class StatementUpdateExtendedCommand implements Command {
     public Object execute(Object target, ConnectionContext ctx) throws SQLException {
         String sql = ctx.resolveOrCheckQuery(this.sql);
         // Now make the descision what call to execute
+        // 现在决定执行什么调用
         if(columnIndexes != null) {
             return ((Statement) target).executeUpdate(sql, columnIndexes);
         }
