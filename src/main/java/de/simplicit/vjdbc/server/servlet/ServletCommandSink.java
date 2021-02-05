@@ -53,6 +53,7 @@ public class ServletCommandSink extends HttpServlet {
         String configResource = servletConfig.getInitParameter(INIT_PARAMETER_CONFIG_RESOURCE);
 
         // Use default location when nothing is configured
+        // 什么都没有配置时使用默认配置
         if(configResource == null) {
             configResource = DEFAULT_CONFIG_RESOURCE;
         }
@@ -77,6 +78,7 @@ public class ServletCommandSink extends HttpServlet {
         }
 
         // Are config variables specifiec ?
+        // 是否指定了配置变量？
         String configVariables = servletConfig.getInitParameter(INIT_PARAMETER_CONFIG_VARIABLES);
         Properties configVariablesProps = null;
 
@@ -138,24 +140,29 @@ public class ServletCommandSink extends HttpServlet {
 
         try {
             // Get the method to execute
+            // 获取执行方法
             String method = httpServletRequest.getHeader(ServletCommandSinkIdentifier.METHOD_IDENTIFIER);
 
             if(method != null) {
                 ois = new ObjectInputStream(httpServletRequest.getInputStream());
                 // And initialize the output
+                // 并初始化输出
                 OutputStream os = httpServletResponse.getOutputStream();
                 oos = new ObjectOutputStream(os);
                 Object objectToReturn = null;
 
                 try {
                     // Some command to process ?
+                    // 一些命令要处理？
                     if(method.equals(ServletCommandSinkIdentifier.PROCESS_COMMAND)) {
                         // Read parameter objects
+                        // 读取参数对象
                         Long connuid = (Long) ois.readObject();
                         Long uid = (Long) ois.readObject();
                         Command cmd = (Command) ois.readObject();
                         CallingContext ctx = (CallingContext) ois.readObject();
                         // Delegate execution to the CommandProcessor
+                        // 将执行委托给CommandProcessor
                         objectToReturn = processor.process(connuid, uid, cmd, ctx);
                     } else if(method.equals(ServletCommandSinkIdentifier.CONNECT_COMMAND)) {
                         String url = ois.readUTF();
@@ -175,10 +182,12 @@ public class ServletCommandSink extends HttpServlet {
                 } catch (Throwable t) {
                     // Wrap any exception so that it can be transported back to
                     // the client
+                    // 包装任何异常，以便可以将其传输回客户端
                     objectToReturn = SQLExceptionHelper.wrap(t);
                 }
 
                 // Write the result in the response buffer
+                // 将结果写入响应缓冲区
                 oos.writeObject(objectToReturn);
                 oos.flush();
 
@@ -186,6 +195,7 @@ public class ServletCommandSink extends HttpServlet {
             } else {
                 // No VJDBC-Method ? Then we redirect the stupid browser user to
                 // some information page :-)
+                // 没有VJDBC方法？ 然后，我们将愚蠢的浏览器用户重定向到一些信息页面：-)
                 httpServletResponse.sendRedirect("index.html");
             }
         } catch (Exception e) {

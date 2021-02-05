@@ -16,6 +16,7 @@ import java.sql.Statement;
 /**
  * This guard object checks if the given object shall be passed to the client or if it shall
  * be put into the object pool with a UID.
+ * <p>该保护对象检查是否将给定对象传递给客户端，或者是否应使用UID将其放入对象池
  */
 class ReturnedObjectGuard {
 

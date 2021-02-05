@@ -12,6 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Root object for RMI communication.
+ * <p>RMI通信的根对象。
  */
 public class ConnectionBrokerRmiImpl extends UnicastRemoteObject implements ConnectionBrokerRmi {
     private static final long serialVersionUID = 3257290235934029618L;

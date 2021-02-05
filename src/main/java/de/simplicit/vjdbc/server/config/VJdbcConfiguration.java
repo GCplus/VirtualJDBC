@@ -223,6 +223,7 @@ public class VJdbcConfiguration {
 
     private void validateConnections() throws ConfigurationException {
         // Call the validation method of the configuration
+        // 调用配置的验证方法
         for (Object connection : connections) {
             ConnectionConfiguration connectionConfiguration = (ConnectionConfiguration) connection;
             connectionConfiguration.validate();

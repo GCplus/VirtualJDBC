@@ -45,19 +45,24 @@ class ConnectionEntry implements ConnectionContext {
     // 配置信息
     private final ConnectionConfiguration connectionConfiguration;
     // Properties delivered from the client
+    // 客户端交付的属性
     private final Properties clientInfo;
     // Flag that signals the activity of this connection
+    // 表示此连接活动的标志
     private boolean active = false;
 
     // Statistics
+    // 统计
     private long lastAccessTimestamp = System.currentTimeMillis();
     private long numberOfProcessedCommands = 0;
 
     // Map containing all JDBC-Objects which are created by this Connection
     // entry
+    // 包含此Connection条目创建的所有JDBC对象的映射
     private final Map<Long, JdbcObjectHolder> jdbcObjects =
         Collections.synchronizedMap(new HashMap<Long, JdbcObjectHolder>());
     // Map for counting commands
+    // 映射计数命令
     private final Map<String, Integer> commandCountMap =
         Collections.synchronizedMap(new HashMap<String, Integer>());
 
@@ -67,6 +72,7 @@ class ConnectionEntry implements ConnectionContext {
         this.clientInfo = clientInfo;
         uid = connuid;
         // Put the connection into the JDBC-Object map
+        // 将连接放入JDBC-Object映射
         jdbcObjects.put(connuid, new JdbcObjectHolder(conn, ctx, JdbcInterfaceType.CONNECTION));
     }
 
@@ -95,9 +101,11 @@ class ConnectionEntry implements ConnectionContext {
             for (Long key : keys) {
                 JdbcObjectHolder jdbcObject = jdbcObjects.get(key);
                 // don't act on the Connection itself - this will be done elsewhere
+                // 不要对连接本身采取行动-这将在其他地方完成
                 if (jdbcObject.getJdbcInterfaceType() == JdbcInterfaceType.CONNECTION)
                     continue;
                 // create a DestroyCommand and act on it
+                // 创建一个摧毁命令并执行它
                 Command destroy = new DestroyCommand(key, jdbcObject.getJdbcInterfaceType());
                 destroy.execute(jdbcObject.getJdbcObject(), this);
             }
@@ -182,8 +190,10 @@ class ConnectionEntry implements ConnectionContext {
             Object result = null;
 
             // Some target object ?
+            // 某个目标对象?
             if(uid != null) {
                 // ... get it
+                // ... 获取它
                 JdbcObjectHolder target = jdbcObjects.get(uid);
 
                 if(target != null) {
@@ -191,12 +201,15 @@ class ConnectionEntry implements ConnectionContext {
                         logger.debug("Target for UID " + uid + " found");
                     }
                     // Execute the command on the target object
+                    // 在目标对象上执行命令
                     result = cmd.execute(target.getJdbcObject(), this);
                     // Check if the result must be remembered on the server side with a UID
+                    // 检查是否必须使用UID在服务器端记住结果
                     UIDEx uidResult = ReturnedObjectGuard.checkResult(result);
 
                     if(uidResult != null) {
                         // put it in the JDBC-Object-Table
+                        // 把它放在JDBC-Object-Table中
                     	int jdbcInterfaceType = getJdbcInterfaceTypeFromObject(result);
                         jdbcObjects.put(uidResult.getUID(), new JdbcObjectHolder(result, ctx, jdbcInterfaceType));
                         if(logger.isDebugEnabled()) {
@@ -208,6 +221,7 @@ class ConnectionEntry implements ConnectionContext {
                         return uidResult;
                     } else {
                         // When the result is of type ResultSet then handle it specially
+                        // 当结果的类型为ResultSet时，请特别处理
                         if(result != null &&
                            VJdbcConfiguration.getUseCustomResultSetHandling()) {
                             if(result instanceof ResultSet) {
@@ -255,9 +269,9 @@ class ConnectionEntry implements ConnectionContext {
     }
 
     public void cancelCurrentStatementExecution(
-        Long connuid, Long uid, StatementCancelCommand cmd)
-        throws SQLException {
+        Long connuid, Long uid, StatementCancelCommand cmd) {
         // Get the Statement object
+        // 获取Statement对象
         JdbcObjectHolder target = jdbcObjects.get(uid);
 
         if (target != null) {
@@ -309,6 +323,7 @@ class ConnectionEntry implements ConnectionContext {
                     Integer v2 = (Integer) e2.getValue();
 
                     // Descending sort
+                    // 降序排列
                     return -v1.compareTo(v2);
                 }
             });
@@ -324,14 +339,17 @@ class ConnectionEntry implements ConnectionContext {
 
     private Object handleResultSet(ResultSet result, boolean forwardOnly, CallingContext ctx) throws SQLException {
         // Populate a StreamingResultSet
+        // 填充StreamingResultSet
         StreamingResultSet srs = new StreamingResultSet(
                 connectionConfiguration.getRowPacketSize(),
                 forwardOnly,
                 connectionConfiguration.isPrefetchResultSetMetaData(),
                 connectionConfiguration.getCharset());
         // Populate it
+        // 填充它
         boolean lastPartReached = srs.populate(result);
         // Remember the ResultSet and put the UID in the StreamingResultSet
+        // 记住ResultSet并将UID放在StreamingResultSet中
         UIDEx uid = new UIDEx();
         srs.setRemainingResultSetUID(uid);
         jdbcObjects.put(uid.getUID(), new JdbcObjectHolder(new ResultSetHolder(result, connectionConfiguration, lastPartReached), ctx, JdbcInterfaceType.RESULTSETHOLDER));

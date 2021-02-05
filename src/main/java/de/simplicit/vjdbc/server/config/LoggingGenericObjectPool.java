@@ -11,6 +11,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 /**
  * This class inherits from the GenericObjectPool and provides a little bit
  * of logging when eviction happens.
+ * <p>这个类继承自GenericObjectPool，并在回收发生时提供了一些日志记录。
  * @author Mike
  */
 public class LoggingGenericObjectPool extends GenericObjectPool {

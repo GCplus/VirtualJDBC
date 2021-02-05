@@ -32,6 +32,7 @@ public class ConnectionServer {
             } else if(args.length == 2) {
                 // Second argument is a properties file with variables that are
                 // replaced by Digester when the configuration is read in
+                // 第二个参数是一个属性文件，其中的变量在读取配置时由Digester替换
                 Properties props = new Properties();
                 FileInputStream propsInputStream = null;
                 try {
@@ -86,6 +87,7 @@ public class ConnectionServer {
 
     private void installShutdownHook() {
         // Install the shutdown hook
+        // 安装关机钩子函数
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 try {
