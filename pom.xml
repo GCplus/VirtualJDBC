@@ -2,9 +2,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.simplicit</groupId>
-  <artifactId>vjdbc</artifactId>
-  <packaging>jar</packaging>
-  <version>1.7.1</version>
+  <artifactId>VirtualJDBC</artifactId>
+  <packaging>pom</packaging>
+  <version>1.8.0 alpha 1</version>
+  <modules>
+    <module>vjdbc</module>
+    <module>vjdbcServer</module>
+  </modules>
   <name>VJDBC JDBC driver</name>
   <url>http://vjdbc.sourceforge.net/</url>
 
