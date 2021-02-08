@@ -8,6 +8,7 @@
   <modules>
     <module>vjdbc</module>
     <module>vjdbcServer</module>
+      <module>vjdbcSerial</module>
   </modules>
   <name>VJDBC JDBC driver</name>
   <url>http://vjdbc.sourceforge.net/</url>
@@ -80,7 +81,7 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <finalName>vjdbc-${project.version}</finalName>
+              <finalName>VirtualJDBC-${project.version}</finalName>
               <includes>
                 <include>de/simplicit/vjdbc/**</include>
                 <include>**/*_Stub.class</include>
@@ -285,6 +286,11 @@
     </plugins>
   </reporting>
 
+  <dependencyManagement>
+    <dependencies>
+
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>commons-beanutils</groupId>

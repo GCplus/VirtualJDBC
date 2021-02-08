@@ -87,7 +87,7 @@ public class DecoratedCommandSink {
             }
             listener.preExecution(cmd);
             return targetSink.process(connectionUid != null ? connectionUid.getUID() : null,
-                                       reg != null ? reg.getUID() : null, cmd, ctx);
+                    reg != null ? reg.getUID() : null, cmd, ctx);
         } finally {
             listener.postExecution(cmd);
         }

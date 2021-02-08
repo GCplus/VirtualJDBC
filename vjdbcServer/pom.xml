@@ -14,7 +14,8 @@
 <dependencies>
     <dependency>
         <groupId>de.simplicit</groupId>
-        <artifactId>vjdbc</artifactId>
+        <artifactId>vjdbcSerial</artifactId>
+        <version>1.8.0 alpha 1</version>
     </dependency>
 </dependencies>
 </project>
